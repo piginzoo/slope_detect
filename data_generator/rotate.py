@@ -67,7 +67,11 @@ def rotate_one_direction(image,image_name,subfix,label_file,target_dir,clazz):
 
         small_degree = random.uniform(-ROTATE_ANGLE, ROTATE_ANGLE)  # 随机旋转0-30度
         rotated_file = degree_rotate(image,small_degree)
-        rotated_file.save(rotated_file_name)
+        try:
+            rotated_file.save(rotated_file_name)
+        except IOError as e:
+            logger.error("保存图片失败：%s,原因：%s",rotated_file_name,str(e))
+            continue
 
         label_file.write(rotated_file_name)
         label_file.write(" ")
