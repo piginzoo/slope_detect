@@ -231,11 +231,11 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
     # accuracy: (tp + tn) / (p + n)
     accuracy = accuracy_score(image_label, classes)
     # precision tp / (tp + fp)
-    precision = precision_score(image_label, classes)
+    precision = precision_score(image_label, classes,labels=[0,1,2,3])
     # recall: tp / (tp + fn)
-    recall = recall_score(image_label, classes)
+    recall = recall_score(image_label, classes,labels=[0,1,2,3])
     # f1: 2 tp / (2 tp + fp + fn)
-    f1 = f1_score(image_label, classes)
+    f1 = f1_score(image_label, classes,labels=[0,1,2,3])
 
     return accuracy,precision,recall,f1
 

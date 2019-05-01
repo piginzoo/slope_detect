@@ -61,4 +61,4 @@ nohup python -m main.train \
     --early_stop=5 \
     --max_width=1200 \
     --max_height=1600 \
-    >> ./logs/ctpn_gpu0_$Date.log 2>&1 &
+    >> ./logs/rotate_gpu0_$Date.log 2>&1 &
