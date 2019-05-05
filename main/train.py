@@ -27,7 +27,7 @@ tf.app.flags.DEFINE_string('validate_dir','data/validate','')
 tf.app.flags.DEFINE_string('validate_label','data/validate.txt','')
 tf.app.flags.DEFINE_integer('validate_batch',30,'')
 tf.app.flags.DEFINE_integer('early_stop',5,'')
-tf.app.flags.DEFINE_integer('num_readers', 4, '')#同时启动的进程4个
+tf.app.flags.DEFINE_integer('num_readers', 2, '')#同时启动的进程2个
 tf.app.flags.DEFINE_string('gpu', '1', '') #使用第#1个GPU
 tf.app.flags.DEFINE_string('model', 'model', '')
 tf.app.flags.DEFINE_float('lambda1', 1000, '')
@@ -157,7 +157,7 @@ def main(argv=None):
 
         logger.debug("开始加载训练数据")
         # 是的，get_batch返回的是一个generator
-        data_generator = data_provider.get_batch(num_workers=FLAGS.num_readers,label_file=FLAGS.train_label,batch_num=FLAGS.validate_batch)
+        data_generator = data_provider.get_batch(num_workers=FLAGS.num_readers,label_file=FLAGS.train_label,batch_num=FLAGS.train_batch)
         start = time.time()
         train_start_time = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime(start))
 
@@ -217,7 +217,9 @@ def main(argv=None):
 def validate(sess,cls_pred,ph_input_image,ph_label):
 
     #### 加载验证数据,随机加载FLAGS.validate_batch张
+
     image_list, image_label = data_provider.load_validate_data(FLAGS.validate_label,FLAGS.validate_batch)
+    logger.debug("加载了验证集%d张",len(image_list))
 
     classes = sess.run([cls_pred],feed_dict={
         ph_input_image:  data_util.prepare4vgg(image_list),

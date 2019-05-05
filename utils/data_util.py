@@ -5,7 +5,7 @@ import logging
 import numpy as np
 import cv2
 import tensorflow as tf
-logger = logging.getLogger("generator queue")
+logger = logging.getLogger("GeneratorEnqueuer")
 
 try:
     import queue
@@ -28,15 +28,13 @@ class GeneratorEnqueuer():
 
     def start(self, workers=1, max_queue_size=10):
         def data_generator_task(name):
+
             while not self._stop_event.is_set():
                 try:
                     if self._use_multiprocessing or self.queue.qsize() < max_queue_size:
                         generator_output = next(self._generator)
-                        # logger.debug("调用next()，%s 拿到了一张图片，放入GeneratorEnqueuer的queue,size=[%d]",
-                        #              name,self.queue.qsize())
-
+                        logger.debug("调用next()，%s 拿到了一批图片，放入queue,队列大小[%d]",name,self.queue.qsize())
                         self.queue.put(generator_output)
-
                     else:
                         time.sleep(self.wait_time)
                 except Exception:

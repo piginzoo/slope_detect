@@ -41,7 +41,7 @@ def load_validate_data(validate_file,batch_num):
     image_list, label_list = _load_batch_image_labels(val_image_names)
     return np.array(image_list),label_list
 
-
+# 加载一个批次数量的图片和标签，数量为batch数
 def _load_batch_image_labels(batch):
     image_list = []
     label_list = []
@@ -55,7 +55,7 @@ def _load_batch_image_labels(batch):
         image_list.append(cv2.imread(image_file))
         logger.debug("加载了图片：%s",image_file)
         label_list.append(label)
-    logger.debug("加载了图片Batch%d张",len(image_list))
+    logger.debug("加载%d张图片作为一个批次到内存中",len(image_list))
     return image_list,label_list
 
 
@@ -66,7 +66,7 @@ def generator(label_file,batch_num):
         logger.debug("shuffle了所有的图片和标签")
         for i in range(0, len(image_label_list), batch_num):
             batch = image_label_list[i:i + batch_num]
-            logger.debug("取出一个批次(%d)：从%d到%d",batch_num,i,i + batch_num)
+            logger.debug("获得批次数量(%d)：从%d到%d的图片/标签的名字，准备加载...",batch_num,i,i + batch_num)
             yield _load_batch_image_labels(batch)
 
 
@@ -80,6 +80,7 @@ def get_batch(num_workers,label_file,batch_num,**kwargs):
         generator_output = None
         while True:
             while enqueuer.is_running():
+                logger.debug("开始读取缓冲队列")
                 if not enqueuer.queue.empty():
                     generator_output = enqueuer.queue.get()
                     logger.debug("从GeneratorEnqueuer的queue中取出的图片")
