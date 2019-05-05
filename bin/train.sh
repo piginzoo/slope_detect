@@ -42,13 +42,13 @@ nohup python -m main.train \
     --name=rotate_detect \
     --pretrained_model_path=data/vgg_16.ckpt \
     --max_steps=100000 \
-    --decay_steps=10000 \
-    --evaluate_steps=1000 \
+    --decay_steps=1000 \
+    --evaluate_steps=100 \
     --validate_dir=data/validate \
-    --validate_batch=200 \
+    --validate_batch=16 \
     --validate_label=data/validate.txt \
     --train_dir=data/train \
-    --train_batch=30 \
+    --train_batch=32 \
     --train_label=data/train.txt \
     --learning_rate=0.0001 \
     --save_checkpoint_steps=5000 \
@@ -60,6 +60,6 @@ nohup python -m main.train \
     --moving_average_decay=0.997 \
     --restore=False \
     --early_stop=5 \
-    --max_width=1200 \
-    --max_height=1600 \
+    --max_width=600 \
+    --max_height=800 \
     >> ./logs/rotate_gpu0_$Date.log 2>&1 &

@@ -137,7 +137,6 @@ def main(argv=None):
     # 早停用的变量
     best_f1 = 0
     early_stop_counter = 0
-    early_stop = False
 
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
@@ -185,6 +184,11 @@ def main(argv=None):
                     logger.info("新F1值[%f]大于过去最好的F1值[%f]，早停计数器重置",f1_value,best_f1)
                     best_f1 = f1_value
                     early_stop_counter = 0
+                    # 每次效果好的话，就保存一个模型
+                    filename = ('ctpn-{:s}-{:d}'.format(train_start_time,step + 1) + '.ckpt')
+                    filename = os.path.join(FLAGS.model, filename)
+                    saver.save(sess, filename)
+                    logger.info("在第%d步，保存了最好的模型文件：%s，F1：%f",step,filename,best_f1)
                 else:
                     logger.info("新F1值[%f]小于过去最好的F1值[%f]，早停计数器+1", f1_value, best_f1)
                     early_stop_counter+= 1
@@ -197,16 +201,8 @@ def main(argv=None):
                 logger.info("在第%d步，模型评估结束", step)
 
                 if early_stop_counter> FLAGS.early_stop:
-                    early_stop = True
                     logger.warning("达到了早停计数次数：%d次，训练提前结束",early_stop_counter)
                     break
-
-            if FLAGS.debug or (step + 1) % FLAGS.save_checkpoint_steps == 0:
-                # 每次训练的模型不要覆盖，前缀是训练启动时间
-                filename = ('ctpn-{:s}-{:d}'.format(train_start_time,step + 1) + '.ckpt')
-                filename = os.path.join(FLAGS.model, filename)
-                saver.save(sess, filename)
-                logger.info("在第%d步，保存了模型文件(checkout point)：%s",step,filename)
 
             if step != 0 and step % FLAGS.decay_steps == 0:
                 logger.info("学习率(learning rate)衰减：%f=>%f",learning_rate.eval(),learning_rate.eval() * FLAGS.decay_rate)
