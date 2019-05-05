@@ -51,8 +51,11 @@ def _load_batch_image_labels(batch):
         if not os.path.exists(image_file):
             logger.warning("样本图片%s不存在", image_file)
             continue
+
         image_list.append(cv2.imread(image_file))
+        logger.debug("加载了图片：%s",image_file)
         label_list.append(label)
+    logger.debug("加载了图片Batch%d张",len(image_list))
     return image_list,label_list
 
 
@@ -60,8 +63,10 @@ def generator(label_file,batch_num):
     image_label_list = load_data(label_file)
     while True:
         np.random.shuffle(image_label_list)
+        logger.debug("shuffle了所有的图片和标签")
         for i in range(0, len(image_label_list), batch_num):
             batch = image_label_list[i:i + batch_num]
+            logger.debug("取出一个批次(%d)：从%d到%d",batch_num,i,i + batch_num)
             yield _load_batch_image_labels(batch)
 
 
