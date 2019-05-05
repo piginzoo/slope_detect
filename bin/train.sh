@@ -4,14 +4,14 @@ Date=$(date +%Y%m%d%H%M)
 
 if [ "$1" = "stop" ]; then
     echo "停止训练"
-    ps aux|grep python|grep vorientation_detect|awk '{print $2}'|xargs kill -9
+    ps aux|grep python|grep rotate_detect|awk '{print $2}'|xargs kill -9
     exit
 fi
 
 if [ "$1" = "console" ]; then
     echo "调试模式:只训练一次"
     python -m main.train \
-        --name=orientation_detect \
+        --name=rotate_detect \
         --pretrained_model_path=data/vgg_16.ckpt \
         --max_steps=2 \
         --decay_steps=1 \
@@ -39,6 +39,7 @@ fi
 
 echo "生产模式:GPU0"
 nohup python -m main.train \
+    --name=rotate_detect \
     --pretrained_model_path=data/vgg_16.ckpt \
     --max_steps=100000 \
     --decay_steps=10000 \

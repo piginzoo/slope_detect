@@ -13,7 +13,7 @@ import numpy as np
 from utils import data_util
 import logging
 
-tf.app.flags.DEFINE_string('name','orientation_detect', '')
+tf.app.flags.DEFINE_string('name','rotate_detect', '')
 tf.app.flags.DEFINE_float('learning_rate', 0.01, '') #学习率
 tf.app.flags.DEFINE_integer('max_steps', 40000, '') #我靠，人家原来是50000的设置
 tf.app.flags.DEFINE_integer('decay_steps', 2000, '')#？？？
