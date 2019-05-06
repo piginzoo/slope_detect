@@ -57,21 +57,26 @@ def load_all_backgroud_images(bground_path):
 
 
 
-def process_folder(dir,type):
+def process_folder(dir,type,num):
     label_file_name = os.path.join("data",type+".txt")
 
     label_file = open(label_file_name,"w")
     target_dir = os.path.join("data",type)
 
+    count = 0
     for image_name in os.listdir(dir):
+        if count> num: break
+
         file_name = os.path.join(dir, image_name)
         _,type = os.path.splitext(file_name)
         if type in ['.jpg','.png','.JPG','.jpeg','.PNG']:
             logger.debug("处理原始图片:%s", file_name)
             rotate_one_image(file_name,label_file,target_dir)
+            count += 1
         else:
             logger.warning("警告：文件%s不是图片，忽略",file_name)
             continue
+
     label_file.close()
 
 
@@ -97,10 +102,12 @@ def rotate_one_direction(image,image_name,subfix,label_file,target_dir,clazz):
 
     # 生成旋转角度，最后需要一张旋转角度为0的
     degrees = []
-    for i in range(1, random_num):
+    for i in range(random_num):
         small_degree = random.uniform(-ROTATE_ANGLE, ROTATE_ANGLE)  # 随机旋转0-30度
         degrees.append(small_degree)
     degrees.append(0)
+
+    logger.debug("%s随机旋转角度：%r",image_name,degrees)
 
     i = 0
     for degree in degrees:
@@ -134,9 +141,12 @@ if __name__ == '__main__':
     parser.add_argument("--type")       # 啥类型的数据啊，train/validate/test
     parser.add_argument("--dir")        # 这个程序的主目录
     parser.add_argument("--background") # 背景图的目录
+    parser.add_argument("--num")
+
     args = parser.parse_args()
     DATA_DIR = args.dir
     TYPE= args.type
+    NUM = int(args.num)
 
     images_dir = os.path.join("data",TYPE)
     if not os.path.exists(images_dir): os.makedirs(images_dir)
@@ -145,4 +155,4 @@ if __name__ == '__main__':
     bg_list = load_all_backgroud_images(args.background)
 
 
-    process_folder(DATA_DIR, TYPE)
+    process_folder(DATA_DIR, TYPE,NUM)
