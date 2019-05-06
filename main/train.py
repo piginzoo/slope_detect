@@ -9,7 +9,6 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
-import numpy as np
 from utils import data_util
 import logging
 
@@ -217,11 +216,10 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
     image_list, image_label = data_provider.load_validate_data(FLAGS.validate_label,FLAGS.validate_batch)
     logger.debug("加载了验证集%d张",len(image_list))
 
-    classes = sess.run([cls_pred],feed_dict={
+    classes = sess.run(cls_pred,feed_dict={
         ph_input_image:  data_util.prepare4vgg(image_list),
         ph_label:        image_label
     })  # data[3]是图像的路径，传入sess是为了调试画图用
-    classes = classes[0]
 
     logger.debug("预测结果为：%r",classes)
     logger.debug("Label为：%r",image_label)
