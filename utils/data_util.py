@@ -33,7 +33,7 @@ class GeneratorEnqueuer():
                 try:
                     if self._use_multiprocessing or self.queue.qsize() < max_queue_size:
                         generator_output = next(self._generator)
-                        logger.debug("调用next()，%s 拿到了一批图片，放入queue,队列大小[%d]",name,self.queue.qsize())
+                        logger.debug("调用next()，%s 拿到了一批图片，放入queue",name)
                         self.queue.put(generator_output)
                     else:
                         time.sleep(self.wait_time)

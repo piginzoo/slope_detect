@@ -13,6 +13,7 @@ if [ "$1" = "console" ]; then
     python -m main.train \
         --name=rotate_detect \
         --pretrained_model_path=data/vgg_16.ckpt \
+        --num_readers=1 \
         --max_steps=2 \
         --decay_steps=1 \
         --evaluate_steps=1 \
@@ -41,6 +42,7 @@ echo "生产模式:GPU0"
 nohup python -m main.train \
     --name=rotate_detect \
     --pretrained_model_path=data/vgg_16.ckpt \
+    --num_readers=4 \
     --max_steps=100000 \
     --decay_steps=1000 \
     --evaluate_steps=100 \
