@@ -18,6 +18,12 @@ def init_params():
     tf.app.flags.DEFINE_string('model_dir', 'model/', '') # model的存放目录，会自动加载最新的那个模型
     tf.app.flags.DEFINE_string('model_file', '', '')     # 为了支持单独文件，如果为空，就预测pred_dir中的所有文件
     tf.app.flags.DEFINE_boolean('debug', False, '')
+    # 这个是为了兼容
+    # gunicorn -w 2 -k gevent web.api_server:app -b 0.0.0.0:8080
+    tf.app.flags.DEFINE_string('worker-class', 'gevent', '')
+    tf.app.flags.DEFINE_integer('workers', 2, '')
+    tf.app.flags.DEFINE_string('bind', '0.0.0.0:8080', '')
+    tf.app.flags.DEFINE_integer('timeout', 60, '')
 
 
 def init_logger():
@@ -78,7 +84,6 @@ def restore_session():
 def main():
     image_name_list = get_images()
     image_list = []
-
     for image_name in image_name_list:
         logger.info("探测图片[%s]开始", image_name)
         try:
@@ -89,19 +94,17 @@ def main():
         except:
             print("Error reading image {}!".format(image_name))
             continue
-
-    image_list = data_util.prepare4vgg(image_list)
-
     input_images,classes = init_model()
     sess = restore_session()
     classes = pred(sess,classes,input_images,image_list)
-
     for i in range(len(classes)):
         logger.info("图片[%s]旋转角度为[%s]度",image_name_list[i],CLASS_NAME[classes[i]])
+
 
 def pred(sess,classes,input_images,image_list):#,input_image,input_im_info,bbox_pred, cls_pred, cls_prob):
     logger.info("开始探测图片")
     start = time.time()
+    image_list = data_util.prepare4vgg(image_list)
     _classes = sess.run(classes,feed_dict={input_images: image_list})
     logger.info("探测图片完成，耗时: %f", (time.time() - start))
     return _classes
