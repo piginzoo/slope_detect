@@ -58,7 +58,7 @@ def ocr_base64():
 
 
 # 图片的识别
-@app.route('/ocr',methods=['POST'])
+@app.route('/rotate',methods=['POST'])
 def ocr():
     data = request.files['image']
     image_name = data.filename
