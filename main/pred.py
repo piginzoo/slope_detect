@@ -75,7 +75,7 @@ def restore_session():
         model_file_path = os.path.join(FLAGS.model_dir,FLAGS.model_file)
         logger.debug("恢复给定名字模型：%s", model_file_path)
         if not os.path.exists(model_file_path):
-            logger.error("模型文件%s不存在，加载模型失败")
+            logger.error("模型文件%s不存在，加载模型失败",model_file_path+".meta")
             return None
         saver.restore(sess,model_file_path)
     else:
