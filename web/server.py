@@ -99,7 +99,13 @@ def startup():
 
     global input_images,classes,sess
 
-    pred.init_params()
+    # gunicorn没法用--方式传参，只好用环境变量了
+    model_dir = os.environ['model_dir']
+    model_name = os.environ['model_file']
+    logger.info("模型目录：%s",model_dir)
+    logger.info("模型名称：%s",model_name)
+
+    pred.init_params(model_dir,model_name)
     input_images,classes = pred.init_model()
     sess = pred.restore_session()
 
