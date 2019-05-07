@@ -24,8 +24,7 @@ def process(buffer):
 
     global input_images,sess
     _classes = pred.pred(sess, classes, input_images, np.array([image]))
-
-    return "图片旋转角度为[{}]".format(pred.CLASS_NAME[_classes[0]])
+    return pred.CLASS_NAME[_classes[0]]
 
 
 @app.route("/")
@@ -74,7 +73,8 @@ def ocr():
         logger.error("处理图片过程中出现问题：%r", e)
         result = str(e)
 
-    return render_template('result.html', result=result)
+    return render_template('result.html', result="图片旋转角度为[{}]".format(str(result))
+)
 
 
 # 图片的识别
