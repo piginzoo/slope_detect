@@ -66,13 +66,17 @@ def init_model():
 def restore_session():
     sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
     saver = tf.train.Saver(tf.global_variables())
-    ckpt_state = tf.train.get_checkpoint_state(FLAGS.model_dir)
-    logger.debug("从路径[%s]查找到最新的checkpoint文件[%s]", FLAGS.model_dir, ckpt_state)
-    model_path = os.path.join(FLAGS.model_dir, os.path.basename(ckpt_state.model_checkpoint_path))
-    logger.info('从%s加载模型', format(model_path))
+    if not os.path.exists(FLAGS.model_dir):
+        logger.error("目录%s不存在，加载模型失败")
+        return None
+    logger.info('从目录%s加载模型', format(FLAGS.model_dir))
+
     if FLAGS.model_file:
         model_file_path = os.path.join(FLAGS.model_dir,FLAGS.model_file)
         logger.debug("恢复给定名字模型：%s", model_file_path)
+        if not os.path.exists(model_file_path):
+            logger.error("模型文件%s不存在，加载模型失败")
+            return None
         saver.restore(sess,model_file_path)
     else:
         ckpt = tf.train.latest_checkpoint(FLAGS.model_dir)
