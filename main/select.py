@@ -5,7 +5,7 @@ import cv2
 import tensorflow as tf
 import logging
 sys.path.append(os.getcwd())
-from main as pred
+from main import pred
 import shutil
 
 logger = logging.getLogger("Select")
