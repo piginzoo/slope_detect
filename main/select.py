@@ -38,6 +38,7 @@ def main():
 
     i=0
     for image_name in image_name_list:
+        start = time.time()
         logger.info("探测图片[%s]开始", image_name)
         try:
             img = cv2.imread(image_name)
@@ -49,6 +50,7 @@ def main():
             logger.error("处理图片[%s]发生错误：%s",image_name,str(e))
             continue
         i+=1
+        logger.debug("处理完第%d张图片，耗时:%f",i,time.time()-start)
 
 def select_image(image_name,cls):
     dst_dir = FLAGS.target_dir
