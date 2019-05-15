@@ -8,6 +8,7 @@ import numpy as np
 sys.path.append(os.getcwd())
 from main import pred
 import shutil
+from tqdm import tqdm
 
 logger = logging.getLogger("Select")
 FLAGS = tf.app.flags.FLAGS
@@ -37,8 +38,7 @@ def main():
     sess = pred.restore_session()
 
     image_name_list = pred.get_images()
-    import tqdm
-    pbar = tqdm(total=100)
+    pbar = tqdm(total=len(image_name_list))
     i=0
     for image_name in image_name_list:
         start = time.time()
