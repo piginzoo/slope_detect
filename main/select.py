@@ -43,7 +43,7 @@ def main():
         logger.info("探测图片[%s]开始", image_name)
         try:
             img = cv2.imread(image_name)
-            classes = pred.pred(sess, classes, input_images,[img])
+            classes = pred.pred(sess, classes, input_images,np.array([img]))
             if classes[0]!=0:
                 select_image(image_name)
         except Exception as e:
@@ -55,8 +55,9 @@ def main():
 
 def select_image(image_name,cls):
     dst_dir = FLAGS.target_dir
+    logger.warning("这张图片[%s]是歪的[%s]，挑出来=>%s",image_name,str(pred.CLASS_NAME[cls]),dst_dir)
     shutil.copyfile(image_name,dst_dir)
-    logger.warning("这张图片是歪的[%s]，挑出来",str(pred.CLASS_NAME[cls]))
+
 
 if __name__ == '__main__':
     init_params()
