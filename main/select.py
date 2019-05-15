@@ -32,10 +32,11 @@ def init_logger():
 
 
 def main():
-    image_name_list = pred.get_images()
-    image_list = []
     input_images,classes = pred.init_model()
     sess = pred.restore_session()
+
+    image_name_list = pred.get_images()
+    image_list = []
 
     i=0
     for image_name in image_name_list:
