@@ -47,7 +47,7 @@ def main():
             if classes[0]!=0:
                 select_image(image_name)
         except Exception as e:
-            traceback.print_exc(limit=1, file=sys.stdout)
+            traceback.print_exc()
             logger.error("处理图片[%s]发生错误：%s",image_name,str(e))
             continue
         i+=1
