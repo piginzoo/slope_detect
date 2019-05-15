@@ -16,7 +16,7 @@ FLAGS = tf.app.flags.FLAGS
 
 def init_params(model_dir='model',model_name=''):
     tf.app.flags.DEFINE_string('image_name','', '')         # 被预测的图片名字，为空就预测目录下所有的文件
-    tf.app.flags.DEFINE_string('pred_dir', 'data/pred', '') # 预测后的结果的输出目录
+    tf.app.flags.DEFINE_string('pred_dir', '', '') # 预测后的结果的输出目录
     tf.app.flags.DEFINE_string('model_dir',model_dir, '')   # model的存放目录，会自动加载最新的那个模型
     tf.app.flags.DEFINE_string('model_file',model_name, '') # 为了支持单独文件，如果为空，就预测pred_dir中的所有文件
     tf.app.flags.DEFINE_string('target_dir','','')
