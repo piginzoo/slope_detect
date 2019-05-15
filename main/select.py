@@ -3,7 +3,7 @@ import os,sys
 import time
 import cv2
 import tensorflow as tf
-import logging
+import logging,traceback
 sys.path.append(os.getcwd())
 from main import pred
 import shutil
@@ -36,7 +36,6 @@ def main():
     sess = pred.restore_session()
 
     image_name_list = pred.get_images()
-    image_list = []
 
     i=0
     for image_name in image_name_list:
@@ -44,11 +43,11 @@ def main():
         logger.info("探测图片[%s]开始", image_name)
         try:
             img = cv2.imread(image_name)
-            image_list.append(img)
-            classes = pred(sess, classes, input_images,[img])
+            classes = pred.pred(sess, classes, input_images,[img])
             if classes[0]!=0:
                 select_image(image_name)
         except Exception as e:
+            traceback.print_exc(limit=1, file=sys.stdout)
             logger.error("处理图片[%s]发生错误：%s",image_name,str(e))
             continue
         i+=1
