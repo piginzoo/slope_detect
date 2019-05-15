@@ -4,6 +4,7 @@ import time
 import cv2
 import tensorflow as tf
 import logging,traceback
+import numpy as np
 sys.path.append(os.getcwd())
 from main import pred
 import shutil
@@ -36,22 +37,26 @@ def main():
     sess = pred.restore_session()
 
     image_name_list = pred.get_images()
-
+    import tqdm
+    pbar = tqdm(total=100)
     i=0
     for image_name in image_name_list:
         start = time.time()
         logger.info("探测图片[%s]开始", image_name)
+        pbar.update(i)
         try:
             img = cv2.imread(image_name)
-            classes = pred.pred(sess, classes, input_images,np.array([img]))
-            if classes[0]!=0:
-                select_image(image_name)
+            _classes = pred.pred(sess, classes, input_images,np.array([img]))
+            if _classes[0]!=0:
+                select_image(image_name,_classes[0])
         except Exception as e:
             traceback.print_exc()
             logger.error("处理图片[%s]发生错误：%s",image_name,str(e))
             continue
         i+=1
         logger.debug("处理完第%d张图片，耗时:%f",i,time.time()-start)
+
+    pbar.close()
 
 def select_image(image_name,cls):
     dst_dir = FLAGS.target_dir
