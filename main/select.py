@@ -61,7 +61,7 @@ def main():
 def select_image(image_name,cls):
     dst_dir = FLAGS.target_dir
     logger.warning("这张图片[%s]是歪的[%s]，挑出来=>%s",image_name,str(pred.CLASS_NAME[cls]),dst_dir)
-    shutil.copyfile(image_name,dst_dir)
+    shutil.copy(image_name,dst_dir)
 
 
 if __name__ == '__main__':
