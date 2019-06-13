@@ -180,7 +180,7 @@ def main(argv=None):
                 logger.info("在第%d步，开始进行模型评估",step)
 
                 # data[4]是大框的坐标，是个数组，8个值
-                accuracy_value,f1_value,recall_value,precision_value = validate(sess,cls_preb,ph_input_image,ph_label)
+                accuracy_value,precision_value,recall_value,f1_value = validate(sess,cls_preb,ph_input_image,ph_label)
 
                 if f1_value>best_f1:
                     logger.info("新F1值[%f]大于过去最好的F1值[%f]，早停计数器重置",f1_value,best_f1)
