@@ -63,7 +63,7 @@ nohup python -m main.train \
     --logs_path=logs \
     --moving_average_decay=0.997 \
     --restore=False \
-    --early_stop=5 \
+    --early_stop=100 \
     --max_width=600 \
     --max_height=800 \
     >> ./logs/rotate_gpu0_$Date.log 2>&1 &
