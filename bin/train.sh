@@ -39,7 +39,7 @@ if [ "$1" = "console" ]; then
     exit
 fi
 
-echo "生产模式:GPU0"
+echo "生产模式:GPU1"
 nohup python -m main.train \
     --name=rotate_detect \
     --pretrained_model_path=data/vgg_16.ckpt \
