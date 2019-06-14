@@ -212,67 +212,67 @@ def main(argv=None):
 
 
 # 这里，只验证一个batch就完事，太多影响训练
-# def validate(sess,cls_pred,ph_input_image,ph_label):
-#
-#     #### 加载验证数据,随机加载FLAGS.validate_batch张
-#
-#     image_list, image_label = data_provider.load_validate_data(FLAGS.validate_label,FLAGS.validate_batch)
-#     logger.debug("加载了验证集%d张",len(image_list))
-#
-#     classes = sess.run(cls_pred,feed_dict={
-#         ph_input_image:  data_util.prepare4vgg(image_list),
-#         ph_label:        image_label
-#     })  # data[3]是图像的路径，传入sess是为了调试画图用
-#
-#     logger.debug("预测结果为：%r",classes)
-#     logger.debug("Label为：%r",image_label)
-#
-#     # pred和label格式如:[2,1,0,1,1,3]，0-3是对应的方向，0朝上，1朝右倒，2倒立，3朝左倒
-#     # accuracy: (tp + tn) / (p + n)
-#     accuracy = accuracy_score(image_label, classes)
-#     # precision tp / (tp + fp)
-#     precision = precision_score(image_label, classes,labels=[0,1,2,3],average='micro')
-#     # recall: tp / (tp + fn)
-#     recall = recall_score(image_label, classes,labels=[0,1,2,3],average='micro')
-#     # f1: 2 tp / (2 tp + fp + fn)
-#     f1 = f1_score(image_label, classes,labels=[0,1,2,3],average='micro')
-#
-#     return accuracy,precision,recall,f1
-
 def validate(sess,cls_pred,ph_input_image,ph_label):
 
     #### 加载验证数据,随机加载FLAGS.validate_batch张
-    accuracy = 0
-    precision = 0
-    recall = 0
-    f1 = 0
-    for step in range(FLAGS.validate_times):
-        image_list, image_label = data_provider.load_validate_data(FLAGS.validate_label,FLAGS.validate_batch)
-        logger.debug("加载了验证集%d张",len(image_list))
 
-        classes = sess.run(cls_pred,feed_dict={
-            ph_input_image:  data_util.prepare4vgg(image_list),
-            ph_label:        image_label
-        })  # data[3]是图像的路径，传入sess是为了调试画图用
+    image_list, image_label = data_provider.load_validate_data(FLAGS.validate_label,FLAGS.validate_batch)
+    logger.debug("加载了验证集%d张",len(image_list))
 
-        logger.debug("预测结果为：%r",classes)
-        logger.debug("Label为：%r",image_label)
+    classes = sess.run(cls_pred,feed_dict={
+        ph_input_image:  data_util.prepare4vgg(image_list),
+        ph_label:        image_label
+    })  # data[3]是图像的路径，传入sess是为了调试画图用
 
-        # pred和label格式如:[2,1,0,1,1,3]，0-3是对应的方向，0朝上，1朝右倒，2倒立，3朝左倒
-        # accuracy: (tp + tn) / (p + n)
-        accuracy = accuracy + accuracy_score(image_label, classes)
-        # precision tp / (tp + fp)
-        precision = precision + precision_score(image_label, classes,labels=[0,1,2,3],average='micro')
-        # recall: tp / (tp + fn)
-        recall = recall + recall_score(image_label, classes,labels=[0,1,2,3],average='micro')
-        # f1: 2 tp / (2 tp + fp + fn)
-        f1 = f1 + f1_score(image_label, classes,labels=[0,1,2,3],average='micro')
-    accuracy = accuracy/FLAGS.validate_times
-    precision = precision/FLAGS.validate_times
-    recall = recall/FLAGS.validate_times
-    f1 = f1/FLAGS.validate_times
+    logger.debug("预测结果为：%r",classes)
+    logger.debug("Label为：%r",image_label)
+
+    # pred和label格式如:[2,1,0,1,1,3]，0-3是对应的方向，0朝上，1朝右倒，2倒立，3朝左倒
+    # accuracy: (tp + tn) / (p + n)
+    accuracy = accuracy_score(image_label, classes)
+    # precision tp / (tp + fp)
+    precision = precision_score(image_label, classes,labels=[0,1,2,3],average='micro')
+    # recall: tp / (tp + fn)
+    recall = recall_score(image_label, classes,labels=[0,1,2,3],average='micro')
+    # f1: 2 tp / (2 tp + fp + fn)
+    f1 = f1_score(image_label, classes,labels=[0,1,2,3],average='micro')
 
     return accuracy,precision,recall,f1
+
+# def validate(sess,cls_pred,ph_input_image,ph_label):
+#
+#     #### 加载验证数据,随机加载FLAGS.validate_batch张
+#     accuracy = 0
+#     precision = 0
+#     recall = 0
+#     f1 = 0
+#     for step in range(FLAGS.validate_times):
+#         image_list, image_label = data_provider.load_validate_data(FLAGS.validate_label,FLAGS.validate_batch)
+#         logger.debug("加载了验证集%d张",len(image_list))
+#
+#         classes = sess.run(cls_pred,feed_dict={
+#             ph_input_image:  data_util.prepare4vgg(image_list),
+#             ph_label:        image_label
+#         })  # data[3]是图像的路径，传入sess是为了调试画图用
+#
+#         logger.debug("预测结果为：%r",classes)
+#         logger.debug("Label为：%r",image_label)
+#
+#         # pred和label格式如:[2,1,0,1,1,3]，0-3是对应的方向，0朝上，1朝右倒，2倒立，3朝左倒
+#         # accuracy: (tp + tn) / (p + n)
+#         accuracy = accuracy + accuracy_score(image_label, classes)
+#         # precision tp / (tp + fp)
+#         precision = precision + precision_score(image_label, classes,labels=[0,1,2,3],average='micro')
+#         # recall: tp / (tp + fn)
+#         recall = recall + recall_score(image_label, classes,labels=[0,1,2,3],average='micro')
+#         # f1: 2 tp / (2 tp + fp + fn)
+#         f1 = f1 + f1_score(image_label, classes,labels=[0,1,2,3],average='micro')
+#     accuracy = accuracy/FLAGS.validate_times
+#     precision = precision/FLAGS.validate_times
+#     recall = recall/FLAGS.validate_times
+#     f1 = f1/FLAGS.validate_times
+#
+#     return accuracy,precision,recall,f1
 
 if __name__ == '__main__':
     init_logger()
