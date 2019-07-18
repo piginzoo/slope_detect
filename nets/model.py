@@ -33,7 +33,7 @@ def model(image):
         # 最终，出来的图像是 （m/16 x n/16 x 512）
         vgg_fc2 = vgg.vgg16(image)
         vgg_fc2 = _p_shape(vgg_fc2, "VGG的5-3卷基层输出")
-        vgg_fc2 = tf.squeeze(vgg_fc2, [1, 2])  # 把[1,1,4096,4096] => [4096,4096]，[1,2]，而不是[0,1,2]是因为0是batch
+        vgg_fc2 = tf.squeeze(vgg_fc2, [1, 2])  # 把[1,1,4096] => [4096]，[1,2]，而不是[0,1,2]是因为0是batch
 
     logger.debug("vgg_fc2:%r", vgg_fc2.get_shape())
 

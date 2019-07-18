@@ -43,7 +43,7 @@ def main():
     for image_name in image_name_list:
         start = time.time()
         logger.info("探测图片[%s]开始", image_name)
-        pbar.update(i)
+        pbar.update(1)
         try:
             img = cv2.imread(image_name)
             _classes = pred.pred(sess, classes, input_images,np.array([img]))
@@ -61,7 +61,7 @@ def main():
 def select_image(image_name,cls):
     dst_dir = FLAGS.target_dir
     logger.warning("这张图片[%s]是歪的[%s]，挑出来=>%s",image_name,str(pred.CLASS_NAME[cls]),dst_dir)
-    shutil.copy(image_name,dst_dir)
+    shutil.move(image_name,dst_dir)
 
 
 if __name__ == '__main__':

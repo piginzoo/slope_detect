@@ -11,6 +11,7 @@ echo "开始检测图片的倾斜....."
 
 python main/pred.py \
     --image_name=$1 \
-    --pred_dir=data/pred \
+    --pred_dir=data/test \
     --debug=True \
-    --model_dir=model
+    --model_dir=model \
+    --model_file=ctpn-2019-05-07-14-19-35-201.ckpt

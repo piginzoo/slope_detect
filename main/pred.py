@@ -5,7 +5,7 @@ import cv2
 import tensorflow as tf
 import logging
 sys.path.append(os.getcwd())
-import nets.model as model
+import nets.mxodel as model
 from utils import data_util
 
 logger = logging.getLogger("Train")
