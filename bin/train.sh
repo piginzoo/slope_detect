@@ -19,6 +19,7 @@ if [ "$1" = "console" ]; then
         --evaluate_steps=1 \
         --validate_dir=data/validate \
         --validate_batch=1 \
+        --validate_times=2 \
         --validate_label=data/validate.txt \
         --train_dir=data/train \
         --train_batch=1 \
@@ -38,7 +39,7 @@ if [ "$1" = "console" ]; then
     exit
 fi
 
-echo "生产模式:GPU0"
+echo "生产模式:GPU1"
 nohup python -m main.train \
     --name=rotate_detect \
     --pretrained_model_path=data/vgg_16.ckpt \
@@ -47,21 +48,22 @@ nohup python -m main.train \
     --decay_steps=1000 \
     --evaluate_steps=100 \
     --validate_dir=data/validate \
-    --validate_batch=16 \
+    --validate_batch=32 \
+    --validate_times=5 \
     --validate_label=data/validate.txt \
     --train_dir=data/train \
-    --train_batch=32 \
+    --train_batch=64 \
     --train_label=data/train.txt \
     --learning_rate=0.0001 \
     --save_checkpoint_steps=5000 \
     --decay_rate=0.5 \
     --lambda1=1000 \
-    --gpu=0 \
+    --gpu=1 \
     --debug=False \
     --logs_path=logs \
     --moving_average_decay=0.997 \
     --restore=False \
-    --early_stop=5 \
+    --early_stop=100 \
     --max_width=600 \
     --max_height=800 \
     >> ./logs/rotate_gpu0_$Date.log 2>&1 &

@@ -24,6 +24,7 @@ def init_params(model_dir='model',model_name=''):
     tf.app.flags.DEFINE_integer('workers', 2, '')
     tf.app.flags.DEFINE_string('bind', '0.0.0.0:8080', '')
     tf.app.flags.DEFINE_integer('timeout', 60, '')
+    tf.app.flags.DEFINE_string('gpu', '1', '')  # 使用第#1个GPU
 
 
 def init_logger():
@@ -128,7 +129,12 @@ if __name__ == '__main__':
     if FLAGS.model_file and not os.path.exists(os.path.join(FLAGS.model_dir,FLAGS.model_file+".meta")):
         logger.error("模型文件[%s]不存在",os.path.join(FLAGS.model_dir,FLAGS.model_file + ".meta"))
         exit()
-
+    # 选择GPU
+    if FLAGS.gpu != "1" and FLAGS.gpu != "0":
+        logger.error("无法确定使用哪一个GPU，退出")
+        exit()
+    logger.info("使用GPU%s显卡进行训练", FLAGS.gpu)
+    os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
     init_logger()
     main()
 
