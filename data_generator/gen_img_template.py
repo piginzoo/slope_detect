@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import datetime
 import os
 import random
 
@@ -8,30 +9,40 @@ import keras
 import numpy as np
 import tensorflow as tf
 from PIL import Image
-import datetime
 
 print("tensorflow", tf.__version__)
 print("keras", keras.__version__)
 print("cv", cv.__version__)
 print("np", np.__version__)
 
-# 目录
+# 常量
 global ROOT
 global BACKGB
 global IMAGES
 global OUT
+global all_bg_images
+
+
+def filter_file_subfix(fileSubfix):
+    if fileSubfix == ".jpg" or fileSubfix == ".jpeg" or fileSubfix == ".JPG" or fileSubfix == ".JPEG" or fileSubfix == ".png" or fileSubfix == ".PNG":
+        return True
+    else:
+        return False
 
 
 # load all bg img
 def load_all_backgroud_images(bground_path):
-    bground_list = os.listdir(bground_path)
-    # for img_name in os.listdir(bground_path):
-    #     image = Image.open(bground_path + img_name)
-    #     image = image.convert("RGBA")
-    #     bground_list.append(image)
-    #     print("    加载背景图片：%s", bground_path + img_name)
-    print("背景总共数量", len(bground_list))
+    bground_list = []
+    for img_name in os.listdir(bground_path):
+        (filepath, fileName) = os.path.split(img_name)
+        name, subfix = os.path.splitext(fileName)
+        if filter_file_subfix(subfix):
+            image = Image.open(bground_path + img_name)
+            image = image.convert("RGBA")
+            bground_list.append(image)
+            print("    加载背景图片：", bground_path + img_name)
 
+    print("背景总共数量", len(bground_list))
     return bground_list
 
 
@@ -114,9 +125,8 @@ def get_random_bg_img(mainimg, c):
         mainimgType = 0
 
     # 随机背景图
-    # ranBgimg = random.choice(all_bg_images)
-    fileName = random.choice(all_bg_images)
-    ranBgimg = Image.open(BACKGB + fileName).convert("RGBA")
+    ranBgimg = random.choice(all_bg_images)
+    # ranBgimg = Image.open(BACKGB + fileName).convert("RGBA")
     bgw, bgh = ranBgimg.size
     # print(bgw, bgh)
     if bgw >= bgh:
@@ -248,13 +258,6 @@ def gen_affine_img(bgimg, mainimg, angle_type, label_file, fileName=None):
     label_file.write(str(angle_type))
     label_file.write("\n")
     print("合并保存图片用时:", (datetime.datetime.now() - startTime).seconds)
-
-
-def filter_file_subfix(fileSubfix):
-    if fileSubfix == ".jpg" or fileSubfix == ".jpeg" or fileSubfix == ".JPG" or fileSubfix == ".JPEG" or fileSubfix == ".png" or fileSubfix == ".PNG":
-        return True
-    else:
-        return False
 
 
 if __name__ == '__main__':
