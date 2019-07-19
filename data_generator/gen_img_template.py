@@ -8,7 +8,6 @@ import cv2 as cv
 import keras
 import numpy as np
 import tensorflow as tf
-from PIL import Image
 
 print("tensorflow", tf.__version__)
 print("keras", keras.__version__)
@@ -37,8 +36,9 @@ def load_all_backgroud_images(bground_path):
         (filepath, fileName) = os.path.split(img_name)
         name, subfix = os.path.splitext(fileName)
         if filter_file_subfix(subfix):
-            image = Image.open(bground_path + img_name)
-            image = image.convert("RGBA")
+            # image = Image.open(bground_path + img_name)
+            # image = image.convert("RGBA")
+            image = cv.imread(bground_path + img_name)
             bground_list.append(image)
             print("    加载背景图片：", bground_path + img_name)
 
@@ -92,20 +92,20 @@ def get_random_affine_offset(angle, rw, rh):
 
 
 # 背影图和主图合并 生成正常图片
-def gen_new_normal_img(bgimg, mainimg):
-    rx, ry = get_random_wh()
-    mainimg = mainimg.convert("RGBA")
-    mw, mh = mainimg.size
-    print("主图:", mw, mh)
-    # 让背景图宽高大于主图，重置背景图宽高
-    bgw = mw + (rx * 2)
-    bgh = mh + (ry * 2)
-    # 重置背景图
-    newBgImg = bgimg.resize((bgw, bgh), Image.ANTIALIAS)
-    # 合并图片
-    newBgImg.paste(mainimg, (rx, ry), mainimg)
-    # 保存合并后的图片
-    newBgImg.save(IMAGES + "/newimage_F" + ".png")
+# def gen_new_normal_img(bgimg, mainimg):
+#     rx, ry = get_random_wh()
+#     mainimg = mainimg.convert("RGBA")
+#     mw, mh = mainimg.size
+#     print("主图:", mw, mh)
+#     # 让背景图宽高大于主图，重置背景图宽高
+#     bgw = mw + (rx * 2)
+#     bgh = mh + (ry * 2)
+#     # 重置背景图
+#     newBgImg = bgimg.resize((bgw, bgh), Image.ANTIALIAS)
+#     # 合并图片
+#     newBgImg.paste(mainimg, (rx, ry), mainimg)
+#     # 保存合并后的图片
+#     newBgImg.save(IMAGES + "/newimage_F" + ".png")
 
 
 # 根据主图宽高类型，随机获取一个背景图，直到获取同样类型的背景图为址
@@ -120,14 +120,16 @@ def get_random_bg_img(mainimg, c):
     # 0-宽图 1-高图
     mainimgType = 1
     bgimgType = 1
-    mw, mh = mainimg.size
+    # mw, mh = mainimg.size
+
+    (mw, mh) = mainimg.shape[:2]
     if mw >= mh:
         mainimgType = 0
 
     # 随机背景图
     ranBgimg = random.choice(all_bg_images)
     # ranBgimg = Image.open(BACKGB + fileName).convert("RGBA")
-    bgw, bgh = ranBgimg.size
+    bgw, bgh = mainimg.shape[:2]
     # print(bgw, bgh)
     if bgw >= bgh:
         bgimgType = 0
@@ -147,13 +149,40 @@ def get_random_bg_img(mainimg, c):
 
 # print(get_random_bg_img(Image.open("images/20190402051418692hjhjiuu.jpg"), 0)), exit(0)
 
+def rotate_bound(image, angle):
+    # grab the dimensions of the image and then determine the
+    # center
+    (h, w) = image.shape[:2]
+    (cX, cY) = (w // 2, h // 2)
+
+    # grab the rotation matrix (applying the negative of the
+    # angle to rotate clockwise), then grab the sine and cosine
+    # (i.e., the rotation components of the matrix)
+    M = cv.getRotationMatrix2D((cX, cY), angle, 1.0)
+    cos = np.abs(M[0, 0])
+    sin = np.abs(M[0, 1])
+
+    # compute the new bounding dimensions of the image
+    nW = int((h * sin) + (w * cos))
+    nH = int((h * cos) + (w * sin))
+
+    # adjust the rotation matrix to take into account translation
+    M[0, 2] += (nW / 2) - cX
+    M[1, 2] += (nH / 2) - cY
+
+    # perform the actual rotation and return the image
+    return cv.warpAffine(image, M, (nW, nH))
+
 
 def gen_rotate_img(mainimg, fileName, label_file):
     for idx in range(0, len(angleList)):  # range(0, len(angleList)):
         angle = get_angle(idx)
         startTime = datetime.datetime.now()
-        rotateImg = mainimg.rotate(angle, expand=True)
-        mw, mh = rotateImg.size
+        # rotateImg = mainimg.rotate(angle, expand=True)
+        # mw, mh = rotateImg.size
+        rotateImg = rotate_bound(mainimg, angle)
+        (mw, mh) = rotateImg.shape[:2]
+
         print("旋转主图:", mw, mh, angle, "用时:", (datetime.datetime.now() - startTime).seconds)
         # 随机加载一个背景图
         startTime = datetime.datetime.now()
@@ -177,8 +206,8 @@ def gen_affine_img(bgimg, mainimg, angle_type, label_file, fileName=None):
     """
     startTime = datetime.datetime.now()
     # 将Image 转换为 opencv (cv2)
-    bgimg = cv.cvtColor(np.asarray(bgimg), cv.COLOR_BGRA2RGBA)
-    mainimg = cv.cvtColor(np.asarray(mainimg), cv.COLOR_BGRA2RGBA)
+    # bgimg = cv.cvtColor(np.asarray(bgimg), cv.COLOR_BGRA2RGBA)
+    # mainimg = cv.cvtColor(np.asarray(mainimg), cv.COLOR_BGRA2RGBA)
     print("Image to CV用时:", (datetime.datetime.now() - startTime).seconds)
 
     startTime = datetime.datetime.now()
@@ -315,7 +344,8 @@ if __name__ == '__main__':
 
     for idx in range(0, milen):
         fileName = mainimg_list[idx]
-        mainimg = Image.open(IMAGES + fileName)
+        mainimg = cv.imread(IMAGES + fileName)
+        # mainimg = Image.open(IMAGES + fileName)
         gen_rotate_img(mainimg, fileName, label_file)
 
     label_file.close()
