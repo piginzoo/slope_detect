@@ -8,6 +8,7 @@ import keras
 import numpy as np
 import tensorflow as tf
 from PIL import Image
+import datetime
 
 print("tensorflow", tf.__version__)
 print("keras", keras.__version__)
@@ -140,11 +141,14 @@ def get_random_bg_img(mainimg, c):
 def gen_rotate_img(mainimg, fileName, label_file):
     for idx in range(0, len(angleList)):  # range(0, len(angleList)):
         angle = get_angle(idx)
+        startTime = datetime.datetime.now()
         rotateImg = mainimg.rotate(angle, expand=True)
         mw, mh = rotateImg.size
-        print("旋转主图:", mw, mh, angle)
+        print("旋转主图:", mw, mh, angle, "用时:", (datetime.datetime.now() - startTime).seconds)
         # 随机加载一个背景图
+        startTime = datetime.datetime.now()
         ranBgimg = get_random_bg_img(rotateImg, 0)
+        print("随机加载一个背景图用时:", (datetime.datetime.now() - startTime).seconds)
         # ranBgimg = Image.open("backgb/WechatIMG27033.jpeg").convert("RGBA")
         # 生成仿射图片
         gen_affine_img(ranBgimg, rotateImg, idx, label_file, fileName)
@@ -161,18 +165,20 @@ def gen_affine_img(bgimg, mainimg, angle_type, label_file, fileName=None):
     :param angle_type:角度类型 上0 左1 下2 右3
     :return:
     """
-
+    startTime = datetime.datetime.now()
     # 将Image 转换为 opencv (cv2)
     bgimg = cv.cvtColor(np.asarray(bgimg), cv.COLOR_BGRA2RGBA)
     mainimg = cv.cvtColor(np.asarray(mainimg), cv.COLOR_BGRA2RGBA)
+    print("Image to CV用时:", (datetime.datetime.now() - startTime).seconds)
 
+    startTime = datetime.datetime.now()
     # 获取一个随机的xy
     rw, rh = get_random_wh()
 
     # 得到主图宽高
     h, w = mainimg.shape[:2]
 
-    # 根据角度 随机调整仿射
+    # 根据角度 随机获取调整仿射
     d, x, y = get_random_affine_offset(angle_type, rw, rh)  # 类型 0上 1左 2下 3右 , x, y
 
     pts1 = np.float32([[0, 0], [w, 0], [0, h], [w, h]])
@@ -191,7 +197,9 @@ def gen_affine_img(bgimg, mainimg, angle_type, label_file, fileName=None):
 
     # 第三个参数：变换后的图像大小
     mainimg = cv.warpPerspective(mainimg, M, (w, h))
+    print("调整仿射用时:", (datetime.datetime.now() - startTime).seconds)
 
+    startTime = datetime.datetime.now()
     # 将背景图大小按主图比例重置，宽度和高度随机大于主图
     bgimg = cv.resize(bgimg, (w + rw * 2, h + rh * 2))
 
@@ -239,6 +247,7 @@ def gen_affine_img(bgimg, mainimg, angle_type, label_file, fileName=None):
     label_file.write(" ")
     label_file.write(str(angle_type))
     label_file.write("\n")
+    print("合并保存图片用时:", (datetime.datetime.now() - startTime).seconds)
 
 
 def filter_file_subfix(fileSubfix):
@@ -262,6 +271,8 @@ if __name__ == '__main__':
         5、手工合并second.txt到train.txt，使用cat train.txt second.txt > train.new.txt
         6、validate.txt 需要手动打标记
     """
+    startTime = datetime.datetime.now()
+
     import argparse
 
     parser = argparse.ArgumentParser()
@@ -289,7 +300,7 @@ if __name__ == '__main__':
             temp_mainimg_list.append(fileName)
 
     mainimg_list = temp_mainimg_list
-    #print(mainimg_list)
+    # print(mainimg_list)
 
     random.shuffle(mainimg_list)
     milen = len(mainimg_list)
@@ -305,3 +316,5 @@ if __name__ == '__main__':
         gen_rotate_img(mainimg, fileName, label_file)
 
     label_file.close()
+
+    print("总共用时", (datetime.datetime.now() - startTime).seconds)
