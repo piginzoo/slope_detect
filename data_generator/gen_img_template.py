@@ -241,6 +241,13 @@ def gen_affine_img(bgimg, mainimg, angle_type, label_file, fileName=None):
     label_file.write("\n")
 
 
+def filter_file_subfix(fileSubfix):
+    if fileSubfix == ".jpg" or fileSubfix == ".jpeg" or fileSubfix == ".JPG" or fileSubfix == ".JPEG" or fileSubfix == ".png" or fileSubfix == ".PNG":
+        return True
+    else:
+        return False
+
+
 if __name__ == '__main__':
     """
     origin 是原始的正图，已经排除了斜的，是为了生成训练集的。
@@ -271,6 +278,19 @@ if __name__ == '__main__':
 
     # 循环1000随机加载主图片
     mainimg_list = os.listdir(IMAGES)
+
+    temp_mainimg_list = []
+
+    for idx in range(0, len(mainimg_list)):
+        fileName = mainimg_list[idx]
+        (filepath, fileName) = os.path.split(fileName)
+        name, subfix = os.path.splitext(fileName)
+        if filter_file_subfix(subfix):
+            temp_mainimg_list.append(fileName)
+
+    mainimg_list = temp_mainimg_list
+    print(mainimg_list)
+
     random.shuffle(mainimg_list)
     milen = len(mainimg_list)
     label_file_name = os.path.join(ROOT, "second.txt")
