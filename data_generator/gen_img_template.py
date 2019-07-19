@@ -289,7 +289,7 @@ if __name__ == '__main__':
             temp_mainimg_list.append(fileName)
 
     mainimg_list = temp_mainimg_list
-    print(mainimg_list)
+    #print(mainimg_list)
 
     random.shuffle(mainimg_list)
     milen = len(mainimg_list)
