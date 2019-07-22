@@ -46,14 +46,18 @@ def _load_batch_image_labels(batch):
     image_list = []
     label_list = []
     for image_label_pair in batch:  # 遍历所有的图片文件
-        image_file = image_label_pair[0]
-        label = image_label_pair[1]
-        if not os.path.exists(image_file):
-            logger.warning("样本图片%s不存在", image_file)
-            continue
-        image_list.append(cv2.imread(image_file))
-        #logger.debug("加载了图片：%s",image_file)
-        label_list.append(label)
+        try:
+            image_file = image_label_pair[0]
+            label = image_label_pair[1]
+            if not os.path.exists(image_file):
+                logger.warning("样本图片%s不存在", image_file)
+                continue
+            image_list.append(cv2.imread(image_file))
+            #logger.debug("加载了图片：%s",image_file)
+            label_list.append(label)
+        except Exception as e:
+            traceback.format_exc()
+            logger.error("加载一个批次图片出现异常：",str(e))
     logger.debug("加载%d张图片作为一个批次到内存中",len(image_list))
     return image_list,label_list
 
