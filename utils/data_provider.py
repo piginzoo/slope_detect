@@ -79,7 +79,7 @@ def get_batch(num_workers,label_file,batch_num,**kwargs):
         generator_output = None
         while True:
             while enqueuer.is_running():
-                logger.debug("开始读取缓冲队列")
+                # logger.debug("开始读取缓冲队列")
                 if not enqueuer.queue.empty():
                     generator_output = enqueuer.queue.get()
                     logger.debug("从GeneratorEnqueuer的queue中取出的图片")
