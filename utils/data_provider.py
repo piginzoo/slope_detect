@@ -55,7 +55,7 @@ def _load_batch_image_labels(batch):
             image_list.append(cv2.imread(image_file))
             #logger.debug("加载了图片：%s",image_file)
             label_list.append(label)
-        except Exception as e:
+        except BaseException as e:
             traceback.format_exc()
             logger.error("加载一个批次图片出现异常：",str(e))
     logger.debug("加载%d张图片作为一个批次到内存中",len(image_list))
@@ -95,7 +95,7 @@ def get_batch(num_workers,label_file,batch_num,**kwargs):
             yield generator_output
 
             generator_output = None
-    except Exception as e:
+    except BaseException as e:
         traceback.format_exc()
         logger.error("读取图片出现异常：",str(e))
     finally:

@@ -39,7 +39,7 @@ class GeneratorEnqueuer():
                         self.queue.put(generator_output)
                     else:
                         time.sleep(self.wait_time)
-                except Exception as e:
+                except BaseException as e:
 
                     logger.error("加载图片出现异常：", str(e))
                     traceback.format_exc()
