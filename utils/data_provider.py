@@ -52,7 +52,7 @@ def _load_batch_image_labels(batch):
             logger.warning("样本图片%s不存在", image_file)
             continue
         image_list.append(cv2.imread(image_file))
-        logger.debug("加载了图片：%s",image_file)
+        #logger.debug("加载了图片：%s",image_file)
         label_list.append(label)
     logger.debug("加载%d张图片作为一个批次到内存中",len(image_list))
     return image_list,label_list
