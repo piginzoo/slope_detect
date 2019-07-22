@@ -22,6 +22,7 @@ global OUT
 global all_bg_images
 
 
+# 过滤图片，只保留常见图片类型
 def filter_file_subfix(fileSubfix):
     if fileSubfix == ".jpg" or fileSubfix == ".jpeg" or fileSubfix == ".JPG" or fileSubfix == ".JPEG" or fileSubfix == ".png" or fileSubfix == ".PNG":
         return True
@@ -29,15 +30,13 @@ def filter_file_subfix(fileSubfix):
         return False
 
 
-# load all bg img
+# 加载所有背景图
 def load_all_backgroud_images(bground_path):
     bground_list = []
     for img_name in os.listdir(bground_path):
         (filepath, fileName) = os.path.split(img_name)
         name, subfix = os.path.splitext(fileName)
         if filter_file_subfix(subfix):
-            # image = Image.open(bground_path + img_name)
-            # image = image.convert("RGBA")
             image = cv.imread(bground_path + img_name)
             bground_list.append(image)
             print("    加载背景图片：", bground_path + img_name)
@@ -75,6 +74,7 @@ def get_random_wh():
 # 获取一个仿射数值
 def get_random_affine_offset(angle, rw, rh):
     """
+    根据角度获取一个合适的随机投射数值
     :return 类型 0上 1左 2下 3右 ,x,y
     """
     direction = 0
@@ -128,7 +128,6 @@ def get_random_bg_img(mainimg, c):
 
     # 随机背景图
     ranBgimg = random.choice(all_bg_images)
-    # ranBgimg = Image.open(BACKGB + fileName).convert("RGBA")
     bgw, bgh = mainimg.shape[:2]
     # print(bgw, bgh)
     if bgw >= bgh:
@@ -149,6 +148,7 @@ def get_random_bg_img(mainimg, c):
 
 # print(get_random_bg_img(Image.open("images/20190402051418692hjhjiuu.jpg"), 0)), exit(0)
 
+# 旋转图片，计算旋转后的大小
 def rotate_bound(image, angle):
     # grab the dimensions of the image and then determine the
     # center
@@ -174,6 +174,13 @@ def rotate_bound(image, angle):
     return cv.warpAffine(image, M, (nW, nH))
 
 
+# temp_img = cv.imread("../data/origin/20190402051412915hjhjiuu.jpg")
+# temp_img = rotate_bound(temp_img, 90)
+# cv.imwrite("../data/second/test_temp_img.jpg",temp_img)
+# exit(0)
+
+
+# 旋转图片并投射图片
 def gen_rotate_img(mainimg, fileName, label_file):
     for idx in range(0, len(angleList)):  # range(0, len(angleList)):
         angle = get_angle(idx)
@@ -188,7 +195,6 @@ def gen_rotate_img(mainimg, fileName, label_file):
         startTime = datetime.datetime.now()
         ranBgimg = get_random_bg_img(rotateImg, 0)
         print("随机加载一个背景图用时:", (datetime.datetime.now() - startTime).seconds)
-        # ranBgimg = Image.open("backgb/WechatIMG27033.jpeg").convert("RGBA")
         # 生成仿射图片
         gen_affine_img(ranBgimg, rotateImg, idx, label_file, fileName)
 
@@ -204,12 +210,6 @@ def gen_affine_img(bgimg, mainimg, angle_type, label_file, fileName=None):
     :param angle_type:角度类型 上0 左1 下2 右3
     :return:
     """
-    startTime = datetime.datetime.now()
-    # 将Image 转换为 opencv (cv2)
-    # bgimg = cv.cvtColor(np.asarray(bgimg), cv.COLOR_BGRA2RGBA)
-    # mainimg = cv.cvtColor(np.asarray(mainimg), cv.COLOR_BGRA2RGBA)
-    print("Image to CV用时:", (datetime.datetime.now() - startTime).seconds)
-
     startTime = datetime.datetime.now()
     # 获取一个随机的xy
     rw, rh = get_random_wh()
