@@ -5,6 +5,8 @@ import logging
 import numpy as np
 import cv2
 import tensorflow as tf
+import traceback
+
 logger = logging.getLogger("GeneratorEnqueuer")
 
 try:
@@ -37,7 +39,9 @@ class GeneratorEnqueuer():
                         self.queue.put(generator_output)
                     else:
                         time.sleep(self.wait_time)
-                except Exception:
+                except Exception as e:
+                    traceback.format_exc()
+                    logger.error("加载图片出现异常：", str(e))
                     self._stop_event.set()
                     raise
 

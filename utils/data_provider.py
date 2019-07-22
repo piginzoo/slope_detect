@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 import random
 from utils.data_util import GeneratorEnqueuer
-
+import traceback
 logger = logging.getLogger("data provider")
 
 
@@ -91,6 +91,9 @@ def get_batch(num_workers,label_file,batch_num,**kwargs):
             yield generator_output
 
             generator_output = None
+    except Exception as e:
+        traceback.format_exc()
+        logger.error("读取图片出现异常：",str(e))
     finally:
         if enqueuer is not None:
             enqueuer.stop()
