@@ -45,7 +45,7 @@ class GeneratorEnqueuer():
                     traceback.format_exc()
                     self._stop_event.set()
                     raise
-            logger.info("读取图片进程退出")
+            logger.error("读取图片进程退出")
 
         try:
             if self._use_multiprocessing:
@@ -69,10 +69,9 @@ class GeneratorEnqueuer():
                     thread = threading.Thread(target=data_generator_task)
                 self._threads.append(thread)
                 thread.start()
-        except Exception as e:
+        except BaseException as e:
             logger.error("加载图片出现异常：", str(e))
             traceback.format_exc()
-
             self.stop()
             raise
 
