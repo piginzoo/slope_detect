@@ -357,7 +357,6 @@ if __name__ == '__main__':
     mainimg_list = temp_mainimg_list
     # print(mainimg_list)
 
-    random.shuffle(mainimg_list)
     milen = len(mainimg_list)
     label_file_name = os.path.join(ROOT, "second.txt")
     label_file = open(label_file_name, "w")
@@ -367,6 +366,7 @@ if __name__ == '__main__':
         milen = sum
 
     for maxIdx in range(0, repeat):
+        random.shuffle(mainimg_list)
         batchNum = datetime.datetime.now().strftime("batch-%H%M%S").strip()
         print("batchNum ", batchNum)
         for idx in range(0, milen):
