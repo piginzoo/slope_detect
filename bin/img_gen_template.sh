@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 if [ "$1" = "" ]; then
-    echo "dir:数据根目录  sum:主图像个数 repeat:重复执行次数，默认1"
+    echo "dir:数据根目录  sum:主图像个数,默认1000 repeat:重复执行次数,默认1"
     exit
 fi
 
