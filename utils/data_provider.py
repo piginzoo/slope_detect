@@ -79,7 +79,7 @@ def get_batch(num_workers,label_file,batch_num,**kwargs):
         # 但是，这里，他的肚子里，还藏着一个generator()
         # 这个generator实际上就是真正去读一张图片，返回回来了
         enqueuer = GeneratorEnqueuer(generator(label_file,batch_num,**kwargs), use_multiprocessing=True)
-        enqueuer.start(max_queue_size=300, workers=num_workers)
+        enqueuer.start(max_queue_size=30, workers=num_workers)
         generator_output = None
         while True:
             while enqueuer.is_running():
