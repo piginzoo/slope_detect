@@ -362,12 +362,13 @@ if __name__ == '__main__':
     label_file_name = os.path.join(ROOT, "second.txt")
     label_file = open(label_file_name, "w")
 
-    batchNum = datetime.datetime.now().strftime("batch-%H%M%S").strip()
-    print("主图像总共数量", milen, " 批次：", batchNum)
+    print("主图像总共数量", milen)
     if milen > sum:
         milen = sum
 
     for maxIdx in range(0, repeat):
+        batchNum = datetime.datetime.now().strftime("batch-%H%M%S").strip()
+        print("batchNum ", batchNum)
         for idx in range(0, milen):
             fileName = mainimg_list[idx]
             mainimg = cv.imread(IMAGES + fileName)
@@ -375,4 +376,4 @@ if __name__ == '__main__':
 
     label_file.close()
 
-    print("总共用时:", (datetime.datetime.now() - startTime).seconds, " 批次：", batchNum)
+    print("总共用时:", (datetime.datetime.now() - startTime).seconds)
