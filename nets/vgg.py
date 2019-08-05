@@ -45,12 +45,12 @@ def vgg16(inputs, scope='vgg_16'):
             # 最终，出来的图像是 （m/16 x n/16 x 512）
 
             # 这个是标准的vgg16，没问题的，保留
-            net = slim.max_pool2d(net, [2, 2], scope='pool5')
+            pool5 = slim.max_pool2d(net, [2, 2], scope='pool5')
 
             # 未指定宽高？怎么得到？
             # net = sppnet.SppNet(net, sppnet.spatial_pool_size)
 
-            net = slim.conv2d(net, 4096, [32, 32], padding='VALID', scope='fc6')
+            net = slim.conv2d(pool5, 4096, [7, 7], padding='VALID', scope='fc6')
             net = slim.dropout(net, 0.5, scope='dropout6')
             net = slim.conv2d(net, 4096, [1, 1], scope='fc7')
             net = tf.Print(net, [tf.shape(net)])
@@ -60,7 +60,7 @@ def vgg16(inputs, scope='vgg_16'):
 
             logger.debug("VGG网络输出Shape(%r)", net.get_shape())
 
-    return net
+    return net,pool5
 
 
 # 这个是有问题的代码，fc6/7用的是full_connected，导致了最终的维度不对，这里仅作保留
