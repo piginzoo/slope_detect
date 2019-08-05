@@ -1,11 +1,11 @@
+import logging
 import multiprocessing
 import threading
 import time
-import logging
-import numpy as np
-import cv2
-import tensorflow as tf
 import traceback
+
+import cv2
+import numpy as np
 
 logger = logging.getLogger("GeneratorEnqueuer")
 
@@ -33,9 +33,14 @@ class GeneratorEnqueuer():
 
             while not self._stop_event.is_set():
                 try:
-                    if self._use_multiprocessing or self.queue.qsize() < max_queue_size:
+                    # if self._use_multiprocessing or self.queue.qsize() < max_queue_size:
+                    #     generator_output = next(self._generator)
+                    #     logger.debug("调用next()，%s 拿到了一批图片，放入queue，当前队列大小( %s / %s )",name,self.queue.qsize(),max_queue_size)
+                    #     self.queue.put(generator_output)
+                    qsize = 0  # self.queue.qsize()
+                    if self._use_multiprocessing or qsize < max_queue_size:
                         generator_output = next(self._generator)
-                        logger.debug("调用next()，%s 拿到了一批图片，放入queue，当前队列大小( %s / %s )",name,self.queue.qsize(),max_queue_size)
+                        logger.debug("调用next()，%s 拿到了一批图片，放入queue，当前队列大小( %s / %s )", name, qsize, max_queue_size)
                         self.queue.put(generator_output)
                     else:
                         time.sleep(self.wait_time)
@@ -61,7 +66,7 @@ class GeneratorEnqueuer():
                     # share the same seed
                     np.random.seed(self.random_seed)
                     thread = multiprocessing.Process(target=data_generator_task,
-                                                     args=("进程_"+str(i),))
+                                                     args=("进程_" + str(i),))
                     thread.daemon = True
                     if self.random_seed is not None:
                         self.random_seed += 1
@@ -106,25 +111,25 @@ class GeneratorEnqueuer():
             else:
                 time.sleep(self.wait_time)
 
-# 看哪个大了，就缩放哪个，规定最大的宽和高：max_width,max_height
-def resize_image_list(image_list,max_width,max_height):
 
+# 看哪个大了，就缩放哪个，规定最大的宽和高：max_width,max_height
+def resize_image_list(image_list, max_width, max_height):
     result = []
     for image in image_list:
-        h,w,_ = image.shape # H,W
+        h, w, _ = image.shape  # H,W
 
-        if h<max_height and w<max_width:
-            logger.debug("图片的宽高[%d,%d]比最大要求[%d,%d]小，无需resize",h,w,max_height,max_width)
+        if h < max_height and w < max_width:
+            logger.debug("图片的宽高[%d,%d]比最大要求[%d,%d]小，无需resize", h, w, max_height, max_width)
             result.append(image)
 
-        h_scale = max_height/h
-        w_scale = max_width/w
+        h_scale = max_height / h
+        w_scale = max_width / w
         # print("h_scale",h_scale,"w_scale",w_scale)
-        scale = min(h_scale,w_scale) # scale肯定是小于1的，越小说明缩放要厉害，所以谁更小，取谁
+        scale = min(h_scale, w_scale)  # scale肯定是小于1的，越小说明缩放要厉害，所以谁更小，取谁
 
         # https://www.jianshu.com/p/11879a49d1a0 关于resize
         image = cv2.resize(image, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
-        logger.debug("图片从[%d,%d]被resize成为%r",h,w,image.shape)
+        logger.debug("图片从[%d,%d]被resize成为%r", h, w, image.shape)
 
         result.append(image)
     return result
@@ -132,28 +137,27 @@ def resize_image_list(image_list,max_width,max_height):
 
 # 必须按照vgg的要求resize成224x224的，变形就变形了，无所了，另外还要normalize，就是减去那三个值
 def prepare4vgg(image_list):
-
     result = []
     for image in image_list:
-        image = cv2.resize(image, (224,224),interpolation=cv2.INTER_AREA)
-        image = image[:,:,::-1] # BGR->RGB
-        result.append(mean_image_subtraction(image)) #减去均值
+        image = cv2.resize(image, (1024, 1024), interpolation=cv2.INTER_AREA)
+        image = image[:, :, ::-1]  # BGR->RGB
+        result.append(mean_image_subtraction(image))  # 减去均值
     return np.array(result)
 
 
 # [123.68, 116.78, 103.94] 这个是VGG的预处理要求的，必须减去这个均值：https://blog.csdn.net/smilejiasmile/article/details/80807050
-def mean_image_subtraction(images,means=[124, 117, 104]): #means=[123.68, 116.78, 103.94]):
+def mean_image_subtraction(images, means=[124, 117, 104]):  # means=[123.68, 116.78, 103.94]):
     # 干啥呢？ 按通道，多分出一个维度么？
     for i in range(3):
-        images[:,:,i] = images[:,:,i] - means[i]
+        images[:, :, i] = images[:, :, i] - means[i]
     return images
 
 
-if __name__=="__main__":
-    data = np.empty([5,7,3])
+if __name__ == "__main__":
+    data = np.empty([5, 7, 3])
     data.fill(200)
     data = mean_image_subtraction(data)
     print(data.shape)
-    print(data[:,:,0])
+    print(data[:, :, 0])
     print(data[:, :, 1])
     print(data[:, :, 2])

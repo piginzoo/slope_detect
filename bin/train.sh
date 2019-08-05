@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # 默认CTPN用GPU1，CRNN用GPU0
 
 Date=$(date +%Y%m%d%H%M)
@@ -10,7 +11,7 @@ fi
 
 if [ "$1" = "console" ]; then
     echo "调试模式:只训练一次"
-    python -m main.train \
+    python -m mains.train.train \
         --name=rotate_detect \
         --pretrained_model_path=data/vgg_16.ckpt \
         --num_readers=1 \
