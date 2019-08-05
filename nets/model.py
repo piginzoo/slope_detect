@@ -31,7 +31,7 @@ def make_var(name, shape, initializer=None):
     return tf.get_variable(name, shape, initializer=initializer)
 
 
-def model(image, image_size):
+def model(image):
     image = _p_shape(image, "最开始输入")
     image = mean_image_subtraction(image)
     with slim.arg_scope(vgg.vgg_arg_scope()):
