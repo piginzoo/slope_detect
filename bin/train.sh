@@ -40,7 +40,7 @@ if [ "$1" = "console" ]; then
     exit
 fi
 
-echo "生产模式:GPU1"
+echo "生产模式"
 nohup python -m main.train \
     --name=rotate_detect \
     --pretrained_model_path=data/vgg_16.ckpt \
@@ -59,7 +59,7 @@ nohup python -m main.train \
     --save_checkpoint_steps=5000 \
     --decay_rate=0.5 \
     --lambda1=1000 \
-    --gpu=1 \
+    --gpu=0 \
     --debug=False \
     --logs_path=logs \
     --moving_average_decay=0.997 \

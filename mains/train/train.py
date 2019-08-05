@@ -113,10 +113,6 @@ def main(argv=None):
     # 输入图像数据的维度[批次,  高度,  宽度,  3通道]
     ph_input_image = tf.placeholder(tf.float32, shape=[None, None, None, 3], name='ph_input_image')
 
-    # ph_input_image_size = tf.placeholder(tf.float32, shape=[None, 2], name='ph_input_image_size')
-    # = [[20,34],[44,55],[33,33],...]
-    input_image_size = tf.placeholder(tf.float32, shape=[None, 2], name='input_image_size')
-
     ph_label = tf.placeholder(tf.int64, shape=[None], name='ph_label')
     global_step = tf.get_variable('global_step', [], initializer=tf.constant_initializer(0), trainable=False)
     learning_rate = tf.Variable(FLAGS.learning_rate, trainable=False)
@@ -127,7 +123,7 @@ def main(argv=None):
     # gpu_id = int(FLAGS.gpu)
     # with tf.device('/gpu:%d' % gpu_id):
     #     with tf.name_scope('model_%d' % gpu_id) as scope:
-    cls_prob, cls_preb = model.model(ph_input_image, input_image_size)
+    cls_prob, cls_preb = model.model(ph_input_image)
     cross_entropy = model.loss(cls_prob, ph_label)
     batch_norm_updates_op = tf.group(*tf.get_collection(tf.GraphKeys.UPDATE_OPS))
     # 计算梯度
