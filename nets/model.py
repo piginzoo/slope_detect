@@ -41,9 +41,9 @@ def model(image):
         # vgg_fc2 = tf.squeeze(vgg_fc2, [1, 2])  # 把[1,1,4096] => [4096]，[1,2]，而不是[0,1,2]是因为0是batch
 
     # 照着vgg，定义我自己的全连接层
-    net = slim.conv2d(pool5, 1024, [14, 14], padding='VALID', scope='slope_conv1')
+    net = slim.conv2d(pool5, 512, [14, 14], padding='VALID', scope='slope_conv1')
     net = slim.dropout(net, 0.5, scope='slope_dropout')
-    net = slim.conv2d(net, 1024, [1, 1], scope='slope_conv2')
+    net = slim.conv2d(net, 512, [1, 1], scope='slope_conv2')
     net = tf.squeeze(net, [1, 2])
 
     # 先注释掉
@@ -51,7 +51,7 @@ def model(image):
     init_biases = tf.constant_initializer(0.0)
     # w_fc1 = tf.get_variable("w_fc1", [4096, 256], initializer=init_weights)
     # w_b1 = tf.get_variable("w_b1", [256], initializer=init_biases)
-    w_fc2 = tf.get_variable("w_fc2", [1024, 4], initializer=init_weights)
+    w_fc2 = tf.get_variable("w_fc2", [512, 4], initializer=init_weights)
     w_b2 = tf.get_variable("w_b2", [4], initializer=init_biases)
 
     # 接2个全连接网络
