@@ -137,11 +137,14 @@ def resize_image_list(image_list, max_width, max_height):
     return result
 
 
+resize = 448
+
+
 # 必须按照vgg的要求resize成224x224的，变形就变形了，无所了，另外还要normalize，就是减去那三个值
 def prepare4vgg(image_list):
     result = []
     for image in image_list:
-        image = cv2.resize(image, (1024, 1024), interpolation=cv2.INTER_AREA)
+        image = cv2.resize(image, (resize, resize), interpolation=cv2.INTER_AREA)
         image = image[:, :, ::-1]  # BGR->RGB
         result.append(mean_image_subtraction(image))  # 减去均值
     return np.array(result)
