@@ -137,7 +137,7 @@ def resize_image_list(image_list, max_width, max_height):
     return result
 
 
-resize = 224
+resize = 448
 
 
 # 必须按照vgg的要求resize成224x224的，变形就变形了，无所了，另外还要normalize，就是减去那三个值
