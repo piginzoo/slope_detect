@@ -11,7 +11,7 @@ fi
 
 if [ "$1" = "console" ]; then
     echo "调试模式:只训练一次"
-    python -m main.train \
+    python -m mains.train.train \
         --name=rotate_detect \
         --pretrained_model_path=data/vgg_16.ckpt \
         --num_readers=1 \
@@ -41,7 +41,7 @@ if [ "$1" = "console" ]; then
 fi
 
 echo "生产模式:GPU1"
-nohup python -m main.train \
+nohup python -m mains.train.train \
     --name=rotate_detect \
     --pretrained_model_path=data/vgg_16.ckpt \
     --num_readers=4 \

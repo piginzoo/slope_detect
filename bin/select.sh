@@ -5,7 +5,7 @@ fi
 
 echo "开始检测图片的倾斜....."
 
-CUDA_VISIBLE_DEVICES=1 python -m main.select \
+CUDA_VISIBLE_DEVICES=1 python -m main.select.select \
     --pred_dir=$1 \
     --debug=True \
     --target_dir=$2 \

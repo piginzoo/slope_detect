@@ -2,7 +2,7 @@
 from flask import Flask,jsonify,request,render_template
 import base64,cv2,numpy as np,logging
 from threading import current_thread
-from main import pred
+from mains.pred import pred
 import os,sys
 cwd = os.getcwd()
 app = Flask(__name__,root_path="web")
@@ -105,7 +105,7 @@ def startup():
     logger.info("模型目录：%s",model_dir)
     logger.info("模型名称：%s",model_name)
 
-    pred.init_params(model_dir,model_name)
+    pred.init_params(model_dir, model_name)
     input_images,classes = pred.init_model()
     sess = pred.restore_session()
     if not sess: sys.exit(4)

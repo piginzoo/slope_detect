@@ -8,7 +8,7 @@ import traceback
 import cv2
 import numpy as np
 
-from mains.cut import cut
+from utils import cut
 from utils.data_util import GeneratorEnqueuer
 
 logger = logging.getLogger("data provider")

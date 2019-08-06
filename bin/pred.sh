@@ -9,7 +9,7 @@ fi
 
 echo "开始检测图片的倾斜....."
 
-python main/pred.py \
+python main/pred/pred.py \
     --image_name=$1 \
     --pred_dir=data/test \
     --debug=True \

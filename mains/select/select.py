@@ -6,7 +6,7 @@ import tensorflow as tf
 import logging,traceback
 import numpy as np
 sys.path.append(os.getcwd())
-from main import pred
+from mains.pred import pred
 import shutil
 from tqdm import tqdm
 
@@ -46,7 +46,7 @@ def main():
         pbar.update(1)
         try:
             img = cv2.imread(image_name)
-            _classes = pred.pred(sess, classes, input_images,np.array([img]))
+            _classes = pred.pred(sess, classes, input_images, np.array([img]))
             if _classes[0]!=0:
                 select_image(image_name,_classes[0])
         except Exception as e:
@@ -60,7 +60,7 @@ def main():
 
 def select_image(image_name,cls):
     dst_dir = FLAGS.target_dir
-    logger.warning("这张图片[%s]是歪的[%s]，挑出来=>%s",image_name,str(pred.CLASS_NAME[cls]),dst_dir)
+    logger.warning("这张图片[%s]是歪的[%s]，挑出来=>%s", image_name, str(pred.CLASS_NAME[cls]), dst_dir)
     shutil.move(image_name,dst_dir)
 
 
