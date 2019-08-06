@@ -258,7 +258,6 @@ def zoom(img, filename=None):
         #     cv2.imwrite("data/pppp/" + filename, newimg)
         # (b, g, r) = cv2.split(newimg)
         # newimg = cv2.merge([r, g, b])
-        print("----------------->>>>>>>>>>>> ", h, w, c, "      ", newimg.shape, filename)
         return newimg
     except BaseException as e:
         print(str(e), img)
