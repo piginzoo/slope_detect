@@ -42,7 +42,7 @@ def load_validate_data(validate_file, batch_num):
     image_label_list = load_data(validate_file)
     val_image_names = random.sample(image_label_list, batch_num)
     image_list, label_list = _load_batch_image_labels(val_image_names)
-    return np.array(image_list), label_list
+    return image_list, label_list
 
 
 # 加载一个批次数量的图片和标签，数量为batch数
@@ -57,8 +57,8 @@ def _load_batch_image_labels(batch):
                 logger.warning("样本图片%s不存在", image_file)
                 continue
             img = cv2.imread(image_file)
-            img = cut.zoom(img)
-            image_list.append(img)
+            newimg = cut.zoom(img)
+            image_list.append(newimg)
             # logger.debug("加载了图片：%s",image_file)
             label_list.append(label)
         except BaseException as e:
