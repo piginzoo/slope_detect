@@ -1,13 +1,15 @@
 # encoding:utf-8
-import os
-import time
 import logging
+import os
+import random
+import time
+import traceback
+
 import cv2
 import numpy as np
-import random
-from utils.data_util import GeneratorEnqueuer
-import traceback
+
 from utils import cut
+from utils.data_util import GeneratorEnqueuer
 
 logger = logging.getLogger("data provider")
 
@@ -40,7 +42,8 @@ def load_validate_data(validate_file, batch_num):
     image_label_list = load_data(validate_file)
     val_image_names = random.sample(image_label_list, batch_num)
     image_list, label_list = _load_batch_image_labels(val_image_names)
-    return np.array(image_list), label_list
+    # return np.array(image_list), label_list
+    return image_list, label_list
 
 
 # 加载一个批次数量的图片和标签，数量为batch数
