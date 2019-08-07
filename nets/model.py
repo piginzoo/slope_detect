@@ -40,9 +40,9 @@ def model(image):
     # 先注释掉
     init_weights = tf.contrib.layers.variance_scaling_initializer(factor=0.01, mode='FAN_AVG', uniform=False)
     init_biases = tf.constant_initializer(0.0)
-    w_fc1 = tf.get_variable("w_fc1", [4096,1024], initializer=init_weights)
-    w_b1 = tf.get_variable("w_b1", [1024], initializer=init_biases)
-    w_fc2 = tf.get_variable("w_fc2", [1024, 4], initializer=init_weights)
+    w_fc1 = tf.get_variable("w_fc1", [4096,256], initializer=init_weights)
+    w_b1 = tf.get_variable("w_b1", [256], initializer=init_biases)
+    w_fc2 = tf.get_variable("w_fc2", [256, 4], initializer=init_weights)
     w_b2 = tf.get_variable("w_b2", [4],initializer=init_biases)
 
     # 接2个全连接网络
