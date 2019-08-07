@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 
-
-import os
-
 import cv2
 import numpy as np
-
-from utils import data_provider,data_util
 
 
 def detect(img):
@@ -264,13 +259,20 @@ def zoom(img, filename=None):
         exit()
 
 
-if __name__ == '__main__':
-    label_path = "/Users/admin/local/creditease/ai/slope_detect.v1/data/validate.test.txt";
-    for idx in range(0, 10000):
-        image_list, image_label = data_provider.load_validate_data(label_path, 10)
-        image_list = data_util.prepare4vgg(image_list)
-        print(len(image_list))
+def cut_avg(img, sum_w, sum_h):
+    print("cut")
+    h, w, c = img.shape
+    avg_w = int(w / sum_w)
+    avg_h = int(h / sum_h)
+    print("avg_w =", avg_w, " avg_h =", avg_h)
+    coordinates = []
+    for wi in range(0, sum_w):
+        for hi in range(0, sum_h):
+            print(wi, hi)
 
+
+if __name__ == '__main__':
+    print("main.run")
     # path = "/Users/admin/local/creditease/ai/slope_detect.v1/data/validate.test/"
     # list = os.listdir(path)
     # for fn in list:
@@ -279,32 +281,8 @@ if __name__ == '__main__':
     #     img = cv2.imread(fnph)
     #     img = zoom(img, fn)
     #     np.array([img])
-    # 读取文件
-    # fn = "10028316864_C1-4_0_0.jpg"
-    # img = cv2.imread(
-    #     "/Users/admin/local/creditease/ai/slope_detect.v1/data/validate/" + fn)
-    # print(img.shape)
-    # zoom(img, fn)
 
-    arr = [('data/validate.test/10028319288_C1-1_0_1.jpg', 0), ('data/validate.test/10028319779_C1-9_2_1.jpg', 2),
-           ('data/validate.test/10028319064_C1-1_3_0.jpg', 3),
-           ('data/validate.test/ocr_o_EcS9o4J51563324375393_1Fg38Sz11563324409865_1934175886340451392.JPG', 0),
-           ('data/validate.test/10028318733_C1-3_0_2.jpg', 0), ('data/validate.test/10028319454_C1-15_2_0.jpg', 2),
-           ('data/validate.test/10028316864_C1-4_1_2.jpg', 1), ('data/validate.test/10028318546_C1-3_0_2.jpg', 0),
-           ('data/validate.test/10028318890_C1-6_3_0.jpg', 3), ('data/validate.test/10028318419_C1-1_1_1.jpg', 1),
-           ('data/validate.test/10028319707_C1-2_1_1.jpg', 1), ('data/validate.test/10028319727_C1-11_1_1.jpg', 1),
-           ('data/validate.test/10028316864_C1-6_0_0.jpg', 0),
-           ('data/validate.test/ocr_o_DU7bk4wc1563082394679_lFdL5F081563082405274_532484287598534800.JPG', 3),
-           ('data/validate.test/10028318960_C1-19_2_1.jpg', 2), ('data/validate.test/10028319779_C1-9_3_2.jpg', 3),
-           ('data/validate.test/ocr_o_b4jfWyMk1563777178047_brManD0b1563777192333_6383951208534591964.jpg', 0),
-           ('data/validate.test/10028318757_C1-1_2_1.jpg', 2), ('data/validate.test/10028318525_C1-1_1_1.jpg', 1),
-           ('data/validate.test/10028319205_C1-8_0_1.jpg', 0), ('data/validate.test/10028318733_C1-3_1_0.jpg', 1),
-           ('data/validate.test/10028318906_C1-3_2_0.jpg', 2), ('data/validate.test/10028319353_C1-6_0_2.jpg', 0),
-           ('data/validate.test/10028319245_C1-1_3_1.jpg', 3), ('data/validate.test/10028319519_C1-6_3_0.jpg', 3),
-           ('data/validate.test/10028318671_C1-30_1_1.jpg', 1),
-           ('data/validate.test/ocr_o_XkcKtk811563155752115_HfkvAZ8r1563155767558_5524155614020858693.JPG', 3),
-           ('data/validate.test/ocr_o_8Mt8e2BX1563322257849_CQZfYjho1563322291207_9130742639720348513.JPG', 0),
-           ('data/validate.test/10028319657_C1-1_0_1.jpg', 0), ('data/validate.test/10028319353_C1-7_1_2.jpg', 1),
-           ('data/validate.test/10028319513_C1-3_1_1.jpg', 1), ('data/validate.test/10028319359_C1-1_2_0.jpg', 2)]
-
-    img = data_provider.test(arr)
+    path = "/Users/admin/local/creditease/ai/slope_detect.v1/data/validate.test/"
+    fnph = path + "10028316864_C1-4_0_0.jpg"
+    img = cv2.imread(fnph)
+    cut_avg(img, 3, 2)
