@@ -2,6 +2,8 @@ model/
 *.pyc
 .idea/
 __pycache__
+data
 data/
+data.bak/
 logs/
 
