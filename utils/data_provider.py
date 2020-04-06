@@ -7,12 +7,20 @@ import traceback
 
 import cv2
 import numpy as np
-
+from utils import preprocess_utils
 from utils import cut
 from utils.data_util import GeneratorEnqueuer
 
 logger = logging.getLogger("data provider")
 
+
+def init_logger():
+    level = logging.DEBUG
+
+    logging.basicConfig(
+        format='%(asctime)s : %(levelname)s : %(message)s',
+        level=level,
+        handlers=[logging.StreamHandler()])
 
 def load_data(label_file):
     f = open(label_file, 'r')
@@ -58,10 +66,24 @@ def _load_batch_image_labels(batch):
                 logger.warning("样本图片%s不存在", image_file)
                 continue
             img = cv2.imread(image_file)
-            img = cut.zoom(img)
-            image_list.append(img)
-            # logger.debug("加载了图片：%s",image_file)
-            label_list.append(label)
+            # 原来的代码，按比例做了缩放后，再进行剪切
+            # img = cut.zoom(img)
+            # image_list.append(img)
+            # logger.debug("加载了图片：%s", image_file)
+            # label_list.append(label)
+            # logger.debug("加载了图片标签：%s", label_list)
+
+            # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行训练
+            patches = preprocess_utils.get_patches(img)
+            logger.debug("将图像分成%d个patches", len(patches))
+            image_list.append(patches)
+            logger.debug("加载了图片：%s",image_file)
+            list = [label]
+            label_list = list * len(patches) # 小图和标签数量一致
+            print("label_list:", label_list)
+            logger.debug("加载了图片标签：%s", label_list)
+
+
         except BaseException as e:
             traceback.format_exc()
             logger.error("加载一个批次图片出现异常：", str(e))
@@ -90,13 +112,14 @@ def get_batch(num_workers, label_file, batch_num, **kwargs):
         generator_output = None
         while True:
             while enqueuer.is_running():
-                # logger.debug("开始读取缓冲队列")
+                # logger.debug("开始读取缓冲队")
                 if not enqueuer.queue.empty():
                     generator_output = enqueuer.queue.get()
                     logger.debug("从GeneratorEnqueuer的queue中取出的图片")
                     break
                 else:
-                    time.sleep(0.01)
+                    # logger.debug("queue is empty, which cause we are waiting....")
+                    time.sleep(1.0)
             # yield一调用，就挂起，等着外面再来调用next()了
             # 所以，可以看出来queue.get()出来的是一个图片，验证了我的想法，就是一张图，不是多张
             yield generator_output
@@ -112,7 +135,9 @@ def get_batch(num_workers, label_file, batch_num, **kwargs):
 
 
 if __name__ == '__main__':
-    gen = get_batch(num_workers=2)
-    while True:
-        image, bbox, im_info = next(gen)
-        print('done')
+    init_logger()
+    # gen = get_batch(num_workers=1,batch_num=10,label_file="data/train.txt")
+    # while True:
+    gen = generator(label_file="data/train.txt",batch_num=1)
+    image, bbox = next(gen)
+    print('done')

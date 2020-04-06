@@ -1,5 +1,6 @@
 import tensorflow as tf
 FLAGS = tf.app.flags.FLAGS
+#FLAGS = tf.compat.v1.flags
 
 def _p_shape(tensor,msg):
     if (FLAGS.debug):

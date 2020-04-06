@@ -1,4 +1,4 @@
-
+# coding=utf-8
 import logging
 from PIL import Image, ImageDraw, ImageFont, ImageFilter,ImageOps
 import random
