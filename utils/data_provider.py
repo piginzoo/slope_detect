@@ -67,27 +67,29 @@ def _load_batch_image_labels(batch):
                 continue
             img = cv2.imread(image_file)
             # 原来的代码，按比例做了缩放后，再进行剪切
-            # img = cut.zoom(img)
-            # image_list.append(img)
-            # logger.debug("加载了图片：%s", image_file)
-            # label_list.append(label)
-            # logger.debug("加载了图片标签：%s", label_list)
+            img = cut.zoom(img)
+            image_list.append(img)
+            logger.debug("加载了图片：%s", image_file)
+            label_list.append(label)
+            logger.debug("加载了图片标签：%s", label_list)
 
             # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行训练
-            patches = preprocess_utils.get_patches(img)
-            logger.debug("将图像分成%d个patches", len(patches))
-            image_list.append(patches)
-            logger.debug("加载了图片：%s",image_file)
-            list = [label]
-            label_list = list * len(patches) # 小图和标签数量一致
-            print("label_list:", label_list)
-            logger.debug("加载了图片标签：%s", label_list)
+            # patches = preprocess_utils.get_patches(img)
+            # image_list.append(patches)
+            # logger.debug("加载了图片：%s",image_file)
+            # logger.debug("将图像分成%d个patches", len(patches))
+            # list = [label]
+            # label_list = list * len(patches) # 小图和标签数量一致
+            # print("label_list:", label_list)
+            # logger.debug("加载了图片标签：%s", label_list)
 
 
         except BaseException as e:
             traceback.format_exc()
             logger.error("加载一个批次图片出现异常：", str(e))
     logger.debug("加载%d张图片作为一个批次到内存中", len(image_list))
+    #print("image_list:",image_list)
+    #print("label_list:",label_list)
     return image_list, label_list
 
 
@@ -108,7 +110,7 @@ def get_batch(num_workers, label_file, batch_num, **kwargs):
         # 但是，这里，他的肚子里，还藏着一个generator()
         # 这个generator实际上就是真正去读一张图片，返回回来了
         enqueuer = GeneratorEnqueuer(generator(label_file, batch_num, **kwargs), use_multiprocessing=True)
-        enqueuer.start(max_queue_size=30, workers=num_workers)
+        enqueuer.start(max_queue_size=32, workers=num_workers)
         generator_output = None
         while True:
             while enqueuer.is_running():

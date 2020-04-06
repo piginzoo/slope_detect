@@ -48,11 +48,11 @@ nohup python -m main.train \
     --decay_steps=1000 \
     --evaluate_steps=100 \
     --validate_dir=data/validate \
-    --validate_batch=1 \
+    --validate_batch=16 \
     --validate_times=5 \
     --validate_label=data/validate.txt \
     --train_dir=data/train \
-    --train_batch=1 \
+    --train_batch=32 \
     --train_label=data/train.txt \
     --learning_rate=0.0001 \
     --save_checkpoint_steps=5000 \

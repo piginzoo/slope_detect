@@ -3,7 +3,7 @@ import cv2
 import random
 
 def get_patches(img):
-    dim = 224
+    dim = 256
     h, w = img.shape[:2]
 
     # 如果图像宽高小于256，补齐到256
