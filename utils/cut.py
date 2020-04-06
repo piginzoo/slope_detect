@@ -160,7 +160,7 @@ def findTextRegion(img):
         # 筛选那些太细的矩形，留下扁的
         if height > width * 1.2:
             continue
-        print("box", box)
+        #print("box", box)
         region.append(box)
 
     return region
@@ -246,11 +246,11 @@ def zoom(img, filename=None):
         # nw = nw - nw % 10
         nh = h / scale
         # nh = nh - nh % 10
-        print("缩放前：", img.shape)
+        #print("缩放前：", img.shape)
         newimg = cv2.resize(img, (int(nw), int(nh)), interpolation=cv2.INTER_AREA)
-        print("缩放后：", newimg.shape)
+        #print("缩放后：", newimg.shape)
         newimg = _cut(newimg)
-        print("剪切后：",newimg.shape)
+        #print("剪切后：",newimg.shape)
         # if not filename is None:
         #     filename = os.path.split(filename)[1]
         #     cv2.imwrite("data/pppp/" + filename, newimg)

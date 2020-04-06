@@ -69,9 +69,9 @@ def _load_batch_image_labels(batch):
             # 原来的代码，按比例做了缩放后，再进行剪切
             img = cut.zoom(img)
             image_list.append(img)
-            logger.debug("加载了图片：%s", image_file)
+            #logger.debug("加载了图片：%s", image_file)
             label_list.append(label)
-            logger.debug("加载了图片标签：%s", label_list)
+            #logger.debug("加载了图片标签：%s", label_list)
 
             # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行训练
             # patches = preprocess_utils.get_patches(img)
