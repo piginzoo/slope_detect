@@ -95,12 +95,12 @@ def _load_batch_image_labels(batch):
             traceback.format_exc()
             logger.error("加载一个批次图片出现异常：", str(e))
     logger.debug("加载%d张图片作为一个批次到内存中", len(image_list))
-    print("image_list:",image_list)
-    print("label_list:",label_list)
-    for image in image_list:
-        #logger.debug("图片list：%s", image_list)
-        #logger.debug("图片：%s", image)
-        logger.debug("图片大小：%s", image.shape)
+    # print("image_list:",image_list)
+    # print("label_list:",label_list)
+    # for image in image_list:
+    #     #logger.debug("图片list：%s", image_list)
+    #     #logger.debug("图片：%s", image)
+    #     logger.debug("图片大小：%s", image.shape)
     return image_list, label_list
 
 def generator(label_file, batch_num):
