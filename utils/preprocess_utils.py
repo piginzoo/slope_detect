@@ -64,7 +64,7 @@ def get_patches(img):
         #patch = (patch - patch.mean()) / patch.std() # 做一下标准化
         #print("patch:",patch)
         patches.append(np.array(patch))
-        print("patches:",patches)
+        #print("patches:",patches)
 
     #patches = np.stack(patches, axis=0)
     return patches
