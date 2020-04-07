@@ -135,8 +135,8 @@ def prepare4vgg(image_list):
 
     result = []
     for image in image_list:
-        logger.debug("图片list：%s", image_list)
-        logger.debug("图片：%s", image)
+        #logger.debug("图片list：%s", image_list)
+        #logger.debug("图片：%s", image)
         logger.debug("图片大小：%s", image.shape)
 
         image = cv2.resize(image, (224,224),interpolation=cv2.INTER_AREA)
