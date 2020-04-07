@@ -84,6 +84,7 @@ def _load_batch_image_labels(batch):
             #print("======================")
             #print(patches)
             image_list.append(patches)
+            #print("image_list:", image_list)
             #logger.debug("加载了图片：%s",image_file)
             logger.debug("将图像分成%d个patches", len(patches))
             list = [label]

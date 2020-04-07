@@ -62,7 +62,7 @@ def get_patches(img):
         patch = img[hStart:(hStart + dim), wStart:(wStart + dim)]
         #因为后面有强制压缩成224 * 224和标准化，所以这里不需要标准化
         #patch = (patch - patch.mean()) / patch.std() # 做一下标准化
-        patches.append(patch)
+        patches.append([patch])
     patches = np.stack(patches, axis=0)
     return patches
 
