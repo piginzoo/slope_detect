@@ -68,8 +68,8 @@ def _load_batch_image_labels(batch):
                 logger.warning("样本图片%s不存在", image_file)
                 continue
             img = cv2.imread(image_file)
-            # print("------------")
-            # print(img)
+            #print(type(img))
+            #print(img)
 
             # 原来的代码，按比例做了缩放后，再进行剪切
             # img = cut.zoom(img)
@@ -80,6 +80,7 @@ def _load_batch_image_labels(batch):
 
             # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行训练
             patches = preprocess_utils.get_patches(img)
+            #print(type(patches))
             #print("======================")
             #print(patches)
             image_list.append(patches)
