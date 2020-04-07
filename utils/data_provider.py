@@ -68,8 +68,6 @@ def _load_batch_image_labels(batch):
                 logger.warning("样本图片%s不存在", image_file)
                 continue
             img = cv2.imread(image_file)
-            #print(type(img))
-            #print(img)
 
             #原来的代码，按比例做了缩放后，再进行剪切
             # img = cut.zoom(img)
@@ -80,27 +78,16 @@ def _load_batch_image_labels(batch):
 
             # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行训练
             image_list = preprocess_utils.get_patches(img)
-            #print(patches)
-            #image_list.append(patches)
-            #print("image_list:", image_list)
             #logger.debug("加载了图片：%s",image_file)
             logger.debug("将图像分成%d个patches", len(image_list))
             list = [label]
             label_list = list * len(image_list) # 小图和标签数量一致
-            #print("label_list:", label_list)
             #logger.debug("加载了图片标签：%s", label_list)
-
 
         except BaseException as e:
             traceback.format_exc()
             logger.error("加载一个批次图片出现异常：", str(e))
     logger.debug("加载%d张图片作为一个批次到内存中", len(image_list))
-    # print("image_list:",image_list)
-    # print("label_list:",label_list)
-    # for image in image_list:
-    #     #logger.debug("图片list：%s", image_list)
-    #     #logger.debug("图片：%s", image)
-    #     logger.debug("图片大小：%s", image.shape)
     return image_list, label_list
 
 def generator(label_file, batch_num):
