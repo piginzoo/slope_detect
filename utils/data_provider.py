@@ -31,8 +31,10 @@ def load_data(label_file):
     # >data/train/22.png 0
     # >data/train/23.png 2
     for line in f:
-        # logger.debug("line=%s",line)
+        #logger.debug("line=%s",line)
         filename, _, label = line[:-1].partition(' ')  # partition函数只读取第一次出现的标志，分为左右两个部分,[:-1]去掉回车
+        #logger.debug("filename=%s", filename)
+        #logger.debug("label=%s", label)
         if label is None or label.strip() == "":
             logger.warning("标签数据有问题，忽略：%s", line)
             continue
@@ -66,32 +68,36 @@ def _load_batch_image_labels(batch):
                 logger.warning("样本图片%s不存在", image_file)
                 continue
             img = cv2.imread(image_file)
-            # 原来的代码，按比例做了缩放后，再进行剪切
-            img = cut.zoom(img)
-            image_list.append(img)
-            #logger.debug("加载了图片：%s", image_file)
-            label_list.append(label)
-            #logger.debug("加载了图片标签：%s", label_list)
+            # print("------------")
+            # print(img)
 
-            # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行训练
-            # patches = preprocess_utils.get_patches(img)
-            # image_list.append(patches)
-            # logger.debug("加载了图片：%s",image_file)
-            # logger.debug("将图像分成%d个patches", len(patches))
-            # list = [label]
-            # label_list = list * len(patches) # 小图和标签数量一致
-            # print("label_list:", label_list)
+            # 原来的代码，按比例做了缩放后，再进行剪切
+            # img = cut.zoom(img)
+            # image_list.append(img)
+            # logger.debug("加载了图片：%s", image_file)
+            # label_list.append(label)
             # logger.debug("加载了图片标签：%s", label_list)
+
+            # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行训练
+            patches = preprocess_utils.get_patches(img)
+            #print("======================")
+            #print(patches)
+            image_list.append(patches)
+            #logger.debug("加载了图片：%s",image_file)
+            logger.debug("将图像分成%d个patches", len(patches))
+            list = [label]
+            label_list = list * len(patches) # 小图和标签数量一致
+            #print("label_list:", label_list)
+            #logger.debug("加载了图片标签：%s", label_list)
 
 
         except BaseException as e:
             traceback.format_exc()
             logger.error("加载一个批次图片出现异常：", str(e))
     logger.debug("加载%d张图片作为一个批次到内存中", len(image_list))
-    #print("image_list:",image_list)
-    #print("label_list:",label_list)
+    # print("image_list:",image_list)
+    # print("label_list:",label_list)
     return image_list, label_list
-
 
 def generator(label_file, batch_num):
     image_label_list = load_data(label_file)
@@ -121,7 +127,7 @@ def get_batch(num_workers, label_file, batch_num, **kwargs):
                     break
                 else:
                     # logger.debug("queue is empty, which cause we are waiting....")
-                    time.sleep(1.0)
+                    time.sleep(0.01)
             # yield一调用，就挂起，等着外面再来调用next()了
             # 所以，可以看出来queue.get()出来的是一个图片，验证了我的想法，就是一张图，不是多张
             yield generator_output
@@ -140,6 +146,6 @@ if __name__ == '__main__':
     init_logger()
     # gen = get_batch(num_workers=1,batch_num=10,label_file="data/train.txt")
     # while True:
-    gen = generator(label_file="data/train.txt",batch_num=1)
+    gen = generator(label_file="data/train.txt",batch_num=2)
     image, bbox = next(gen)
     print('done')
