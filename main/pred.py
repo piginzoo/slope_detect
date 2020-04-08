@@ -88,27 +88,22 @@ def restore_session():
 
 def main():
     image_name_list = get_images()
-    image_list = []
+    input_images, classes = init_model()
+    sess = restore_session()
+    lines = []
     for image_name in image_name_list:
         logger.info("探测图片[%s]开始", image_name)
         try:
             img = cv2.imread(image_name)
             # 好像网络用的就是OpenCV的BGR顺序，所以也不用转了
             # img = img[:, :, ::-1]  # bgr是opencv通道默认顺序，转成标准的RGB方式
-            image_list.append(img)
+            classes = pred(sess, classes, input_images, img)
+            logger.info("图片[%s]旋转角度为[%s]度", image_name, CLASS_NAME[classes])
+            line = image_name + " " + str(CLASS_NAME[classes])
+            lines.append(line)
         except:
             print("Error reading image {}!".format(image_name))
             continue
-    input_images,classes = init_model()
-    sess = restore_session()
-    classes = pred(sess,classes,input_images,image_list)
-
-    lines = []
-    for i in range(len(classes)):
-        logger.info("图片[%s]旋转角度为[%s]度",image_name_list[i],CLASS_NAME[classes[i]])
-
-        line = image_name_list[i] + " " + str(CLASS_NAME[classes[i]])
-        lines.append(line)
     with open("data/pred.txt", "w", encoding='utf-8') as f:
         for line in lines:
             f.write(str(line) + '\n')
