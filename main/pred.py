@@ -87,28 +87,38 @@ def restore_session():
 
 
 def main():
-    image_name_list = get_images()
-    image_list = []
-    for image_name in image_name_list:
-        logger.info("探测图片[%s]开始", image_name)
-        try:
-            img = cv2.imread(image_name)
-            # 好像网络用的就是OpenCV的BGR顺序，所以也不用转了
-            # img = img[:, :, ::-1]  # bgr是opencv通道默认顺序，转成标准的RGB方式
-            image_list.append(img)
-        except:
-            print("Error reading image {}!".format(image_name))
-            continue
-    input_images,classes = init_model()
-    sess = restore_session()
-    classes = pred(sess,classes,input_images,image_list)
-
+    image_name_list_all = get_images()
+    i = 0
     lines = []
-    for i in range(len(classes)):
-        logger.info("图片[%s]旋转角度为[%s]度",image_name_list[i],CLASS_NAME[classes[i]])
+    while i <= 490:
+        image_name_list = image_name_list_all[i:i + 10]
+        # print(image_name_list)
+        i += 10
+        if i % 10 == 0:
+            print('处理完成：', i)
+        # print(len(image_name_list))
+        image_list = []
+        for image_name in image_name_list:
+            logger.info("探测图片[%s]开始", image_name)
+            try:
+                img = cv2.imread(image_name)
+                # print(img.shape)
+                # 好像网络用的就是OpenCV的BGR顺序，所以也不用转了
+                # img = img[:, :, ::-1]  # bgr是opencv通道默认顺序，转成标准的RGB方式
+                image_list.append(img)
+                input_images, classes = init_model()
+                sess = restore_session()
+                classes = pred(sess, classes, input_images, image_list)
 
-        line = image_name_list[i] + " " + str(CLASS_NAME[classes[i]])
-        lines.append(line)
+                for i in range(len(classes)):
+                    logger.info("图片[%s]旋转角度为[%s]度", image_name_list[i], CLASS_NAME[classes[i]])
+                    line = image_name_list[i] + " " + str(CLASS_NAME[classes[i]])
+                    lines.append(line)
+
+            except:
+                print("Error reading image {}!".format(image_name))
+                continue
+
     with open("data/pred.txt", "w", encoding='utf-8') as f:
         for line in lines:
             f.write(str(line) + '\n')

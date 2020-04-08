@@ -144,14 +144,14 @@ def prepare4vgg(image_list):
         result.append(mean_image_subtraction(image)) #减去均值
     return np.array(result)
 
-def prepare4vgg_one(image):
-    image = cv2.resize(image, (224,224),interpolation=cv2.INTER_AREA)
-    logger.debug("图片被resize成为%r", image.shape)
-    image = image[:,:,::-1] # BGR->RGB
-    image = mean_image_subtraction(image) #减去均值
-    logger.debug("图片标准化后成为%r", image)
-    logger.debug("图片标准化后大小%", image.shape)
-    return image
+# def prepare4vgg_one(image):
+#     image = cv2.resize(image, (224,224),interpolation=cv2.INTER_AREA)
+#     logger.debug("图片被resize成为%r", image.shape)
+#     image = image[:,:,::-1] # BGR->RGB
+#     image = mean_image_subtraction(image) #减去均值
+#     logger.debug("图片标准化后成为%r", image)
+#     logger.debug("图片标准化后大小%", image.shape)
+#     return image
 
 # [123.68, 116.78, 103.94] 这个是VGG的预处理要求的，必须减去这个均值：https://blog.csdn.net/smilejiasmile/article/details/80807050
 def mean_image_subtraction(images,means=[124, 117, 104]): #means=[123.68, 116.78, 103.94]):
