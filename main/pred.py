@@ -1,4 +1,3 @@
-
 # coding=utf-8
 import os,sys
 import time
@@ -8,11 +7,6 @@ import logging
 sys.path.append(os.getcwd())
 import nets.model as model
 from utils import data_util
-
-import numpy as np
-from multiprocessing import Pool
-# 线程数
-worker = 20
 
 logger = logging.getLogger("Train")
 FLAGS = tf.app.flags.FLAGS
@@ -43,6 +37,7 @@ def init_logger():
         level=level,
         handlers=[logging.StreamHandler()])
 
+
 def get_images():
 
     if FLAGS.image_name:
@@ -50,22 +45,16 @@ def get_images():
         logger.info("指定被检测图片：%s",image_path)
         return [image_path]
 
-    # files = []
-    # exts = ['jpg', 'png', 'jpeg', 'JPG']
-    # images_dir = os.path.join(FLAGS.pred_dir)
-    # for img_name in os.listdir(images_dir):
-    #     for ext in exts:
-    #         if img_name.endswith(ext):
-    #             files.append(os.path.join(images_dir, img_name))
-    #             break
-    # logger.debug('批量预测，找到需要检测的图片%d张',len(files))
-
-    image_all = os.listdir(FLAGS.pred_dir)
-    # 分批多线程处理
-    file_list_arr = np.array_split(image_all, worker)
-    logger.info("线程数：%r", worker)
-
-    return file_list_arr
+    files = []
+    exts = ['jpg', 'png', 'jpeg', 'JPG']
+    images_dir = os.path.join(FLAGS.pred_dir)
+    for img_name in os.listdir(images_dir):
+        for ext in exts:
+            if img_name.endswith(ext):
+                files.append(os.path.join(images_dir, img_name))
+                break
+    logger.debug('批量预测，找到需要检测的图片%d张',len(files))
+    return files
 
 
 # 定义图，并且还原模型，创建session
