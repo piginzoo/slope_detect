@@ -88,23 +88,27 @@ def restore_session():
 
 def main():
     image_name_list = get_images()
-    input_images, classes = init_model()
-    sess = restore_session()
-    lines = []
+    image_list = []
     for image_name in image_name_list:
         logger.info("探测图片[%s]开始", image_name)
         try:
             img = cv2.imread(image_name)
-            logger.debug("图片大小%r", img.shape)
             # 好像网络用的就是OpenCV的BGR顺序，所以也不用转了
             # img = img[:, :, ::-1]  # bgr是opencv通道默认顺序，转成标准的RGB方式
-            classes = pred(sess, classes, input_images, img)
-            logger.info("图片[%s]旋转角度为[%s]度", image_name, CLASS_NAME[classes])
-            line = image_name + " " + str(CLASS_NAME[classes])
-            lines.append(line)
+            image_list.append(img)
         except:
             print("Error reading image {}!".format(image_name))
             continue
+    input_images,classes = init_model()
+    sess = restore_session()
+    classes = pred(sess,classes,input_images,image_list)
+
+    lines = []
+    for i in range(len(classes)):
+        logger.info("图片[%s]旋转角度为[%s]度",image_name_list[i],CLASS_NAME[classes[i]])
+
+        line = image_name_list[i] + " " + str(CLASS_NAME[classes[i]])
+        lines.append(line)
     with open("data/pred.txt", "w", encoding='utf-8') as f:
         for line in lines:
             f.write(str(line) + '\n')
@@ -114,8 +118,7 @@ def main():
 def pred(sess,classes,input_images,image_list):#,input_image,input_im_info,bbox_pred, cls_pred, cls_prob):
     logger.info("开始探测图片")
     start = time.time()
-    image_list = data_util.prepare4vgg_one(image_list)
-    logger.debug("图片大小%", image_list.shape)
+    image_list = data_util.prepare4vgg(image_list)
     _classes = sess.run(classes,feed_dict={input_images: image_list})
     logger.info("探测图片完成，耗时: %f", (time.time() - start))
     return _classes
