@@ -102,12 +102,13 @@ def main():
     input_images,classes = init_model()
     sess = restore_session()
     classes = pred(sess,classes,input_images,image_list)
-    #lines = []
+    lines = []
     for i in range(len(classes)):
         logger.info("图片[%s]旋转角度为[%s]度",image_name_list[i],CLASS_NAME[classes[i]])
-        line = image_name_list[i] + " " + "CLASS_NAME[classes[i]]"
-        #lines.append(line)
-        with open("data/pred.txt", "w", encoding='utf-8') as f:
+        line = image_name_list[i] + " " + str(CLASS_NAME[classes[i]])
+        lines.append(line)
+    with open("data/pred.txt", "w", encoding='utf-8') as f:
+        for line in lines:
             f.write(str(line) + '\n')
 
 
