@@ -111,8 +111,10 @@ def main():
                 print("Error reading image {}!".format(image_name))
                 continue
 
+        tf.reset_default_graph() # 重置图表
         input_images, classes = init_model()
         sess = restore_session()
+        
         classes = pred(sess, classes, input_images, image_list)
 
         for i in range(len(classes)):
