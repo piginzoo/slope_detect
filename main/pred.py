@@ -97,8 +97,8 @@ def restore_session():
     return sess
 
 
-def main(image_name_list):
-    #image_name_list = get_images()
+def main():
+    image_name_list = get_images()
     image_list = []
     for image_name in image_name_list:
         logger.info("探测图片[%s]开始", image_name)
@@ -156,7 +156,4 @@ if __name__ == '__main__':
     logger.info("使用GPU%s显卡进行训练", FLAGS.gpu)
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
     init_logger()
-    #main()
-    file_list_arr = get_images()
-    for image_name_list in file_list_arr:
-        main(image_name_list)
+    main()
