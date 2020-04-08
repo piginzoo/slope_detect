@@ -10,7 +10,7 @@ from utils import data_util
 
 logger = logging.getLogger("Train")
 FLAGS = tf.app.flags.FLAGS
-aCLASS_NAME = [0,90,180,270]
+CLASS_NAME = [0,90,180,270]
 
 def init_params(model_dir='model',model_name=''):
     tf.app.flags.DEFINE_string('image_name','data/validate', '')         # 被预测的图片名字，为空就预测目录下所有的文件
