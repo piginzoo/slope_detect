@@ -8,8 +8,11 @@ import logging
 sys.path.append(os.getcwd())
 import nets.model as model
 from utils import data_util
+
 import numpy as np
 from multiprocessing import Pool
+# 线程数
+worker = 20
 
 logger = logging.getLogger("Train")
 FLAGS = tf.app.flags.FLAGS
@@ -40,7 +43,6 @@ def init_logger():
         level=level,
         handlers=[logging.StreamHandler()])
 
-
 def get_images():
 
     if FLAGS.image_name:
@@ -57,8 +59,8 @@ def get_images():
     #             files.append(os.path.join(images_dir, img_name))
     #             break
     # logger.debug('批量预测，找到需要检测的图片%d张',len(files))
-    image_all = os.listdir(FLAGS.pred_dir)
 
+    image_all = os.listdir(FLAGS.pred_dir)
     # 分批多线程处理
     file_list_arr = np.array_split(image_all, worker)
     logger.info("线程数：%r", worker)
@@ -95,8 +97,8 @@ def restore_session():
     return sess
 
 
-def main(p_no, image_name_list):
-    #file_list_arr = get_images()
+def main(image_name_list):
+    #image_name_list = get_images()
     image_list = []
     for image_name in image_name_list:
         logger.info("探测图片[%s]开始", image_name)
@@ -155,18 +157,6 @@ if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
     init_logger()
     #main()
-
-    # 线程数
-    worker = 20
-
     file_list_arr = get_images()
-    p_no = 0
-    pool = Pool(processes=worker)
-
-    for img_list in file_list_arr:
-        pool.apply_async(main, args=(p_no,file_list_arr))
-        p_no += 1
-
-    pool.close()
-    pool.join()
-    logger.info("程序处理结束，全部测试完毕！")
+    for image_name_list in file_list_arr:
+        main(image_name_list)
