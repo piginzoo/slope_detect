@@ -95,7 +95,7 @@ def main():
         logger.info("探测图片[%s]开始", image_name)
         try:
             img = cv2.imread(image_name)
-
+            logger.debug("图片大小%r", img.shape)
             # 好像网络用的就是OpenCV的BGR顺序，所以也不用转了
             # img = img[:, :, ::-1]  # bgr是opencv通道默认顺序，转成标准的RGB方式
             classes = pred(sess, classes, input_images, img)
