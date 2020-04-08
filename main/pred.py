@@ -1,3 +1,4 @@
+
 # coding=utf-8
 import os,sys
 import time
@@ -7,13 +8,15 @@ import logging
 sys.path.append(os.getcwd())
 import nets.model as model
 from utils import data_util
+import numpy as np
+from multiprocessing import Pool
 
 logger = logging.getLogger("Train")
 FLAGS = tf.app.flags.FLAGS
 CLASS_NAME = [0,90,180,270]
 
 def init_params(model_dir='model',model_name=''):
-    tf.app.flags.DEFINE_string('image_name','data/validate', '')         # 被预测的图片名字，为空就预测目录下所有的文件
+    tf.app.flags.DEFINE_string('image_name','', '')         # 被预测的图片名字，为空就预测目录下所有的文件
     tf.app.flags.DEFINE_string('pred_dir', 'data/pred', '') # 预测后的结果的输出目录
     tf.app.flags.DEFINE_string('model_dir',model_dir, '')   # model的存放目录，会自动加载最新的那个模型
     tf.app.flags.DEFINE_string('model_file',model_name, '') # 为了支持单独文件，如果为空，就预测pred_dir中的所有文件
@@ -45,16 +48,22 @@ def get_images():
         logger.info("指定被检测图片：%s",image_path)
         return [image_path]
 
-    files = []
-    exts = ['jpg', 'png', 'jpeg', 'JPG']
-    images_dir = os.path.join(FLAGS.pred_dir)
-    for img_name in os.listdir(images_dir):
-        for ext in exts:
-            if img_name.endswith(ext):
-                files.append(os.path.join(images_dir, img_name))
-                break
-    logger.debug('批量预测，找到需要检测的图片%d张',len(files))
-    return files
+    # files = []
+    # exts = ['jpg', 'png', 'jpeg', 'JPG']
+    # images_dir = os.path.join(FLAGS.pred_dir)
+    # for img_name in os.listdir(images_dir):
+    #     for ext in exts:
+    #         if img_name.endswith(ext):
+    #             files.append(os.path.join(images_dir, img_name))
+    #             break
+    # logger.debug('批量预测，找到需要检测的图片%d张',len(files))
+    image_all = os.listdir(FLAGS.pred_dir)
+
+    # 分批多线程处理
+    file_list_arr = np.array_split(image_all, worker)
+    logger.info("线程数：%r", worker)
+
+    return file_list_arr
 
 
 # 定义图，并且还原模型，创建session
@@ -86,8 +95,8 @@ def restore_session():
     return sess
 
 
-def main():
-    image_name_list = get_images()
+def main(p_no, image_name_list):
+    #file_list_arr = get_images()
     image_list = []
     for image_name in image_name_list:
         logger.info("探测图片[%s]开始", image_name)
@@ -102,9 +111,11 @@ def main():
     input_images,classes = init_model()
     sess = restore_session()
     classes = pred(sess,classes,input_images,image_list)
+
     lines = []
     for i in range(len(classes)):
         logger.info("图片[%s]旋转角度为[%s]度",image_name_list[i],CLASS_NAME[classes[i]])
+
         line = image_name_list[i] + " " + str(CLASS_NAME[classes[i]])
         lines.append(line)
     with open("data/pred.txt", "w", encoding='utf-8') as f:
@@ -143,5 +154,19 @@ if __name__ == '__main__':
     logger.info("使用GPU%s显卡进行训练", FLAGS.gpu)
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
     init_logger()
-    main()
+    #main()
 
+    # 线程数
+    worker = 20
+
+    file_list_arr = get_images()
+    p_no = 0
+    pool = Pool(processes=worker)
+
+    for img_list in file_list_arr:
+        pool.apply_async(main, args=(p_no,file_list_arr))
+        p_no += 1
+
+    pool.close()
+    pool.join()
+    logger.info("程序处理结束，全部测试完毕！")
