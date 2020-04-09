@@ -7,6 +7,7 @@ import logging
 sys.path.append(os.getcwd())
 import nets.model as model
 from utils import data_util
+import numpy as np
 
 logger = logging.getLogger("Train")
 FLAGS = tf.app.flags.FLAGS
@@ -88,17 +89,14 @@ def restore_session():
 
 def main():
     image_name_list_all = get_images()
-    i = 0
     lines = []
-    while i <= 490:
-        tf.reset_default_graph()  # 重置图表
+    tf.reset_default_graph()  # 重置图表
+    input_images, classes = init_model()
+    sess = restore_session()
 
-        image_name_list = image_name_list_all[i:i + 10]
-        # print(image_name_list)
-        i += 10
-        if i % 10 == 0:
-            logger.info('分批处理，已完成预测图片[%s]张', i)
-        # print(len(image_name_list))
+    arr_split = np.array_split(image_name_list_all,50)
+    for image_name_list in arr_split:
+        logger.info("批次处理：%人r", len(image_name_list))
         image_list = []
         for image_name in image_name_list:
             logger.info("探测图片[%s]开始", image_name)
@@ -112,12 +110,7 @@ def main():
             except:
                 print("Error reading image {}!".format(image_name))
                 continue
-
-        input_images, classes = init_model()
-        sess = restore_session()
-
         classes = pred(sess, classes, input_images, image_list)
-
         for i in range(len(classes)):
             logger.info("图片[%s]旋转角度为[%s]度", image_name_list[i], CLASS_NAME[classes[i]])
             line = image_name_list[i] + " " + str(CLASS_NAME[classes[i]])
