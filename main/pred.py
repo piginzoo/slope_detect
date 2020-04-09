@@ -91,11 +91,13 @@ def main():
     i = 0
     lines = []
     while i <= 490:
+        tf.reset_default_graph()  # 重置图表
+
         image_name_list = image_name_list_all[i:i + 10]
         # print(image_name_list)
         i += 10
         if i % 10 == 0:
-            print('分批处理，加载图片：', i)
+            logger.info('分批处理，已完成预测图片[%s]张', i)
         # print(len(image_name_list))
         image_list = []
         for image_name in image_name_list:
@@ -111,10 +113,9 @@ def main():
                 print("Error reading image {}!".format(image_name))
                 continue
 
-        tf.reset_default_graph() # 重置图表
         input_images, classes = init_model()
         sess = restore_session()
-        
+
         classes = pred(sess, classes, input_images, image_list)
 
         for i in range(len(classes)):
@@ -122,7 +123,9 @@ def main():
             line = image_name_list[i] + " " + str(CLASS_NAME[classes[i]])
             lines.append(line)
 
-    return lines
+    with open("data/pred.txt", "w", encoding='utf-8') as f:
+        for line in lines:
+            f.write(str(line) + '\n')
 
 
 
@@ -157,8 +160,4 @@ if __name__ == '__main__':
     logger.info("使用GPU%s显卡进行训练", FLAGS.gpu)
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
     init_logger()
-    lines = main()
-
-    with open("data/pred.txt", "w", encoding='utf-8') as f:
-        for line in lines:
-            f.write(str(line) + '\n')
+    main()
