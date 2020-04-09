@@ -15,7 +15,7 @@ CLASS_NAME = [0,90,180,270]
 
 def init_params(model_dir='model',model_name=''):
     tf.app.flags.DEFINE_string('image_name','', '')         # 被预测的图片名字，为空就预测目录下所有的文件
-    tf.app.flags.DEFINE_string('pred_dir', 'data/pred', '') # 预测后的结果的输出目录
+    tf.app.flags.DEFINE_string('pred_dir', 'data/validate', '') # 预测后的结果的输出目录
     tf.app.flags.DEFINE_string('model_dir',model_dir, '')   # model的存放目录，会自动加载最新的那个模型
     tf.app.flags.DEFINE_string('model_file',model_name, '') # 为了支持单独文件，如果为空，就预测pred_dir中的所有文件
     tf.app.flags.DEFINE_boolean('debug', False, '')
@@ -29,13 +29,9 @@ def init_params(model_dir='model',model_name=''):
 
 
 def init_logger():
-    level = logging.DEBUG
-    if(FLAGS.debug):
-        level = logging.DEBUG
-
     logging.basicConfig(
         format='%(asctime)s : %(levelname)s : %(message)s',
-        level=level,
+        level=logging.DEBUG,
         handlers=[logging.StreamHandler()])
 
 
@@ -90,13 +86,10 @@ def restore_session():
 def main():
     image_name_list_all = get_images()
     lines = []
-    tf.reset_default_graph()  # 重置图表
-    input_images, classes = init_model()
-    sess = restore_session()
 
     arr_split = np.array_split(image_name_list_all,50)
     for image_name_list in arr_split:
-        logger.info("批次处理：%人r", len(image_name_list))
+        logger.info("批次处理：%r", len(image_name_list))
         image_list = []
         for image_name in image_name_list:
             logger.info("探测图片[%s]开始", image_name)
@@ -110,7 +103,10 @@ def main():
             except:
                 print("Error reading image {}!".format(image_name))
                 continue
-        classes = pred(sess, classes, input_images, image_list)
+        tf.reset_default_graph()  # 重置图表
+        input_images, classes = init_model()
+        sess = restore_session()
+        classes = pred(sess, classes, input_images, np.array(image_list))
         for i in range(len(classes)):
             logger.info("图片[%s]旋转角度为[%s]度", image_name_list[i], CLASS_NAME[classes[i]])
             line = image_name_list[i] + " " + str(CLASS_NAME[classes[i]])
@@ -119,8 +115,6 @@ def main():
     with open("data/pred.txt", "w", encoding='utf-8') as f:
         for line in lines:
             f.write(str(line) + '\n')
-
-
 
 
 def pred(sess,classes,input_images,image_list):#,input_image,input_im_info,bbox_pred, cls_pred, cls_prob):
@@ -133,7 +127,8 @@ def pred(sess,classes,input_images,image_list):#,input_image,input_im_info,bbox_
 
 
 if __name__ == '__main__':
-    init_params()
+    init_logger()
+    init_params(model_name="ctpn-2019-05-07-14-19-35-201.ckpt")
     if not os.path.exists(FLAGS.pred_dir):
         logger.error("要识别的图片的目录[%s]不存在",FLAGS.pred_dir)
         exit()
@@ -152,5 +147,4 @@ if __name__ == '__main__':
         exit()
     logger.info("使用GPU%s显卡进行训练", FLAGS.gpu)
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
-    init_logger()
     main()
