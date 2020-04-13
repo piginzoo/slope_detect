@@ -269,8 +269,8 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
 
         image_label_all.append(image_label)
         classes_all.append(classes)
-        logger.debug("一个批次验证集的预测结果为：%r", classes_all)
-        logger.debug("一个批次验证集的Label为：%r", image_label_all)
+    logger.debug("一个批次验证集的预测结果为：%r", classes_all)
+    logger.debug("一个批次验证集的Label为：%r", image_label_all)
 
     # pred和label格式如:[2,1,0,1,1,3]，0-3是对应的方向，0朝上，1朝右倒，2倒立，3朝左倒
     # accuracy: (tp + tn) / (p + n)
