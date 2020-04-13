@@ -7,6 +7,7 @@ import traceback
 
 import cv2
 import numpy as np
+import random
 from utils import preprocess_utils
 from utils import cut
 from utils.data_util import GeneratorEnqueuer
@@ -60,7 +61,10 @@ def load_validate_data(validate_file, batch_num):
 def _load_batch_image_labels(batch):
     image_list = []
     label_list = []
+    image_list_all = []
+    label_list_all = []
     for image_label_pair in batch:  # 遍历所有的图片文件
+        print("image_label_pair:",image_label_pair)
         try:
             image_file = image_label_pair[0]
             label = image_label_pair[1]
@@ -80,15 +84,32 @@ def _load_batch_image_labels(batch):
             image_list = preprocess_utils.get_patches(img)
             #logger.debug("加载了图片：%s",image_file)
             logger.debug("将图像分成%d个patches", len(image_list))
+            #logger.debug("将图像分成%d", image_list)
             list = [label]
             label_list = list * len(image_list) # 小图和标签数量一致
             #logger.debug("加载了图片标签：%s", label_list)
+            print(type(image_list))
+            image_list_all.extend(image_list)
+            label_list_all.extend(label_list)
+            #logger.debug("加载了图片标签：%s", label_list_all)
+            #logger.debug("加载了图片：%s", image_list_all)
 
         except BaseException as e:
             traceback.format_exc()
             logger.error("加载一个批次图片出现异常：", str(e))
-    logger.debug("加载%d张图片作为一个批次到内存中", len(image_list))
-    return image_list, label_list
+
+    label_list_sample = random.sample(label_list_all, 32)
+
+    image_list_sample = []
+    for s in label_list_sample:
+        print(type(s))
+        i = image_list_all[label_list_all.index(s)]
+        image_list_sample.append(i)
+
+    logger.debug("加载%d张图片作为一个批次到内存中", len(image_list_sample))
+    logger.debug("加载了图片标签：%s", label_list_sample)
+    logger.debug("加载了图片：%s", image_list_sample)
+    return image_list_sample, label_list_sample
 
 def generator(label_file, batch_num):
     image_label_list = load_data(label_file)

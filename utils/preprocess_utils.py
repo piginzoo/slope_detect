@@ -39,18 +39,20 @@ def get_patches(img):
 
     # 随机取32个，之前按顺序来，并且只有16个，对比较大的图，如3000x4000这类的，就会值切到某个边缘，如果边缘没有单据图像就惨了
     # 所以，现在是随机取32个。改进后，效果好一些了。
+    patch_idxes = np.arange(0, len(candidate_patches))
     random.shuffle(candidate_patches)
 
     # 从随机里面只取32个出来，32 hardcode了
     # TODO 还需要做优化
     done_counter = 0
-    for candidate_patch in candidate_patches:
+    for patch_idx in patch_idxes:
         # 用MSER+NMS，找有多少个包含文字的框
+        candidate_patch = candidate_patches[patch_idx]
         boxCnt = getTextBoxCnt(candidate_patch)
         # print(hIdx, wIdx, boxCnt)
         # >5个才作为备选，用于检验歪斜
         if boxCnt >= 5:
-            candiIdx.append((hStart, wStart))
+            candiIdx.append(backupIdx[patch_idx])
             done_counter+=1
         if done_counter>=32: break
 
@@ -62,8 +64,7 @@ def get_patches(img):
         patch = img[hStart:(hStart + dim), wStart:(wStart + dim)]
         #因为后面有强制压缩成224 * 224和标准化，所以这里不需要标准化
         #patch = (patch - patch.mean()) / patch.std() # 做一下标准化
-        patches.append(np.array(patch))
-
+        patches.append(patch)
     #patches = np.stack(patches, axis=0)
     return patches
 
@@ -151,4 +152,3 @@ if __name__ == '__main__':
     print(img.shape)
     patches = get_patches(img)
     print(patches)
-
