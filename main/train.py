@@ -264,8 +264,8 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
         classes = np.argmax(counts)
         counts = np.bincount(image_label)
         image_label = np.argmax(counts)
-        logger.debug("预测结果为：%r",classes)
-        logger.debug("Label为：%r",image_label)
+        # logger.debug("预测结果为：%r",classes)
+        # logger.debug("Label为：%r",image_label)
 
         image_label_all.append(image_label)
         classes_all.append(classes)

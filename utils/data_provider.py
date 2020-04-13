@@ -101,7 +101,7 @@ def _load_batch_image_labels(batch):
 
             # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行训练
             image_list = preprocess_utils.get_patches(img)
-            logger.debug("将图像分成%d个patches", len(image_list))
+            #logger.debug("将图像分成%d个patches", len(image_list))
             list = [label]
             label_list = list * len(image_list) # 小图和标签数量一致
             image_list_all.extend(image_list)
@@ -122,7 +122,6 @@ def _load_batch_image_labels(batch):
         image_list_sample.append(i)
 
     logger.debug("加载%d张小图作为一个批次到内存中", len(image_list_sample))
-    #logger.debug("加载了图片：%s", image_list_sample)
     return image_list_sample, label_list_sample
 
 def generator(label_file, batch_num):
