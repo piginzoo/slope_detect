@@ -32,10 +32,7 @@ def load_data(label_file):
     # >data/train/22.png 0
     # >data/train/23.png 2
     for line in f:
-        #logger.debug("line=%s",line)
         filename, _, label = line[:-1].partition(' ')  # partition函数只读取第一次出现的标志，分为左右两个部分,[:-1]去掉回车
-        #logger.debug("filename=%s", filename)
-        #logger.debug("label=%s", label)
         if label is None or label.strip() == "":
             logger.warning("标签数据有问题，忽略：%s", line)
             continue
@@ -59,8 +56,6 @@ def load_validate_data(validate_file, batch_num):
 
 # 加载一个批次数量的图片和标签，数量为batch数
 def _load_batch_image_labels(batch):
-    # image_list = []
-    # label_list = []
     image_list_all = []
     label_list_all = []
     for image_label_pair in batch:  # 遍历所有的图片文件
@@ -72,7 +67,7 @@ def _load_batch_image_labels(batch):
                 continue
             img = cv2.imread(image_file)
 
-            #原来的代码，按比例做了缩放后，再进行剪切
+            # 原来的代码，按比例做了缩放后，再进行剪切
             # img = cut.zoom(img)
             # image_list.append(img)
             # logger.debug("加载了图片：%s", image_file)
@@ -81,17 +76,11 @@ def _load_batch_image_labels(batch):
 
             # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行训练
             image_list = preprocess_utils.get_patches(img)
-            #logger.debug("加载了图片：%s",image_file)
             logger.debug("将图像分成%d个patches", len(image_list))
-            #logger.debug("将图像分成%d", image_list)
             list = [label]
             label_list = list * len(image_list) # 小图和标签数量一致
-            #logger.debug("加载了图片标签：%s", label_list)
-            print(type(image_list))
             image_list_all.extend(image_list)
             label_list_all.extend(label_list)
-            #logger.debug("加载了图片标签：%s", label_list_all)
-            #logger.debug("加载了图片：%s", image_list_all)
 
         except BaseException as e:
             traceback.format_exc()
@@ -100,10 +89,10 @@ def _load_batch_image_labels(batch):
     #logger.debug("加载一个批次图片标签：%s", label_list_all)
     logger.debug("加载一个批次图片,切出小图[%s]张", len(image_list_all))
 
-    label_list_sample = random.sample(label_list_all, 30)
-
+    label_list_sample = random.sample(label_list_all, 30) # 随机抽取30个标签
     image_list_sample = []
     for s in label_list_sample:
+        # 抽取对应标签的图片
         i = image_list_all[label_list_all.index(s)]
         image_list_sample.append(i)
 
