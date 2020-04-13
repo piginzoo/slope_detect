@@ -59,7 +59,7 @@ def val_load_batch_image_labels(batch):
     for image_label_pair in batch:  # 遍历所有的图片文件
         try:
             image_file = image_label_pair[0]
-            label_list = image_label_pair[1]
+            label = image_label_pair[1]
             if not os.path.exists(image_file):
                 logger.warning("样本图片%s不存在", image_file)
                 continue
@@ -68,6 +68,8 @@ def val_load_batch_image_labels(batch):
             # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行训练
             image_list = preprocess_utils.get_patches(img)
             logger.debug("将图像分成%d个patches", len(image_list))
+            list = [label]
+            label_list = list * len(image_list)  # 小图和标签数量一致
 
         except BaseException as e:
             traceback.format_exc()

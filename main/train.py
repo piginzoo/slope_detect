@@ -259,7 +259,7 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
         })  # data[3]是图像的路径，传入sess是为了调试画图用
 
         classes = np.bincount(classes)
-        #image_label = np.bincount(image_label)
+        image_label = np.bincount(image_label)
         logger.debug("预测结果为：%r",classes)
         logger.debug("Label为：%r",image_label)
 
