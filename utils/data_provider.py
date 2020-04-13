@@ -49,8 +49,31 @@ def load_validate_data(validate_file, batch_num):
     logger.info("加载验证validate数据：%s，加载%d张", validate_file, batch_num)
     image_label_list = load_data(validate_file)
     val_image_names = random.sample(image_label_list, batch_num)
-    image_list, label_list = _load_batch_image_labels(val_image_names)
+    image_list, label_list = val_load_batch_image_labels(val_image_names)
     # return np.array(image_list), label_list
+    return image_list, label_list
+
+
+# 加载一个批次数量的图片和标签，数量为batch数
+def val_load_batch_image_labels(batch):
+    for image_label_pair in batch:  # 遍历所有的图片文件
+        try:
+            image_file = image_label_pair[0]
+            label_list = image_label_pair[1]
+            if not os.path.exists(image_file):
+                logger.warning("样本图片%s不存在", image_file)
+                continue
+            img = cv2.imread(image_file)
+
+            # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行训练
+            image_list = preprocess_utils.get_patches(img)
+            logger.debug("将图像分成%d个patches", len(image_list))
+
+        except BaseException as e:
+            traceback.format_exc()
+            logger.error("加载一个批次图片出现异常：", str(e))
+
+    logger.debug("加载一个批次图片,切出小图[%s]张", len(image_list))
     return image_list, label_list
 
 
