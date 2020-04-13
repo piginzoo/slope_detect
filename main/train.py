@@ -249,6 +249,8 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
     precision = 0
     recall = 0
     f1 = 0
+    image_label_all = []
+    classes_all = []
     for step in range(FLAGS.validate_times):
         image_list, image_label = data_provider.load_validate_data(FLAGS.validate_label,FLAGS.validate_batch)
         logger.debug("加载了验证集%d张",len(image_list))
@@ -265,19 +267,24 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
         logger.debug("预测结果为：%r",classes)
         logger.debug("Label为：%r",image_label)
 
+        image_label_all.append(image_label)
+        classes_all.append(classes)
+        logger.debug("一个批次验证集的预测结果为：%r", classes_all)
+        logger.debug("一个批次验证集的Label为：%r", image_label_all)
+
         # pred和label格式如:[2,1,0,1,1,3]，0-3是对应的方向，0朝上，1朝右倒，2倒立，3朝左倒
         # accuracy: (tp + tn) / (p + n)
-        accuracy = accuracy + accuracy_score(image_label, classes)
+        accuracy = accuracy + accuracy_score(image_label_all, classes_all)
         # precision tp / (tp + fp)
-        precision = precision + precision_score(image_label, classes,labels=[0,1,2,3],average='micro')
+        precision = precision + precision_score(image_label_all, classes_all,labels=[0,1,2,3],average='micro')
         # recall: tp / (tp + fn)
-        recall = recall + recall_score(image_label, classes,labels=[0,1,2,3],average='micro')
+        recall = recall + recall_score(image_label_all, classes_all,labels=[0,1,2,3],average='micro')
         # f1: 2 tp / (2 tp + fp + fn)
-        f1 = f1 + f1_score(image_label, classes,labels=[0,1,2,3],average='micro')
-    accuracy = accuracy/FLAGS.validate_times
-    precision = precision/FLAGS.validate_times
-    recall = recall/FLAGS.validate_times
-    f1 = f1/FLAGS.validate_times
+        f1 = f1 + f1_score(image_label_all, classes_all,labels=[0,1,2,3],average='micro')
+    # accuracy = accuracy/FLAGS.validate_times
+    # precision = precision/FLAGS.validate_times
+    # recall = recall/FLAGS.validate_times
+    # f1 = f1/FLAGS.validate_times
 
     return accuracy,precision,recall,f1
 
