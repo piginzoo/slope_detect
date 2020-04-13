@@ -128,7 +128,7 @@ def pred(sess,classes,input_images,image_list):#,input_image,input_im_info,bbox_
 
 if __name__ == '__main__':
     init_logger()
-    init_params(model_name="ctpn-2020-04-07-18-02-28-801.ckpt")
+    init_params(model_name="ctpn-2020-04-13-15-35-26-1001.ckpt")
     if not os.path.exists(FLAGS.pred_dir):
         logger.error("要识别的图片的目录[%s]不存在",FLAGS.pred_dir)
         exit()
