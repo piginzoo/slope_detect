@@ -59,12 +59,11 @@ def load_validate_data(validate_file, batch_num):
 
 # 加载一个批次数量的图片和标签，数量为batch数
 def _load_batch_image_labels(batch):
-    image_list = []
-    label_list = []
+    # image_list = []
+    # label_list = []
     image_list_all = []
     label_list_all = []
     for image_label_pair in batch:  # 遍历所有的图片文件
-        print("image_label_pair:",image_label_pair)
         try:
             image_file = image_label_pair[0]
             label = image_label_pair[1]
@@ -98,17 +97,18 @@ def _load_batch_image_labels(batch):
             traceback.format_exc()
             logger.error("加载一个批次图片出现异常：", str(e))
 
-    label_list_sample = random.sample(label_list_all, 32)
+    #logger.debug("加载一个批次图片标签：%s", label_list_all)
+    logger.debug("加载一个批次图片,切出小图[%s]张", len(image_list_all))
+
+    label_list_sample = random.sample(label_list_all, 30)
 
     image_list_sample = []
     for s in label_list_sample:
-        print(type(s))
         i = image_list_all[label_list_all.index(s)]
         image_list_sample.append(i)
 
-    logger.debug("加载%d张图片作为一个批次到内存中", len(image_list_sample))
-    logger.debug("加载了图片标签：%s", label_list_sample)
-    logger.debug("加载了图片：%s", image_list_sample)
+    logger.debug("加载%d张小图作为一个批次到内存中", len(image_list_sample))
+    #logger.debug("加载了图片：%s", image_list_sample)
     return image_list_sample, label_list_sample
 
 def generator(label_file, batch_num):
@@ -158,6 +158,6 @@ if __name__ == '__main__':
     init_logger()
     # gen = get_batch(num_workers=1,batch_num=10,label_file="data/train.txt")
     # while True:
-    gen = generator(label_file="data/train.txt",batch_num=2)
+    gen = generator(label_file="data/train.txt",batch_num=3)
     image, bbox = next(gen)
     print('done')
