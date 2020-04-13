@@ -115,6 +115,7 @@ def main(argv=None):
     v_f1 = tf.Variable(0.001, trainable=False)
     tf.summary.scalar("Recall",v_recall)
     tf.summary.scalar("Precision",v_precision)
+    tf.summary.scalar("Accuracy", v_accuracy)
     tf.summary.scalar("F1",v_f1)
     summary_op = tf.summary.merge_all()
     logger.info("summary定义完毕")
