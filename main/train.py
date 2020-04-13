@@ -137,7 +137,8 @@ def main(argv=None):
                                                              slim.get_trainable_variables(),
                                                              ignore_missing_vars=True)
     # 早停用的变量
-    best_f1 = 0
+    #best_f1 = 0
+    best_accuracy = 0
     early_stop_counter = 0
 
     config = tf.ConfigProto()
@@ -182,20 +183,20 @@ def main(argv=None):
                 # data[4]是大框的坐标，是个数组，8个值
                 accuracy_value,precision_value,recall_value,f1_value = validate(sess,cls_preb,ph_input_image,ph_label)
 
-                if f1_value>best_f1:
-                    logger.info("新F1值[%f]大于过去最好的F1值[%f]，早停计数器重置",f1_value,best_f1)
-                    best_f1 = f1_value
+                if accuracy_value>best_accuracy:
+                    logger.info("新accuracy值[%f]大于过去最好的accuracy值[%f]，早停计数器重置",accuracy_value,best_accuracy)
+                    best_accuracy = accuracy_value
                     early_stop_counter = 0
                     # 每次效果好的话，就保存一个模型
                     filename = ('ctpn-{:s}-{:d}'.format(train_start_time,step + 1) + '.ckpt')
                     filename = os.path.join(FLAGS.model, filename)
                     saver.save(sess, filename)
-                    logger.info("在第%d步，保存了最好的模型文件：%s，F1：%f",step,filename,best_f1)
+                    logger.info("在第%d步，保存了最好的模型文件：%s，Faccuracy：%f",step,filename,best_accuracy)
                 else:
-                    logger.info("新F1值[%f]小于过去最好的F1值[%f]，早停计数器+1", f1_value, best_f1)
+                    logger.info("新accuracy值[%f]小于过去最好的accuracy值[%f]，早停计数器+1", accuracy_value, best_accuracy)
                     early_stop_counter+= 1
 
-                # 更新F1,Recall和Precision
+                # 更新accuracy,Recall和Precision
                 sess.run([tf.assign(v_f1,       f1_value),
                           tf.assign(v_recall,   recall_value),
                           tf.assign(v_precision,precision_value),
