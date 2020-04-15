@@ -1,15 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import cv2
-import numpy as np
-
 '''
     这个代码用来帮我们计算三个旋转模型的正确率比较：
     - 老模型（大图）--2019-05-07
     - 赵毅模型
-    - 新模型（切分小图）--2020-04-07
+    - 新模型（切图）--2020-04-15
 '''
 
 def read_label(path):
@@ -74,7 +70,6 @@ def calculate_accurate(merge_path):
     print("赵毅模型的正确率accuracy:", k / 500)
 
 
-
 if __name__ == '__main__':
     validate_path = "data/pred/validate.txt"
     old_path = "data/pred/pred_20190507.txt"
@@ -88,3 +83,46 @@ if __name__ == '__main__':
 
     # 计算正确率
     calculate_accurate(merge_path)
+
+
+
+'''
+    统计样本中各个类别的个数 
+'''
+# def counts(path):
+#     i = 0
+#     j = 0
+#     k = 0
+#     n = 0
+#     with open(path, "r", encoding='utf-8') as f:
+#         for line in f.readlines():
+#             name, label = line.split(" ")
+#             label = label.replace("\n","")
+#             if label == "0":
+#                 i +=1
+#             if label == "1":
+#                 j +=1
+#             if label == "2":
+#                 k +=1
+#             if label == "3":
+#                 n +=1
+#     return i,j,k,n
+#
+# def main(train_path,validate_path):
+#     i, j, k, n = counts(train_path)
+#     print("-------训练集每类个数统计-------")
+#     print("0类个数：", i)
+#     print("1类个数：", j)
+#     print("2类个数：", k)
+#     print("3类个数：", n)
+#     i, j, k, n = counts(validate_path)
+#     print("-------验证集每类个数统计-------")
+#     print("0类个数：", i)
+#     print("1类个数：", j)
+#     print("2类个数：", k)
+#     print("3类个数：", n)
+#
+# if __name__ == '__main__':
+#     train_path = "/Users/yanmeima/Desktop/rotate/train.txt"
+#     validate_path = "/Users/yanmeima/Desktop/rotate/validate.txt"
+#     main(train_path,validate_path)

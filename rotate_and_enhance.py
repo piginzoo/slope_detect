@@ -4,6 +4,7 @@
 import os
 import cv2
 import numpy as np
+import math
 from PIL import Image
 
 # POSSIBILITY_SPECIAL_1 = 0.1
@@ -13,6 +14,27 @@ from PIL import Image
 # # 随机接受概率
 # def _random_accept(accept_possibility):
 #     return np.random.choice([True,False], p = [accept_possibility,1 - accept_possibility])
+
+def rotate(image, angle, scale=1.0):
+    angle = -angle
+    (h, w) = image.shape[:2]  # 2
+    # if center is None: #3
+    center = (w // 2, h // 2)  # 4
+    M = cv2.getRotationMatrix2D(center, angle, scale)  # 5
+
+    # 防止旋转图像丢失
+    sin = math.fabs(math.sin(math.radians(angle)))
+    cos = math.fabs(math.cos(math.radians(angle)))
+    h_new = int(w * sin + h * cos)
+    w_new = int(h * sin + w * cos)
+    M[0, 2] += (w_new - w) / 2
+    M[1, 2] += (h_new - h) / 2
+    # 旋转后边角填充
+    # rotated = cv2.warpAffine(image, M, (w_new, h_new), borderMode=cv2.BORDER_REPLICATE)
+    # 白背景填充
+    rotated = cv2.warpAffine(image, M, (w_new, h_new), borderValue=(254, 254, 254))
+    return rotated
+
 
 def random_rotate(lines):
     # if not _random_accept(0.2): return lines,s #不旋转
@@ -24,10 +46,24 @@ def random_rotate(lines):
         label = label.replace("\n","")
 
         if label == "0":
-            img = Image.open(file)
-            line_new_1 = rotate_270(file,img)
-            line_new_2 = rotate_180(file,img)
-            line_new_3 = rotate_90(file,img)
+            img = cv2.imread(file)
+            path, name = os.path.splitext(file)
+
+            rotated_1 = rotate(img, 90, scale=1.0)
+            cv2.imwrite(os.path.join(path + "_" + "1" + ".jpg"),rotated_1)
+            label = "1"
+            line_new_1 = path + "_" + "1" + ".jpg" + " " + label
+
+            rotated_2 = rotate(img, 180, scale=1.0)
+            cv2.imwrite(os.path.join(path + "_" + "2" + ".jpg"), rotated_2)
+            label = "2"
+            line_new_2 = path + "_" + "2" + ".jpg" + " " + label
+
+            rotated_3 = rotate(img, 270, scale=1.0)
+            cv2.imwrite(os.path.join(path + "_" + "3" + ".jpg"), rotated_3)
+            label = "3"
+            line_new_3 = path + "_" + "3" + ".jpg" + " " + label
+
             lines_new.append(line_new_1)
             lines_new.append(line_new_2)
             lines_new.append(line_new_3)
@@ -42,36 +78,7 @@ def random_rotate(lines):
     return lines_new
 
 
-# 指定逆时针旋转的角度
-def rotate_270(file,img):
-    #img = Image.open(file)
-    img_rotate = img.rotate(270)
-    path, name = os.path.splitext(file)
-    img_rotate.save(os.path.join(path + "_" + "1" + ".jpg"))
-    label = "1"
-    line_new = path + "_" + "1" + ".jpg" + " " + label
-    return line_new
-
-def rotate_180(file,img):
-    #img = Image.open(file)
-    img_rotate = img.rotate(180)
-    path, name = os.path.splitext(file)
-    img_rotate.save(os.path.join(path + "_" + "2" + ".jpg"))
-    label = "2"
-    line_new = path + "_" + "2" + ".jpg" + " " + label
-    return line_new
-
-def rotate_90(file,img):
-    #img = Image.open(file)
-    img_rotate = img.rotate(90)
-    path, name = os.path.splitext(file)
-    img_rotate.save(os.path.join(path + "_" + "3" + ".jpg"))
-    label = "3"
-    line_new = path + "_" + "3" + ".jpg" + " " + label
-    return line_new
-
 def gray(file,label,image):
-    #image = cv2.imread(file)
     image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     path, name = os.path.splitext(file)
     cv2.imwrite(os.path.join(path + "_" + "gray" + ".jpg"),image_gray)
@@ -79,7 +86,6 @@ def gray(file,label,image):
     return line_new
 
 def noise(file,label,img):
-    #img = cv2.imread(file)
     for i in range(20): #添加点噪声
         temp_x = np.random.randint(0,img.shape[0])
         temp_y = np.random.randint(0,img.shape[1])
@@ -95,6 +101,7 @@ def main(txt):
     lines_enhance = []
     with open(txt, "r", encoding='utf-8') as f:
         for line in f.readlines():
+            line = line.replace("\n", "")
             lines.append(line)
 
     lines_new = random_rotate(lines) # 旋转

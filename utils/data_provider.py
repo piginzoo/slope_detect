@@ -44,12 +44,6 @@ def load_data(label_file):
     logger.info("最终样本标签数量[%d],样本图像数量[%d]", len(labels), len(filenames))
     return list(zip(filenames, labels))
 
-# 图像做旋转
-def rotate(image):
-    rows, cols, channel = image.shape
-    M = cv2.getRotationMatrix2D((cols/2, rows/2), 2, 1)
-    img_rotated = cv2.warpAffine(image, M, (cols, rows))
-    return img_rotated
 
 # 按照FLAGS.validate_num 随机从目录中产生批量的数据，用于做验证集
 def load_validate_data(validate_file, batch_num):
@@ -60,7 +54,7 @@ def load_validate_data(validate_file, batch_num):
     # return np.array(image_list), label_list
     return image_list, label_list
 
-
+# 因为验证集一张张切图预测标签后取众数，有的切图<30张，所以这个函数跟训练集的分开写了
 # 加载一个批次数量的图片和标签，数量为batch数
 def val_load_batch_image_labels(batch):
     for image_label_pair in batch:  # 遍历所有的图片文件
@@ -91,7 +85,6 @@ def _load_batch_image_labels(batch):
     image_list_all = []
     label_list_all = []
     for image_label_pair in batch:  # 遍历所有的图片文件
-        #print("image_label_pair：", image_label_pair)
         try:
             image_file = image_label_pair[0]
             label = image_label_pair[1]
