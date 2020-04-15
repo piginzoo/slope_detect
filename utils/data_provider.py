@@ -5,6 +5,7 @@ import random
 import time
 import traceback
 
+from PIL import Image
 import cv2
 import numpy as np
 import random
@@ -43,6 +44,12 @@ def load_data(label_file):
     logger.info("最终样本标签数量[%d],样本图像数量[%d]", len(labels), len(filenames))
     return list(zip(filenames, labels))
 
+# 图像做旋转
+def rotate(image):
+    rows, cols, channel = image.shape
+    M = cv2.getRotationMatrix2D((cols/2, rows/2), 2, 1)
+    img_rotated = cv2.warpAffine(image, M, (cols, rows))
+    return img_rotated
 
 # 按照FLAGS.validate_num 随机从目录中产生批量的数据，用于做验证集
 def load_validate_data(validate_file, batch_num):
@@ -84,6 +91,7 @@ def _load_batch_image_labels(batch):
     image_list_all = []
     label_list_all = []
     for image_label_pair in batch:  # 遍历所有的图片文件
+        #print("image_label_pair：", image_label_pair)
         try:
             image_file = image_label_pair[0]
             label = image_label_pair[1]
@@ -91,13 +99,6 @@ def _load_batch_image_labels(batch):
                 logger.warning("样本图片%s不存在", image_file)
                 continue
             img = cv2.imread(image_file)
-
-            # 原来的代码，按比例做了缩放后，再进行剪切
-            # img = cut.zoom(img)
-            # image_list.append(img)
-            # logger.debug("加载了图片：%s", image_file)
-            # label_list.append(label)
-            # logger.debug("加载了图片标签：%s", label_list)
 
             # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行训练
             image_list = preprocess_utils.get_patches(img)
