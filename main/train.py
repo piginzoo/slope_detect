@@ -94,6 +94,7 @@ def main(argv=None):
     global_step = tf.get_variable('global_step', [], initializer=tf.constant_initializer(0), trainable=False)
     learning_rate = tf.Variable(FLAGS.learning_rate, trainable=False)
 
+    tf.summary.image('input', ph_input_image, 48)
     tf.summary.scalar('learning_rate', learning_rate)
     adam_opt = tf.train.AdamOptimizer(learning_rate) # 默认是learning_rate是0.001，而且后期会不断的根据梯度调整，一般不用设这个数，所以我索性去掉了
 
@@ -119,7 +120,7 @@ def main(argv=None):
     tf.summary.scalar("Accuracy", v_accuracy)
     #tf.summary.scalar("F1",v_f1)
 
-    tf.summary.image('input', ph_input_image, 48)
+
 
     # with tf.name_scope('input_reshape'):
     #     image_shaped_input = tf.reshape(ph_input_image, [-1, 28, 28, 1])
@@ -177,19 +178,6 @@ def main(argv=None):
 
             image_list,label_list = next(data_generator) # next(<迭代器>）来返回下一个结果
             logger.debug("成功加载图片%d张，标签%d个：",len(image_list),len(label_list))
-
-
-
-            # sess = tf.InteractiveSession()
-            # with tf.name_scope('input'):
-            #     x = tf.placeholder(tf.float32, [None], name='x-input')
-            #     y_ = tf.placeholder(tf.float32, [None], name='y-input')
-            # with tf.name_scope('input_reshape'):
-            #     image_shaped_input = tf.reshape(x, [-1, 28, 28, 1])
-            #     tf.summary.image('input', image_shaped_input, 48)
-
-
-
 
             image_list = data_util.prepare4vgg(image_list)
             logger.debug("开始第%d步训练，运行sess.run,数据shape：%r",step,image_list.shape)
