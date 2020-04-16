@@ -130,7 +130,7 @@ def _load_batch_image_labels(batch):
     #logger.debug("加载一个批次图片标签：%s", label_list_all)
     logger.debug("加载一个批次图片,切出小图[%s]张", len(image_list_all))
 
-    label_list_sample = random.sample(label_list_all, 32) # 随机抽取32个标签
+    label_list_sample = random.sample(label_list_all, 16) # 随机抽取32个标签
     #logger.debug("随机抽取32个小图的标签:%s", label_list_sample)
 
     image_list_sample = []
