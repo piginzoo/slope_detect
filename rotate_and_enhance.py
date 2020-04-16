@@ -69,7 +69,7 @@ def random_rotate(lines):
             lines_new.append(line_new_3)
             #print("lines_new:",lines_new)
             i += 1
-            if i > 1200:
+            if i > 165:
                 break
         else:
             continue
@@ -78,22 +78,22 @@ def random_rotate(lines):
     return lines_new
 
 
-def gray(file,label,image):
-    image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    path, name = os.path.splitext(file)
-    cv2.imwrite(os.path.join(path + "_" + "gray" + ".jpg"),image_gray)
-    line_new = path + "_" + "gray" + ".jpg"+ " " + label
-    return line_new
-
-def noise(file,label,img):
-    for i in range(20): #添加点噪声
-        temp_x = np.random.randint(0,img.shape[0])
-        temp_y = np.random.randint(0,img.shape[1])
-        img[temp_x][temp_y] = np.random.randint(255)
-    path, name = os.path.splitext(file)
-    cv2.imwrite(os.path.join(path + "_" + "noise" + ".jpg"), img)
-    line_new = path + "_" + "noise" + ".jpg" + " " + label
-    return line_new
+# def gray(file,label,image):
+#     image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+#     path, name = os.path.splitext(file)
+#     cv2.imwrite(os.path.join(path + "_" + "gray" + ".jpg"),image_gray)
+#     line_new = path + "_" + "gray" + ".jpg"+ " " + label
+#     return line_new
+#
+# def noise(file,label,img):
+#     for i in range(20): #添加点噪声
+#         temp_x = np.random.randint(0,img.shape[0])
+#         temp_y = np.random.randint(0,img.shape[1])
+#         img[temp_x][temp_y] = np.random.randint(255)
+#     path, name = os.path.splitext(file)
+#     cv2.imwrite(os.path.join(path + "_" + "noise" + ".jpg"), img)
+#     line_new = path + "_" + "noise" + ".jpg" + " " + label
+#     return line_new
 
 
 def main(txt):
@@ -106,25 +106,26 @@ def main(txt):
 
     lines_new = random_rotate(lines) # 旋转
 
-    # 增强
-    for line in lines_new:
-        file, label = line.split(" ")
-        label = label.replace("\n", "")
-        image = cv2.imread(file)
-        line_gray = gray(file, label,image)
-        line_noise = noise(file, label,image)
-        lines_enhance.append(line_gray)
-        lines_enhance.append(line_noise)
-    lines_all = lines + lines_new + lines_enhance
+    # # 增强
+    # for line in lines_new:
+    #     file, label = line.split(" ")
+    #     label = label.replace("\n", "")
+    #     image = cv2.imread(file)
+    #     line_gray = gray(file, label,image)
+    #     line_noise = noise(file, label,image)
+    #     lines_enhance.append(line_gray)
+    #     lines_enhance.append(line_noise)
+    # lines_all = lines + lines_new + lines_enhance
+    lines_all = lines + lines_new
 
-    with open("data/train_new.txt", "w", encoding='utf-8') as f1:
+    with open("data/validate_new.txt", "w", encoding='utf-8') as f1:
         for line in lines_all:
            f1.write(str(line) + "\n")
 
 
 if __name__ == '__main__':
     #img_dir = "data/train"
-    txt = "data/train.txt"
+    txt = "data/validate.txt"
     main(txt)
 
 
