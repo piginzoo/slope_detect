@@ -143,8 +143,6 @@ def _load_batch_image_labels(batch):
 
     # 旋转做样本平衡
     image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
-    #logger.debug("统一旋转正后加载小图作为一个批次到内存中:%s", label_list_rotate)
-    #logger.debug("统一旋转正后加载小图作为一个批次到内存中:%s", len(label_list_rotate))
     image_list_all, label_list_all = rotate_and_balance(image_list_rotate, label_list_rotate)
     #logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", label_list_all)
     logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", len(label_list_all))
@@ -174,7 +172,6 @@ def rotate_to_0(image_list_sample,label_list_sample):
     return image_list_rotate, label_list_rotate
 
 def rotate_and_balance(image_list_rotate, label_list_rotate):
-    #image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
     image_list_all = []
     label_list_all = []
     for img in image_list_rotate:

@@ -43,7 +43,7 @@ echo "生产模式:GPU1"
 nohup python -m main.train \
     --name=rotate_detect \
     --pretrained_model_path=data/vgg_16.ckpt \
-    --num_readers=6 \
+    --num_readers=8 \
     --max_steps=100000 \
     --decay_steps=1000 \
     --evaluate_steps=100 \
