@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import random
+import os
 
 def get_patches(img):
     dim = 256
@@ -40,6 +41,7 @@ def get_patches(img):
     # 随机取32个，之前按顺序来，并且只有16个，对比较大的图，如3000x4000这类的，就会值切到某个边缘，如果边缘没有单据图像就惨了
     # 所以，现在是随机取32个。改进后，效果好一些了。
     patch_idxes = np.arange(0, len(candidate_patches))
+    #print("patch_idxes:",patch_idxes)
     random.shuffle(candidate_patches)
 
     # 从随机里面只取32个出来，32 hardcode了
@@ -49,7 +51,7 @@ def get_patches(img):
         # 用MSER+NMS，找有多少个包含文字的框
         candidate_patch = candidate_patches[patch_idx]
         boxCnt = getTextBoxCnt(candidate_patch)
-        # print(hIdx, wIdx, boxCnt)
+        #print(hIdx, wIdx, boxCnt)
         # >5个才作为备选，用于检验歪斜
         if boxCnt >= 5:
             candiIdx.append(backupIdx[patch_idx])
@@ -149,6 +151,11 @@ def nms(boxes, overlapThresh):
 
 if __name__ == '__main__':
     img = cv2.imread("data/train/ocr_o_0az54M911570682172646_aMr76rg21570682183202_5993909610730071053.JPG")
-    print(img.shape)
+    #print(img.shape)
     patches = get_patches(img)
-    print(patches)
+    i = 0
+    for p in patches:
+        cv2.imwrite(os.path.join("data/patches/22/" + str(i) + ".jpg"),p)
+        i +=1
+
+    #print(patches)
