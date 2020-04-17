@@ -129,7 +129,7 @@ def _load_batch_image_labels(batch):
             traceback.format_exc()
             logger.error("加载一个批次图片出现异常：", str(e))
 
-    logger.debug("加载一个批次图片标签：%s", label_list_all)
+    #logger.debug("加载一个批次图片标签：%s", label_list_all)
     logger.debug("加载一个批次图片,切出小图[%s]张", len(image_list_all))
 
     image_label_list = list(zip(image_list_all, label_list_all))
@@ -156,7 +156,7 @@ def _load_batch_image_labels(batch):
     # 旋转做样本平衡
     image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
     image_list_all, label_list_all = rotate_and_balance(image_list_rotate, label_list_rotate)
-    logger.debug("旋转并做样本均衡后，加载[%s]张小图作为一个批次到内存中，对应标签:%s", len(label_list_all), label_list_all)
+    logger.debug("旋转并做样本均衡后，加载[%s]张小图作为一个批次到内存中", len(label_list_all))
     return image_list_all, label_list_all
 
 
@@ -172,7 +172,6 @@ def rotate_to_0(image_list_sample,label_list_sample):
         index0 = np.where(arr == 0)
         for l in index0[0]:
             img = image_list_sample[l]
-            img = rotate(img, -90, scale=1.0)
             l = 0
             label_list_rotate.append(l)
             image_list_rotate.append(img)
