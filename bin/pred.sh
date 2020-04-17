@@ -10,9 +10,9 @@ fi
 echo "开始检测图片的倾斜....."
 
 python main/pred.py \
-    --gpu=0 \
+    --gpu=1 \
     --image_name=$1 \
     --pred_dir=data/validate \
     --debug=True \
     --model_dir=model \
-    --model_file=ctpn-2020-04-13-18-26-49-3801.ckpt
+    --model_file=ctpn-2020-04-17-16-41-36-2801.ckpt
