@@ -15,4 +15,4 @@ python main/pred.py \
     --pred_dir=data/validate \
     --debug=True \
     --model_dir=model \
-    --model_file=ctpn-2020-04-17-16-41-36-2801.ckpt
+    --model_file=ctpn-2019-05-07-14-19-35-201.ckpt
