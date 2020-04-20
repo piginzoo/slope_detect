@@ -87,6 +87,7 @@ def restore_model(model_path, input_dict, output_dict):
             for input_k in input_dict:
                 print("input_k:",input_k)
                 in_tensor_name = signature['serving_default'].inputs[input_k].name
+                print("in_tensor_name:",in_tensor_name)
                 input_param = sess.graph.get_tensor_by_name(in_tensor_name)
                 params[input_dict[input_k]] = input_param
         if output_dict:
