@@ -137,7 +137,7 @@ def main(params):
             except:
                 print("Error reading image {}!".format(image_name))
                 continue
-        #tf.reset_default_graph()  # 重置图表
+        tf.reset_default_graph()  # 重置图表
 
         sess = params["session"]
         classes = pred(sess, classes, np.array(image_list))
@@ -157,8 +157,8 @@ def main(params):
 
 def test1():
     param_dict = {
-        'inputs': {'input_data': 'data/pred/validate'},
-        'output': {'output': 'data/pred/seg_maps_pred'}
+        'inputs': {'input_data': 'data/validate'},
+        'output': {'output': 'data/seg_maps_pred'}
     }
     model_path = "model/pb"
     params = restore_model_by_dir(model_path, param_dict['inputs'], param_dict['output'])
