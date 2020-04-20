@@ -9,22 +9,19 @@
 import os
 import tensorflow as tf
 
+def restore_model_by_dir(model_path, input_map, output_map):
+    """
+        从目录下寻找最新的模型加载
+    :param model_path:
+    :param input_map:
+    :param output_map:
+    :return:
+    """
+    f_list = os.listdir(model_path)
+    dirs = [i for i in f_list if os.path.isdir(os.path.join(model_path, i))]
+    max_dir = max(dirs)
+    return restore_model(os.path.join(model_path, max_dir), input_map, output_map)
 
-# def restore_model_by_dir(model_path, input_map, output_map):
-#     """
-#         从目录下寻找最新的模型加载
-#     :param model_path:
-#     :param input_map:
-#     :param output_map:
-#     :return:
-#     """
-#     f_list = os.listdir(model_path)
-#     dirs = [i for i in f_list if os.path.isdir(os.path.join(model_path, i))]
-#     max_dir = max(dirs)
-#     return restore_model(os.path.join(model_path, max_dir), input_map, output_map)
-
-# tf.get_variable_scope().reuse_variables()
-# tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING], real_path)
 
 def restore_model(model_path, input_dict, output_dict):
     """
@@ -65,8 +62,8 @@ def test1():
         'inputs': {'input_data': 'data/pred/validate'},
         'output': {'output': 'data/pred/seg_maps_pred'}
     }
-    model_path = "model/pb/"
-    params = restore_model(model_path, param_dict['inputs'], param_dict['output'])
+    model_path = "model/pb"
+    params = restore_model_by_dir(model_path, param_dict['inputs'], param_dict['output'])
     print("asdas")
     return params
 
