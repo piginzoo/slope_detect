@@ -15,6 +15,10 @@ import logging
 from utils import data_util
 from utils import preprocess_utils
 
+'''
+    用赵毅训练的模型预测图片
+'''
+
 logger = logging.getLogger("pred")
 FLAGS = tf.app.flags.FLAGS
 CLASS_NAME = [0,90,180,270]
