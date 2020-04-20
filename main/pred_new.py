@@ -88,7 +88,7 @@ def main():
     image_name_list_all = get_images()
     lines = []
 
-    arr_split = np.array_split(image_name_list_all,10)
+    arr_split = np.array_split(image_name_list_all,2000)
     for image_name_list in arr_split:
         logger.info("批次处理：%r", len(image_name_list))
 
