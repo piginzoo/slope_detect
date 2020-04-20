@@ -19,7 +19,7 @@ from utils import preprocess_utils
     用赵毅训练的模型预测图片
 '''
 
-logger = logging.getLogger("pred")
+logger = logging.getLogger("Pred")
 FLAGS = tf.app.flags.FLAGS
 CLASS_NAME = [0,90,180,270]
 
@@ -83,7 +83,9 @@ def restore_model(model_path, input_dict, output_dict):
         meta_graph_def = tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING], model_path)
         signature = meta_graph_def.signature_def
         if input_dict:
+            print("input_dict:",input_dict)
             for input_k in input_dict:
+                print("input_k:",input_k)
                 in_tensor_name = signature['serving_default'].inputs[input_k].name
                 input_param = sess.graph.get_tensor_by_name(in_tensor_name)
                 params[input_dict[input_k]] = input_param
@@ -97,10 +99,9 @@ def restore_model(model_path, input_dict, output_dict):
     return params
 
 
-def pred(params, classes, input_images, image_list):
+def pred(sess, classes, input_images, image_list):
     logger.info("开始探测图片")
     start = time.time()
-    sess = params["session"]
     image_list = data_util.prepare4vgg(image_list)
     _classes = sess.run(classes, feed_dict={input_images: image_list})
     logger.info("探测图片完成，耗时: %f", (time.time() - start))

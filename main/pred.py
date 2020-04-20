@@ -9,9 +9,14 @@ import nets.model as model
 from utils import data_util
 import numpy as np
 
+'''
+    旋转模型预测
+'''
+
 logger = logging.getLogger("Train")
 FLAGS = tf.app.flags.FLAGS
 CLASS_NAME = [0,90,180,270]
+
 
 def init_params(model_dir='model',model_name=''):
     tf.app.flags.DEFINE_string('image_name','', '')         # 被预测的图片名字，为空就预测目录下所有的文件
@@ -36,7 +41,6 @@ def init_logger():
 
 
 def get_images():
-
     if FLAGS.image_name:
         image_path = os.path.join(FLAGS.pred_dir,FLAGS.image_name)
         logger.info("指定被检测图片：%s",image_path)
@@ -95,11 +99,11 @@ def main():
             logger.info("探测图片[%s]开始", image_name)
             try:
                 img = cv2.imread(image_name)
-                # print(img.shape)
+                print(img.shape)
                 # 好像网络用的就是OpenCV的BGR顺序，所以也不用转了
                 # img = img[:, :, ::-1]  # bgr是opencv通道默认顺序，转成标准的RGB方式
                 image_list.append(img)
-                #logger.debug("需要检测的图片[%s]",image_list)
+                logger.debug("需要检测的图片[%s]",image_list)
             except:
                 print("Error reading image {}!".format(image_name))
                 continue
@@ -128,7 +132,7 @@ def pred(sess,classes,input_images,image_list):#,input_image,input_im_info,bbox_
 
 if __name__ == '__main__':
     init_logger()
-    init_params(model_name="ctpn-2020-04-13-15-35-26-1001.ckpt")
+    init_params(model_name="ctpn-2019-05-07-14-19-35-201.ckpt")
     if not os.path.exists(FLAGS.pred_dir):
         logger.error("要识别的图片的目录[%s]不存在",FLAGS.pred_dir)
         exit()

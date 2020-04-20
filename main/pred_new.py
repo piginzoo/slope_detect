@@ -10,7 +10,12 @@ from utils import data_util
 import numpy as np
 from utils import preprocess_utils
 
-logger = logging.getLogger("Train")
+
+'''
+    用新训练出来的模型（大图切成小图）预测
+'''
+
+logger = logging.getLogger("Pred_new")
 FLAGS = tf.app.flags.FLAGS
 CLASS_NAME = [0,90,180,270]
 
@@ -96,15 +101,11 @@ def main():
             logger.info("探测图片[%s]开始", image_name)
             try:
                 img = cv2.imread(image_name)
-                #print(img.shape)
-                # 好像网络用的就是OpenCV的BGR顺序，所以也不用转了
-                # img = img[:, :, ::-1]  # bgr是opencv通道默认顺序，转成标准的RGB方式
 
-                # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行训练
+                # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行预测
                 image_list = preprocess_utils.get_patches(img)
                 logger.debug("将图像分成%d个patches", len(image_list))
-
-                logger.debug("需要检测的图片[%s]",image_list)
+                #logger.debug("需要检测的图片[%s]",image_list)
             except:
                 print("Error reading image {}!".format(image_name))
                 continue
@@ -112,18 +113,16 @@ def main():
         input_images, classes = init_model()
         sess = restore_session()
         classes = pred(sess, classes, input_images, np.array(image_list))
+        logger.debug("预测的标签:%s",classes)
 
+        # TODO:预测出来多个小图的标签，取众数作为大图的标签
         counts = np.bincount(classes)
         classes = np.argmax(counts)
+        logger.debug("预测的标签:%s", classes)
 
         logger.info("图片[%s]旋转角度为[%s]度", image_name, CLASS_NAME[classes])
         line = image_name + " " + str(CLASS_NAME[classes])
         lines.append(line)
-
-        # for i in range(len(classes)):
-        #     logger.info("图片[%s]旋转角度为[%s]度", image_name_list[i], CLASS_NAME[classes[i]])
-        #     line = image_name_list[i] + " " + str(CLASS_NAME[classes[i]])
-        #     lines.append(line)
 
     with open("data/pred.txt", "w", encoding='utf-8') as f:
         for line in lines:
@@ -133,11 +132,6 @@ def main():
 def pred(sess,classes,input_images,image_list):#,input_image,input_im_info,bbox_pred, cls_pred, cls_prob):
     logger.info("开始探测图片")
     start = time.time()
-
-
-
-
-
     image_list = data_util.prepare4vgg(image_list)
     _classes = sess.run(classes,feed_dict={input_images: image_list})
     logger.info("探测图片完成，耗时: %f", (time.time() - start))
