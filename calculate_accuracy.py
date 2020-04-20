@@ -42,11 +42,11 @@ def compare(test_files, test_labels, path):
 
 
 def calculate_accuracy(i,j,k):
-    print("-----------------统计预测正确的个数---------------")
+    print("--------统计2000张图片预测正确的个数--------")
     print("老模型预测正确的个数：", i)
     print("新模型预测正确的个数：", j)
     print("赵毅模型预测正确的个数：", k)
-    print("-----------------比较模型的正确率---------------")
+    print("-------------比较模型的正确率-------------")
     print("老模型的正确率accuracy:",   i / 2000)
     print("新模型的正确率accuracy:",   j / 2000)
     print("赵毅模型的正确率accuracy:", k / 2000)
