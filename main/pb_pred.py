@@ -20,11 +20,11 @@ FLAGS = tf.app.flags.FLAGS
 CLASS_NAME = [0,90,180,270]
 
 
-def init_params(model_dir='model',model_name=''):
+def init_params(model_path=''):
     tf.app.flags.DEFINE_string('image_name','', '')         # 被预测的图片名字，为空就预测目录下所有的文件
     tf.app.flags.DEFINE_string('pred_dir', 'data/validate', '') # 预测后的结果的输出目录
-    tf.app.flags.DEFINE_string('model_dir',model_dir, '')   # model的存放目录，会自动加载最新的那个模型
-    tf.app.flags.DEFINE_string('model_file',model_name, '') # 为了支持单独文件，如果为空，就预测pred_dir中的所有文件
+    tf.app.flags.DEFINE_string('model_path',model_path, '')   # model的存放目录，会自动加载最新的那个模型
+    #tf.app.flags.DEFINE_string('model_file',model_name, '') # 为了支持单独文件，如果为空，就预测pred_dir中的所有文件
     tf.app.flags.DEFINE_boolean('debug', False, '')
     # 这个是为了兼容
     # gunicorn -w 2 -k gevent web.api_server:app -b 0.0.0.0:8080
@@ -43,7 +43,6 @@ def init_logger():
 
 
 def get_images():
-
     if FLAGS.image_name:
         image_path = os.path.join(FLAGS.pred_dir,FLAGS.image_name)
         logger.info("指定被检测图片：%s",image_path)
@@ -59,19 +58,6 @@ def get_images():
                 break
     logger.debug('批量预测，找到需要检测的图片%d张',len(files))
     return files
-
-def restore_model_by_dir(model_path, input_map, output_map):
-    """
-        从目录下寻找最新的模型加载
-    :param model_path:
-    :param input_map:
-    :param output_map:
-    :return:
-    """
-    f_list = os.listdir(model_path)
-    dirs = [i for i in f_list if os.path.isdir(os.path.join(model_path, i))]
-    max_dir = max(dirs)
-    return restore_model(os.path.join(model_path, max_dir), input_map, output_map)
 
 
 def restore_model(model_path, input_dict, output_dict):
@@ -155,18 +141,37 @@ def main(params):
             f.write(str(line) + '\n')
 
 
-def test1():
+
+if __name__ == '__main__':
+    init_logger()
+    init_params(model_path="model/pb/100000/")
+
+    if not os.path.exists(FLAGS.pred_dir):
+        logger.error("要识别的图片的目录[%s]不存在",FLAGS.pred_dir)
+        exit()
+    if FLAGS.image_name and not os.path.exists(os.path.join(FLAGS.pred_dir,FLAGS.image_name)):
+        logger.error("要识别的图片[%s]不存在",os.path.join(FLAGS.pred_dir,FLAGS.image_name))
+        exit()
+    if not os.path.exists(FLAGS.model_path):
+        logger.error("模型目录[%s]不存在",FLAGS.model_path)
+        exit()
+    if not os.path.exists(os.path.join(FLAGS.model_path,'saved_model.pb')):
+        logger.error("模型文件[%s]不存在",os.path.join(FLAGS.model_path,'saved_model.pb'))
+        exit()
+    # 选择GPU
+    if FLAGS.gpu != "1" and FLAGS.gpu != "0":
+        logger.error("无法确定使用哪一个GPU，退出")
+        exit()
+    logger.info("使用GPU%s显卡进行训练", FLAGS.gpu)
+    os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
+
+
     param_dict = {
         'inputs': {'input_data': 'data/validate'},
         'output': {'output': 'data/seg_maps_pred'}
     }
-    model_path = "model/pb"
-    params = restore_model_by_dir(model_path, param_dict['inputs'], param_dict['output'])
-    print("asdas")
-    return params
+    #model_path = "model/pb/100000"
 
+    params = restore_model(FLAGS.model_path, param_dict['inputs'], param_dict['output'])
 
-
-if __name__ == '__main__':
-    p = test1()
-    main(p)
+    main(params)
