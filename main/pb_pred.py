@@ -172,8 +172,8 @@ if __name__ == '__main__':
 
 
     param_dict = {
-        'inputs': {'input_data': 'x'},
-        'output': {'output': 'predCls'}
+        'inputs': {'x':'input_data'},
+        'output': {'predCls':'output'}
     }
 
 
