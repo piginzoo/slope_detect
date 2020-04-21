@@ -5,6 +5,9 @@ import os
 import cv2
 import math
 
+'''
+    这个代码，是先把图片都旋转正，然后再统一旋转，保证样本均衡
+'''
 
 def rotate(image, angle, scale=1.0):
     angle = -angle
