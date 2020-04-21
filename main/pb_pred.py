@@ -84,9 +84,7 @@ def restore_model(model_path, input_dict, output_dict):
         signature = meta_graph_def.signature_def
         if input_dict:
             for input_k in input_dict:
-                #print("input_k:",input_k)
                 in_tensor_name = signature['serving_default'].inputs[input_k].name
-                #print("in_tensor_name:",in_tensor_name)
                 input_param = sess.graph.get_tensor_by_name(in_tensor_name)
                 params[input_dict[input_k]] = input_param
         if output_dict:
@@ -99,16 +97,16 @@ def restore_model(model_path, input_dict, output_dict):
     return params
 
 
-def pred(sess, classes, input_images, image_list):
+def pred(sess, output, input_x, image_list):
     logger.info("开始探测图片")
     start = time.time()
     image_list = data_util.prepare4vgg(image_list)
-    _classes = sess.run(classes, feed_dict={input_images: image_list})
+    _classes = sess.run(output, feed_dict={input_x: image_list})
     logger.info("探测图片完成，耗时: %f", (time.time() - start))
     return _classes
 
 
-def main(params):
+def main():
     image_name_list_all = get_images()
     lines = []
 
@@ -128,18 +126,33 @@ def main(params):
             except:
                 print("Error reading image {}!".format(image_name))
                 continue
-        tf.reset_default_graph()  # 重置图表
+        #tf.reset_default_graph()  # 重置图表
+        #sess = params["session"]
+        #print("开始预测")
 
-        sess = params["session"]
-        classes = pred(sess, classes, np.array(image_list))
+        with tf.Session() as sess:
+            # 从pb模型直接恢复
+            # sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
+            # init = tf.global_variables_initializer()
+            # sess.run(init)
+            meta_graph_def = tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING], FLAGS.model_path)
+            signature = meta_graph_def.signature_def
+            in_tensor_name = signature['serving_default'].inputs['x'].name
+            out_tensor_name = signature['serving_default'].outputs['predCls'].name
 
-        # TODO:预测出来多个小图的标签，取众数作为大图的标签
-        counts = np.bincount(classes)
-        classes = np.argmax(counts)
+            input_x = sess.graph.get_tensor_by_name(in_tensor_name)
+            output = sess.graph.get_tensor_by_name(out_tensor_name)
 
-        logger.info("图片[%s]旋转角度为[%s]度", image_name, CLASS_NAME[classes])
-        line = image_name + " " + str(CLASS_NAME[classes])
-        lines.append(line)
+
+            classes = pred(sess, output, input_x, image_list)
+
+            # TODO:预测出来多个小图的标签，取众数作为大图的标签
+            counts = np.bincount(classes)
+            classes = np.argmax(counts)
+
+            logger.info("图片[%s]旋转角度为[%s]度", image_name, CLASS_NAME[classes])
+            line = image_name + " " + str(CLASS_NAME[classes])
+            lines.append(line)
 
     with open("data/pred.txt", "w", encoding='utf-8') as f:
         for line in lines:
@@ -177,8 +190,6 @@ if __name__ == '__main__':
     }
 
 
-    #model_path = "model/pb/100000"
-
-    params = restore_model(FLAGS.model_path, param_dict['inputs'], param_dict['output'])
-
-    main(params)
+    #params = restore_model(FLAGS.model_path, param_dict['inputs'], param_dict['output'])
+    #main(params)
+    main()
