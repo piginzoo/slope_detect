@@ -83,11 +83,10 @@ def restore_model(model_path, input_dict, output_dict):
         meta_graph_def = tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING], model_path)
         signature = meta_graph_def.signature_def
         if input_dict:
-            print("input_dict:",input_dict)
             for input_k in input_dict:
-                print("input_k:",input_k)
+                #print("input_k:",input_k)
                 in_tensor_name = signature['serving_default'].inputs[input_k].name
-                print("in_tensor_name:",in_tensor_name)
+                #print("in_tensor_name:",in_tensor_name)
                 input_param = sess.graph.get_tensor_by_name(in_tensor_name)
                 params[input_dict[input_k]] = input_param
         if output_dict:
@@ -173,9 +172,11 @@ if __name__ == '__main__':
 
 
     param_dict = {
-        'inputs': {'input_data': 'data/validate'},
-        'output': {'output': 'data/seg_maps_pred'}
+        'inputs': {'input_data': 'x'},
+        'output': {'output': 'predCls'}
     }
+
+
     #model_path = "model/pb/100000"
 
     params = restore_model(FLAGS.model_path, param_dict['inputs'], param_dict['output'])
