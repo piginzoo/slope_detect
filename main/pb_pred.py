@@ -110,7 +110,7 @@ def main():
     image_name_list_all = get_images()
     lines = []
 
-    arr_split = np.array_split(image_name_list_all,10)
+    arr_split = np.array_split(image_name_list_all,2000)
     for image_name_list in arr_split:
         logger.info("批次处理：%r", len(image_name_list))
 
@@ -188,7 +188,6 @@ if __name__ == '__main__':
         'inputs': {'x':'input_data'},
         'output': {'predCls':'output'}
     }
-
 
     #params = restore_model(FLAGS.model_path, param_dict['inputs'], param_dict['output'])
     #main(params)
