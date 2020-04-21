@@ -146,7 +146,7 @@ def main():
 
                 logger.info("开始探测图片")
                 start = time.time()
-                image_list = data_util.prepare4vgg(image_list)
+                #image_list = data_util.prepare4vgg(image_list)
                 classes = sess.run(output, feed_dict={input_x: image_list})
                 logger.info("探测图片完成，耗时: %f", (time.time() - start))
 
