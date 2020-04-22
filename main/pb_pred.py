@@ -20,7 +20,7 @@ from utils import preprocess_utils
 
 logger = logging.getLogger("Pred")
 FLAGS = tf.app.flags.FLAGS
-CLASS_NAME = [0,90,180,270]
+CLASS_NAME = [0,270,180,90]
 
 
 def init_params(model_path=''):
@@ -132,7 +132,7 @@ def main():
                     _, _, name = image_name.split("/")
                     i = 0
                     for img in image_list:
-                        cv2.imwrite(os.path.join("data/check/" + name[:-4] + "_" + str(i) + '.jpg'), img)
+                        cv2.imwrite(os.path.join("data/checkout/check/" + name[:-4] + "_" + str(i) + '.jpg'), img)
                         i += 1
 
                 except:
@@ -159,12 +159,12 @@ def main():
                 line = image_name + " " + str(CLASS_NAME[classes])
                 lines.append(line)
 
-    with open("data/pred_check.txt", "w", encoding='utf-8') as f:
+    with open("data/checkout/pred_check.txt", "w", encoding='utf-8') as f:
         for line in lines:
             f.write(str(line) + '\n')
 
     # check
-    with open("data/check.txt", "w", encoding='utf-8') as f1:
+    with open("data/checkout/check.txt", "w", encoding='utf-8') as f1:
         for c in classes_all:
             f1.write(str(c) + "\n")
 
