@@ -146,7 +146,7 @@ def main():
                 classes = sess.run(output, feed_dict={input_x: image_list})
                 logger.info("探测图片完成，耗时: %f", (time.time() - start))
 
-                # check
+                # TODO:check
                 classes_all = []
                 classes_line = name + " " + str(classes)
                 classes_all.append(classes_line)
