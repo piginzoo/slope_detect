@@ -148,7 +148,7 @@ def main():
 
                 # check
                 classes_all = []
-                classes_line = name + " " + classes
+                classes_line = name + " " + str(classes)
                 classes_all.append(classes_line)
 
 
