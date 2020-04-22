@@ -113,7 +113,7 @@ def main():
 
         image_name_list_all = get_images()
         lines = []
-
+        classes_all = []
         arr_split = np.array_split(image_name_list_all,2000)
         for image_name_list in arr_split:
             logger.info("批次处理：%r", len(image_name_list))
@@ -147,7 +147,6 @@ def main():
                 logger.info("探测图片完成，耗时: %f", (time.time() - start))
 
                 # TODO:check
-                classes_all = []
                 classes_line = name + " " + str(classes)
                 classes_all.append(classes_line)
 
