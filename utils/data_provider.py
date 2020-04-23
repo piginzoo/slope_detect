@@ -141,7 +141,7 @@ def _load_batch_image_labels(batch):
     np.random.shuffle(image_label_list)
     logger.debug("shuffle了所有的小图和标签")
     val_image_names = random.sample(image_label_list, 12)
-    logger.debug("抽取小图的批次数量[%d]，准备加载...", 12)
+    logger.debug("随机抽取小图的批次数量[%d]，准备加载...", 12)
 
     image_list_sample = []
     label_list_sample = []
@@ -155,7 +155,7 @@ def _load_batch_image_labels(batch):
             traceback.format_exc()
             logger.error("加载一个批次图片出现异常：", str(e))
 
-    logger.debug("成功加载%d张小图作为一个批次到内存中", len(image_list_sample))
+    logger.debug("成功加载[%d]张小图作为一个批次到内存中", len(image_list_sample))
     #logger.debug("加载小图作为一个批次到内存中:%s", image_list_sample)
 
     # 旋转做样本平衡
@@ -208,7 +208,7 @@ def rotate_to_0(image_list_sample,label_list_sample):
             label_list_rotate.append(k)
             image_list_rotate.append(img)
 
-    logger.debug("统一旋转正后加载小图作为一个批次到内存中:%s", len(label_list_rotate))
+    logger.debug("统一旋转正后加载[%s]张小图作为一个批次到内存中", len(label_list_rotate))
     return image_list_rotate, label_list_rotate
 
 def rotate_and_balance(image_list_rotate, label_list_rotate):
