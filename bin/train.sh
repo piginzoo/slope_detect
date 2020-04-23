@@ -58,7 +58,7 @@ nohup python -m main.train \
     --save_checkpoint_steps=5000 \
     --decay_rate=0.5 \
     --lambda1=1000 \
-    --gpu=0 \
+    --gpu=1 \
     --debug=False \
     --logs_path=logs \
     --moving_average_decay=0.997 \
