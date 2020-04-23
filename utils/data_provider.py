@@ -262,13 +262,13 @@ def v2_rotate_and_balance(image_list_rotate, label_list_rotate):
 
     i = 1
     for img in image_list_rotate:
-        img_rotate_1 = rotate(img, 180, scale=1.0)
+        img_rotate_1 = rotate(img, 90, scale=1.0)
         image_list_all.append(img)
         image_list_all.append(img_rotate_1)
-        label_2 = 0
-        label_3 = 1
-        label_list_all.append(label_2)
-        label_list_all.append(label_3)
+        label_0 = 0
+        label_1 = 1
+        label_list_all.append(label_0)
+        label_list_all.append(label_1)
         i +=1
         if i > 8:
             break
