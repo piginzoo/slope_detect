@@ -265,24 +265,15 @@ def v2_rotate_and_balance(image_list_rotate, label_list_rotate):
         img_rotate_1 = rotate(img, 180, scale=1.0)
         image_list_all.append(img)
         image_list_all.append(img_rotate_1)
-        label_2 = 2
-        label_3 = 3
+        label_2 = 0
+        label_3 = 1
         label_list_all.append(label_2)
         label_list_all.append(label_3)
         i +=1
-        if i > 7:
+        if i > 8:
             break
-    #     cv2.imshow("img", img)
-    #     cv2.imshow("img_rotate_1", img_rotate_1)
-    #     cv2.imshow("img_rotate_2", img_rotate_2)
-    #     cv2.imshow("img_rotate_3", img_rotate_3)
-    # cv2.waitKey()
-    #logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", label_list_all)
-    #logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", len(label_list_all))
+
     return image_list_all, label_list_all
-
-
-
 
 
 
