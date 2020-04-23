@@ -103,7 +103,7 @@ def main():
                 # 好像网络用的就是OpenCV的BGR顺序，所以也不用转了
                 # img = img[:, :, ::-1]  # bgr是opencv通道默认顺序，转成标准的RGB方式
                 image_list.append(img)
-                logger.debug("需要检测的图片[%s]",image_list)
+                #logger.debug("需要检测的图片[%s]",image_list)
             except:
                 print("Error reading image {}!".format(image_name))
                 continue

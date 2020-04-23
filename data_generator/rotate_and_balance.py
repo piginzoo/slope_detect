@@ -116,3 +116,15 @@ if __name__ == '__main__':
     lines_new = main(txt_path)
     # 统一旋转，样本均衡
     all_rotate(lines_new)
+
+# 测试
+# if __name__ == '__main__':
+#     img = cv2.imread("data/validate/ocr_o_0pdB35ay1571813607039_pOLgTtKM1571813621891_5607930943762045072_3.jpg")
+#     cv2.imshow("img",img)
+#     rotate_image = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) # 顺时针90度
+#     cv2.imshow("rotate_image", rotate_image)
+#     rotate1 = rotate(img, 90,scale=1.0) # 顺时针90度
+#     cv2.imshow("rotate1", rotate1)
+#     rotate2 = rotate(img, -90, scale=1.0) # 逆时针90度
+#     cv2.imshow("rotate2", rotate2)
+# cv2.waitKey()
