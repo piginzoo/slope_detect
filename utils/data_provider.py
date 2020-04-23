@@ -160,7 +160,7 @@ def _load_batch_image_labels(batch):
 
     # 旋转做样本平衡
     image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
-    image_list_all, label_list_all = rotate_and_balance(image_list_rotate, label_list_rotate)
+    image_list_all, label_list_all = v2_rotate_and_balance(image_list_rotate, label_list_rotate)
     logger.debug("旋转并做样本均衡后，加载[%s]张小图作为一个批次到内存中", len(label_list_all))
     return image_list_all, label_list_all
 
@@ -241,6 +241,50 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
     #logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", label_list_all)
     #logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", len(label_list_all))
     return image_list_all, label_list_all
+
+
+def v2_rotate_and_balance(image_list_rotate, label_list_rotate):
+    '''
+    统一旋转做样本均衡
+    '''
+    image_list_all = []
+    label_list_all = []
+    for img in image_list_rotate:
+        img_rotate_2 = rotate(img, 180, scale=1.0)
+        img_rotate_3 = rotate(img, 270, scale=1.0)
+        image_list_all.append(img_rotate_2)
+        image_list_all.append(img_rotate_3)
+        label_2 = 2
+        label_3 = 3
+        label_list_all.append(label_2)
+        label_list_all.append(label_3)
+
+
+    i = 1
+    for img in image_list_rotate:
+        img_rotate_1 = rotate(img, 180, scale=1.0)
+        image_list_all.append(img)
+        image_list_all.append(img_rotate_1)
+        label_2 = 2
+        label_3 = 3
+        label_list_all.append(label_2)
+        label_list_all.append(label_3)
+        i +=1
+        if i > 7:
+            break
+    #     cv2.imshow("img", img)
+    #     cv2.imshow("img_rotate_1", img_rotate_1)
+    #     cv2.imshow("img_rotate_2", img_rotate_2)
+    #     cv2.imshow("img_rotate_3", img_rotate_3)
+    # cv2.waitKey()
+    #logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", label_list_all)
+    #logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", len(label_list_all))
+    return image_list_all, label_list_all
+
+
+
+
+
 
 
 def generator(label_file, batch_num):
