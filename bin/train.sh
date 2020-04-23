@@ -47,10 +47,10 @@ nohup python -m main.train \
     --max_steps=100000 \
     --decay_steps=1000 \
     --evaluate_steps=100 \
-    --validate_dir=data/validate \
+    --validate_dir=data/validate_500 \
     --validate_batch=1 \
     --validate_times=24 \
-    --validate_label=data/validate.txt \
+    --validate_label=data/validate_500.txt \
     --train_dir=data/train \
     --train_batch=3 \
     --train_label=data/train.txt \
