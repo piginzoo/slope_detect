@@ -109,9 +109,8 @@ def _load_batch_image_labels(batch):
     for image_label_pair in batch:  # 遍历所有的图片文件
         try:
             image_file = image_label_pair[0]
-            #print("image_file:",image_file)
+            _, _, name = image_file.split("/")
             label = image_label_pair[1]
-           # print("label:",label)
             if not os.path.exists(image_file):
                 logger.warning("样本图片%s不存在", image_file)
                 continue
@@ -124,6 +123,12 @@ def _load_batch_image_labels(batch):
             label_list = lab_list * len(image_list) # 小图和标签数量一致
             image_list_all.extend(image_list)
             label_list_all.extend(label_list)
+
+            # check
+            # i = 0
+            # for img in image_list:
+            #     cv2.imwrite(os.path.join("data/check/" + name[:-4] + "_" + str(i) + '.jpg'), img)
+            #     i += 1
 
         except BaseException as e:
             traceback.format_exc()

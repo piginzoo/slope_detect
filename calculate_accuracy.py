@@ -58,13 +58,8 @@ if __name__ == '__main__':
     validate_path = "data/pred/2000/validate_2000.txt"
     old_path = "data/pred/2000/pred_2000_20190507.txt"
     new_path = "data/pred/2000/pred_2000_20200417.txt"
-    zhao_path = "data/pred/2000/pred_2000_zhao.txt"
+    zhao_path = "data/pred/2000/pred_zhao.txt"
 
-    # 500张
-    # validate_path = "data/pred/500/validate.txt"
-    # old_path = "data/pred/500/pred_500_20190507.txt"
-    # new_path = "data/pred/500/pred_500_20200417.txt"
-    # zhao_path = "data/pred/500/pred_500_20200417.txt"
 
     # 测试
     # validate_path = "data/test/00.txt"

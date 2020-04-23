@@ -25,7 +25,7 @@ CLASS_NAME = [0,270,180,90]
 
 def init_params(model_path=''):
     tf.app.flags.DEFINE_string('image_name','', '')         # 被预测的图片名字，为空就预测目录下所有的文件
-    tf.app.flags.DEFINE_string('pred_dir', 'data/pred_check', '') # 预测后的结果的输出目录
+    tf.app.flags.DEFINE_string('pred_dir', 'data/validate', '') # 预测后的结果的输出目录
     tf.app.flags.DEFINE_string('model_path',model_path, '')   # model的存放目录，会自动加载最新的那个模型
     #tf.app.flags.DEFINE_string('model_file',model_name, '') # 为了支持单独文件，如果为空，就预测pred_dir中的所有文件
     tf.app.flags.DEFINE_boolean('debug', False, '')
@@ -128,12 +128,12 @@ def main():
                     logger.debug("将图像分成%d个patches", len(image_list))
                     #logger.debug("需要检测的图片[%s]",image_list)
 
-                    # check
-                    _, _, name = image_name.split("/")
-                    i = 0
-                    for img in image_list:
-                        cv2.imwrite(os.path.join("data/checkout/check/" + name[:-4] + "_" + str(i) + '.jpg'), img)
-                        i += 1
+                    # # check
+                    # _, _, name = image_name.split("/")
+                    # i = 0
+                    # for img in image_list:
+                    #     cv2.imwrite(os.path.join("data/checkout/check/" + name[:-4] + "_" + str(i) + '.jpg'), img)
+                    #     i += 1
 
                 except:
                     print("Error reading image {}!".format(image_name))
@@ -146,9 +146,9 @@ def main():
                 classes = sess.run(output, feed_dict={input_x: image_list})
                 logger.info("探测图片完成，耗时: %f", (time.time() - start))
 
-                # TODO:check
-                classes_line = name + " " + str(classes)
-                classes_all.append(classes_line)
+                # # TODO:check
+                # classes_line = name + " " + str(classes)
+                # classes_all.append(classes_line)
 
 
                 # TODO:预测出来多个小图的标签，取众数作为大图的标签
@@ -159,14 +159,14 @@ def main():
                 line = image_name + " " + str(CLASS_NAME[classes])
                 lines.append(line)
 
-    with open("data/checkout/pred_check.txt", "w", encoding='utf-8') as f:
+    with open("data/pred.txt", "w", encoding='utf-8') as f:
         for line in lines:
             f.write(str(line) + '\n')
 
-    # check
-    with open("data/checkout/check.txt", "w", encoding='utf-8') as f1:
-        for c in classes_all:
-            f1.write(str(c) + "\n")
+    # # check
+    # with open("data/checkout/check.txt", "w", encoding='utf-8') as f1:
+    #     for c in classes_all:
+    #         f1.write(str(c) + "\n")
 
 
 if __name__ == '__main__':

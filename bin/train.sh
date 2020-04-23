@@ -49,7 +49,7 @@ nohup python -m main.train \
     --evaluate_steps=100 \
     --validate_dir=data/validate \
     --validate_batch=1 \
-    --validate_times=16 \
+    --validate_times=24 \
     --validate_label=data/validate.txt \
     --train_dir=data/train \
     --train_batch=3 \

@@ -3,6 +3,22 @@ import cv2
 import random
 import os
 
+
+# def show(img, title='无标题'):
+#     """
+#     本地测试时展示图片
+#     :param img:
+#     :param name:
+#     :return:
+#     """
+#     import matplotlib.pyplot as plt
+#     from matplotlib.font_manager import FontProperties
+#     font = FontProperties(fname='/Users/yanmeima/workspace/ocr/crnn/data/data_generator/fonts/simhei.ttf')
+#     plt.title(title, fontsize='large', fontweight='bold', FontProperties=font)
+#     plt.imshow(img)
+#     plt.show()
+
+
 def get_patches(img):
     dim = 256
     h, w = img.shape[:2]
@@ -42,7 +58,7 @@ def get_patches(img):
     # 所以，现在是随机取32个。改进后，效果好一些了。
     patch_idxes = np.arange(0, len(candidate_patches))
     #print("patch_idxes:",patch_idxes)
-    random.shuffle(candidate_patches)
+    random.shuffle(patch_idxes)
 
     # 从随机里面只取32个出来，32 hardcode了
     # TODO 还需要做优化
@@ -51,6 +67,7 @@ def get_patches(img):
         # 用MSER+NMS，找有多少个包含文字的框
         candidate_patch = candidate_patches[patch_idx]
         boxCnt = getTextBoxCnt(candidate_patch)
+        #show(candidate_patch,str(boxCnt))
         #print(hIdx, wIdx, boxCnt)
         # >5个才作为备选，用于检验歪斜
         if boxCnt >= 5:
@@ -65,7 +82,7 @@ def get_patches(img):
     for hStart, wStart in candiIdx[:32]:
         patch = img[hStart:(hStart + dim), wStart:(wStart + dim)]
         #因为后面有强制压缩成224 * 224和标准化，所以这里不需要标准化
-        #patch = (patch - patch.mean()) / patch.std() # 做一下标准化
+        #patch = (patch - patch.mean()) / patch.std() # 做一下标准化----------！！！因为后面进VGG之前要减均值，所以这里我没有做标准化
         patches.append(patch)
     #patches = np.stack(patches, axis=0)
     return patches
@@ -150,12 +167,12 @@ def nms(boxes, overlapThresh):
 
 
 if __name__ == '__main__':
-    img = cv2.imread("data/train/ocr_o_0az54M911570682172646_aMr76rg21570682183202_5993909610730071053.JPG")
+    img = cv2.imread("data/debug/images/ocr_o_RJifyfKN1569570661198_e4UaHf891569570683130_7250508932517050569.JPG")
     #print(img.shape)
     patches = get_patches(img)
     i = 0
     for p in patches:
-        cv2.imwrite(os.path.join("data/patches/22/" + str(i) + ".jpg"),p)
+        cv2.imwrite(os.path.join("data/debug/patches/" + str(i) + ".jpg"),p)
         i +=1
 
     #print(patches)
