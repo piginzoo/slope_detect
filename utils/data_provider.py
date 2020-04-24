@@ -259,7 +259,6 @@ def v2_rotate_and_balance(image_list_rotate, label_list_rotate):
         label_list_all.append(label_2)
         label_list_all.append(label_3)
 
-
     i = 1
     for img in image_list_rotate:
         img_rotate_1 = rotate(img, 90, scale=1.0)
@@ -272,10 +271,7 @@ def v2_rotate_and_balance(image_list_rotate, label_list_rotate):
         i +=1
         if i > 6:
             break
-
     return image_list_all, label_list_all
-
-
 
 
 def generator(label_file, batch_num):
