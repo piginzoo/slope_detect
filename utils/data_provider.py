@@ -270,7 +270,7 @@ def v2_rotate_and_balance(image_list_rotate, label_list_rotate):
         label_list_all.append(label_0)
         label_list_all.append(label_1)
         i +=1
-        if i > 8:
+        if i > 6:
             break
 
     return image_list_all, label_list_all
