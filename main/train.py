@@ -264,7 +264,7 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
         logger.debug("加载了验证集%d张",len(image_list))
 
         classes = sess.run(cls_pred,feed_dict={
-            ph_input_image:  data_util.prepare4vgg(image_list),
+            ph_input_image:  data_util._prepare4vgg(image_list),
             ph_label:        image_label
         })  # data[3]是图像的路径，传入sess是为了调试画图用
 
