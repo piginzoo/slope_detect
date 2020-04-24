@@ -136,7 +136,7 @@ def prepare4vgg(image_list):
     for image in image_list:
         image = cv2.resize(image, (224,224),interpolation=cv2.INTER_AREA)
         image = image[:,:,::-1] # BGR->RGB
-        #result.append(mean_image_subtraction(image)) #减去均值
+        result.append(mean_image_subtraction(image)) #减去均值
         result.append(image)
     return np.array(result)
 
