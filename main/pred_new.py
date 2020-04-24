@@ -133,7 +133,7 @@ def main():
 def pred(sess,classes,input_images,image_list):#,input_image,input_im_info,bbox_pred, cls_pred, cls_prob):
     logger.info("开始探测图片")
     start = time.time()
-    image_list = data_util._prepare4vgg(image_list)
+    image_list = data_util.prepare4vgg(image_list)
     _classes = sess.run(classes,feed_dict={input_images: image_list})
     logger.info("探测图片完成，耗时: %f", (time.time() - start))
     return _classes
