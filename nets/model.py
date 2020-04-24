@@ -29,7 +29,7 @@ def make_var(name, shape, initializer=None):
 
 def model(image):
     image = _p_shape(image, "最开始输入")
-    image = mean_image_subtraction(image)
+    #image = mean_image_subtraction(image)
     with slim.arg_scope(vgg.vgg_arg_scope()):
         # 最终，出来的图像是 （m/16 x n/16 x 512）
         vgg_fc2 = vgg.vgg16(image)
