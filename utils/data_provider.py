@@ -13,6 +13,10 @@ import math
 from utils import preprocess_utils
 from utils import cut
 from utils.data_util import GeneratorEnqueuer
+from server.tuning import RotateProcessor
+#from server import conf
+
+rotate_processor = RotateProcessor()
 
 logger = logging.getLogger("data provider")
 
@@ -24,6 +28,31 @@ def init_logger():
         format='%(asctime)s : %(levelname)s : %(message)s',
         level=level,
         handlers=[logging.StreamHandler()])
+
+
+def show(img, title='无标题'):
+    """
+    本地测试时展示图片
+    :param img:
+    :param name:
+    :return:
+    """
+    import matplotlib.pyplot as plt
+    from matplotlib.font_manager import FontProperties
+    font = FontProperties(fname='/Users/yanmeima/workspace/ocr/crnn/data/data_generator/fonts/simhei.ttf')
+    plt.title(title, fontsize='large', fontweight='bold', FontProperties=font)
+    plt.imshow(img)
+    plt.show()
+
+
+#返回的是以原图逆时针旋转"多少度？"后变正
+def tuning(image):
+    # 如果不做微调，就直接返回是0度和原图
+    #if not conf.CFG.preprocess_tuning: return 0,image
+    angle, img_rotate = rotate_processor.process(image)
+    logger.debug("微调旋转角度为：%f",angle)
+    return angle, img_rotate
+
 
 def rotate(image, angle, scale=1.0):
     angle = -angle
@@ -76,6 +105,7 @@ def load_validate_data(validate_file, batch_num):
     # return np.array(image_list), label_list
     return image_list, label_list
 
+
 # 因为验证集一张张切图预测标签后取众数，有的切图<30张，所以这个函数跟训练集的分开写了
 # 加载一个批次数量的图片和标签，数量为batch数
 def val_load_batch_image_labels(batch):
@@ -89,7 +119,11 @@ def val_load_batch_image_labels(batch):
             img = cv2.imread(image_file)
 
             # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行训练
-            image_list = preprocess_utils.get_patches(img)
+            # 先做微调,tuning_degree为顺时针调整角度，如果是反方向，为负
+            tuning_degree, tuning_image = tuning(img)
+            logger.debug("图像[%s]微调角度：%f,shape=%r", image_file, tuning_degree, tuning_image.shape)
+            #  再做切图
+            image_list = preprocess_utils.get_patches(tuning_image)
             logger.debug("将图像分成%d个patches", len(image_list))
             list = [label]
             label_list = list * len(image_list)  # 小图和标签数量一致
@@ -116,19 +150,24 @@ def _load_batch_image_labels(batch):
                 continue
             img = cv2.imread(image_file)
 
-            # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行训练
-            image_list = preprocess_utils.get_patches(img)
-            logger.debug("将图像分成%d个patches", len(image_list))
+            # # TODO:将一张大图切成很多小图，再随机抽取小图灌到模型中进行训练
+            # 先做微调,tuning_degree为顺时针调整角度，如果是反方向，为负
+            tuning_degree, tuning_image = tuning(img)
+            logger.debug("图像[%s]微调角度：%f,shape=%r", image_file, tuning_degree, tuning_image.shape)
+
+            #  再做切图
+            image_list = preprocess_utils.get_patches(tuning_image)
+            logger.debug("将微调后的图像分成%d个patches", len(image_list))
             lab_list = [label]
-            label_list = lab_list * len(image_list) # 小图和标签数量一致
+            label_list = lab_list * len(image_list) # 保证同一张大图切出来的小图标签一致，小图数量和标签数量相同
             image_list_all.extend(image_list)
             label_list_all.extend(label_list)
 
             # check
-            # i = 0
-            # for img in image_list:
-            #     cv2.imwrite(os.path.join("data/check/" + name[:-4] + "_" + str(i) + '.jpg'), img)
-            #     i += 1
+            i = 0
+            for img in image_list:
+                cv2.imwrite(os.path.join("data/check/" + name[:-4] + "_" + str(i) + '.jpg'), img)
+                i += 1
 
         except BaseException as e:
             traceback.format_exc()
@@ -141,7 +180,7 @@ def _load_batch_image_labels(batch):
     np.random.shuffle(image_label_list)
     logger.debug("shuffle了所有的小图和标签")
     val_image_names = random.sample(image_label_list, 12)
-    logger.debug("随机抽取小图的批次数量[%d]，准备加载...", 12)
+    logger.debug("一个批次随机抽取小图的数量[%d]张，准备加载...", 12)
 
     image_list_sample = []
     label_list_sample = []
@@ -149,6 +188,7 @@ def _load_batch_image_labels(batch):
         try:
             image = image_label_pair[0]
             label = image_label_pair[1]
+            #show(image,str(label))
             image_list_sample.append(image)
             label_list_sample.append(label)
         except BaseException as e:
@@ -156,7 +196,7 @@ def _load_batch_image_labels(batch):
             logger.error("加载一个批次图片出现异常：", str(e))
 
     logger.debug("成功加载[%d]张小图作为一个批次到内存中", len(image_list_sample))
-    #logger.debug("加载小图作为一个批次到内存中:%s", image_list_sample)
+    logger.debug("加载到内存中一个批次的小图的标签:%s", label_list_sample)
 
     # 旋转做样本平衡
     image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
@@ -175,11 +215,16 @@ def rotate_to_0(image_list_sample,label_list_sample):
 
     if 0 in label_list_sample:
         index0 = np.where(arr == 0)
+        #print("0的个数：",len(index0[0]))
+        #print("index0[0]:",index0[0])
         for l in index0[0]:
+            #print("l:",l)
             img = image_list_sample[l]
             l = 0
+            #show(img, str(l))
             label_list_rotate.append(l)
             image_list_rotate.append(img)
+
 
     if 1 in label_list_sample:
         index1 = np.where(arr == 1)
@@ -187,6 +232,7 @@ def rotate_to_0(image_list_sample,label_list_sample):
             img = image_list_sample[i]
             img = rotate(img, -90, scale=1.0)
             i = 0
+            #show(img, str(i))
             label_list_rotate.append(i)
             image_list_rotate.append(img)
 
@@ -196,6 +242,7 @@ def rotate_to_0(image_list_sample,label_list_sample):
             img = image_list_sample[j]
             img = rotate(img, 180, scale=1.0)
             j = 0
+            #show(img, str(j))
             label_list_rotate.append(j)
             image_list_rotate.append(img)
 
@@ -204,6 +251,7 @@ def rotate_to_0(image_list_sample,label_list_sample):
         for k in index3[0]:
             img = image_list_sample[k]
             img = rotate(img, 90, scale=1.0)
+            #show(img, str(k))
             k = 0
             label_list_rotate.append(k)
             image_list_rotate.append(img)
@@ -233,11 +281,12 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
         label_list_all.append(label_1)
         label_list_all.append(label_2)
         label_list_all.append(label_3)
-    #     cv2.imshow("img", img)
-    #     cv2.imshow("img_rotate_1", img_rotate_1)
-    #     cv2.imshow("img_rotate_2", img_rotate_2)
-    #     cv2.imshow("img_rotate_3", img_rotate_3)
-    # cv2.waitKey()
+
+        # show(img, str(label_0))
+        # show(img_rotate_1, str(label_1))
+        # show(img_rotate_2, str(label_2))
+        # show(img_rotate_3, str(label_3))
+
     #logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", label_list_all)
     #logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", len(label_list_all))
     return image_list_all, label_list_all
