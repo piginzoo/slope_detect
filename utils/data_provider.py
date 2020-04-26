@@ -14,7 +14,6 @@ from utils import preprocess_utils
 from utils import cut
 from utils.data_util import GeneratorEnqueuer
 from server.tuning import RotateProcessor
-#from server import conf
 
 rotate_processor = RotateProcessor()
 

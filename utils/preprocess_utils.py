@@ -4,19 +4,19 @@ import random
 import os
 
 
-# def show(img, title='无标题'):
-#     """
-#     本地测试时展示图片
-#     :param img:
-#     :param name:
-#     :return:
-#     """
-#     import matplotlib.pyplot as plt
-#     from matplotlib.font_manager import FontProperties
-#     font = FontProperties(fname='/Users/yanmeima/workspace/ocr/crnn/data/data_generator/fonts/simhei.ttf')
-#     plt.title(title, fontsize='large', fontweight='bold', FontProperties=font)
-#     plt.imshow(img)
-#     plt.show()
+def show(img, title='无标题'):
+    """
+    本地测试时展示图片
+    :param img:
+    :param name:
+    :return:
+    """
+    import matplotlib.pyplot as plt
+    from matplotlib.font_manager import FontProperties
+    font = FontProperties(fname='/Users/yanmeima/workspace/ocr/crnn/data/data_generator/fonts/simhei.ttf')
+    plt.title(title, fontsize='large', fontweight='bold', FontProperties=font)
+    plt.imshow(img)
+    plt.show()
 
 
 def get_patches(img):
@@ -70,7 +70,7 @@ def get_patches(img):
         #show(candidate_patch,str(boxCnt))
         #print(hIdx, wIdx, boxCnt)
         # >5个才作为备选，用于检验歪斜
-        if boxCnt >= 5:
+        if boxCnt > 10:
             candiIdx.append(backupIdx[patch_idx])
             done_counter+=1
         if done_counter>=32: break
@@ -84,7 +84,7 @@ def get_patches(img):
         #因为后面有强制压缩成224 * 224和标准化，所以这里不需要标准化
         #patch = (patch - patch.mean()) / patch.std() # 做一下标准化----------！！！因为后面进VGG之前要减均值，所以这里我没有做标准化
         patches.append(patch)
-    #patches = np.stack(patches, axis=0)
+    patches = np.stack(patches, axis=0)
     return patches
 
 # 入参是256x256的小图，一堆
@@ -169,6 +169,8 @@ def nms(boxes, overlapThresh):
 if __name__ == '__main__':
     img = cv2.imread("data/debug/images/ocr_o_RJifyfKN1569570661198_e4UaHf891569570683130_7250508932517050569.JPG")
     #print(img.shape)
+    #tuning_degree, tuning_image = tuning(img)
+
     patches = get_patches(img)
     i = 0
     for p in patches:
