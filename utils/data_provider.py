@@ -156,10 +156,11 @@ def _load_batch_image_labels(batch):
     logger.debug("加载一个批次图片,切出小图[%s]张", len(image_list_all))
 
     image_label_list = list(zip(image_list_all, label_list_all))
+    logger.debug("==========================",len(image_label_list))
     np.random.shuffle(image_label_list)
     logger.debug("shuffle了所有的小图和标签")
     val_image_names = random.sample(image_label_list, 16)
-    logger.debug("一个批次随机抽取小图的数量[%d]张，准备加载...", 16)
+    logger.debug("一个批次随机抽取小图的数量[%d]张，准备加载...", len(val_image_names))
 
     image_list_sample = []
     label_list_sample = []
