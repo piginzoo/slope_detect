@@ -26,19 +26,19 @@ def init_logger():
         handlers=[logging.StreamHandler()])
 
 
-def show(img, title='无标题'):
-    """
-    本地测试时展示图片
-    :param img:
-    :param name:
-    :return:
-    """
-    import matplotlib.pyplot as plt
-    from matplotlib.font_manager import FontProperties
-    font = FontProperties(fname='/Users/yanmeima/workspace/ocr/crnn/data/data_generator/fonts/simhei.ttf')
-    plt.title(title, fontsize='large', fontweight='bold', FontProperties=font)
-    plt.imshow(img)
-    plt.show()
+# def show(img, title='无标题'):
+#     """
+#     本地测试时展示图片
+#     :param img:
+#     :param name:
+#     :return:
+#     """
+#     import matplotlib.pyplot as plt
+#     from matplotlib.font_manager import FontProperties
+#     font = FontProperties(fname='/Users/yanmeima/workspace/ocr/crnn/data/data_generator/fonts/simhei.ttf')
+#     plt.title(title, fontsize='large', fontweight='bold', FontProperties=font)
+#     plt.imshow(img)
+#     plt.show()
 
 
 def rotate(image, angle, scale=1.0):
