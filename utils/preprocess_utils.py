@@ -67,7 +67,7 @@ def get_patches(img):
         # 用MSER+NMS，找有多少个包含文字的框
         candidate_patch = candidate_patches[patch_idx]
         boxCnt = getTextBoxCnt(candidate_patch)
-        show(candidate_patch,str(boxCnt))
+        #show(candidate_patch,str(boxCnt))
         #print(hIdx, wIdx, boxCnt)
         # >5个才作为备选，用于检验歪斜
         if boxCnt > 10:
