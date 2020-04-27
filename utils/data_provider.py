@@ -26,21 +26,6 @@ def init_logger():
         handlers=[logging.StreamHandler()])
 
 
-# def show(img, title='无标题'):
-#     """
-#     本地测试时展示图片
-#     :param img:
-#     :param name:
-#     :return:
-#     """
-#     import matplotlib.pyplot as plt
-#     from matplotlib.font_manager import FontProperties
-#     font = FontProperties(fname='/Users/yanmeima/workspace/ocr/crnn/data/data_generator/fonts/simhei.ttf')
-#     plt.title(title, fontsize='large', fontweight='bold', FontProperties=font)
-#     plt.imshow(img)
-#     plt.show()
-
-
 def rotate(image, angle, scale=1.0):
     angle = -angle
     (h, w) = image.shape[:2]  # 2
@@ -88,45 +73,19 @@ def load_validate_data(validate_file, batch_num):
     logger.info("加载验证validate数据：%s，加载%d张", validate_file, batch_num)
     image_label_list = load_data(validate_file)
     val_image_names = random.sample(image_label_list, batch_num)
-    image_list, label_list = val_load_batch_image_labels(val_image_names)
+    image_list, label_list = load_batch_image_labels(val_image_names)
     # return np.array(image_list), label_list
     return image_list, label_list
 
 
-# 因为验证集一张张切图预测标签后取众数，有的切图<30张，所以这个函数跟训练集的分开写了
 # 加载一个批次数量的图片和标签，数量为batch数
-def val_load_batch_image_labels(batch):
-    for image_label_pair in batch:  # 遍历所有的图片文件
-        try:
-            image_file = image_label_pair[0]
-            label = image_label_pair[1]
-            if not os.path.exists(image_file):
-                logger.warning("样本图片%s不存在", image_file)
-                continue
-            img = cv2.imread(image_file)
-
-            # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行训练
-            image_list = preprocess_utils.get_patches(img)
-            logger.debug("将图像[%s]分成%d个patches", image_file, len(image_list))
-            list = [label]
-            label_list = list * len(image_list)  # 小图和标签数量一致
-
-        except BaseException as e:
-            traceback.format_exc()
-            logger.error("加载一个批次图片出现异常：", str(e))
-
-    logger.debug("加载一个批次图片,切出小图[%s]张", len(image_list))
-    return image_list, label_list
-
-
-# 加载一个批次数量的图片和标签，数量为batch数
-def _load_batch_image_labels(batch):
+def load_batch_image_labels(batch):
     image_list_all = []
     label_list_all = []
     for image_label_pair in batch:  # 遍历所有的图片文件
         try:
             image_file = image_label_pair[0]
-            _, _, _, name = image_file.split("/")
+            _, _, name = image_file.split("/")
             label = image_label_pair[1]
             if not os.path.exists(image_file):
                 logger.warning("样本图片%s不存在", image_file)
@@ -142,18 +101,18 @@ def _load_batch_image_labels(batch):
             image_list_all.extend(image_list)
             label_list_all.extend(label_list)
 
-            # check
-            i = 0
-            for img in image_list:
-                cv2.imwrite(os.path.join("data/check0427/check/cut/" + name[:-4] + "_" + str(i) + '.jpg'), img)
-                i += 1
-
         except BaseException as e:
             traceback.format_exc()
             logger.error("加载一个批次图片出现异常：", str(e))
 
     #logger.debug("加载一个批次图片标签：%s", label_list_all)
     logger.debug("加载一个批次图片,切出小图[%s]张", len(image_list_all))
+
+    return image_list_all, label_list_all
+
+
+# 随机抽取16张图片再旋转，保证训练集样本均衡
+def sample_image_label(image_list_all, label_list_all):
 
     image_label_list = list(zip(image_list_all, label_list_all))
     np.random.shuffle(image_label_list)
@@ -172,13 +131,6 @@ def _load_batch_image_labels(batch):
         except BaseException as e:
             traceback.format_exc()
             logger.error("加载一个批次图片出现异常：", str(e))
-
-    m = 0
-    for p in image_list_sample:
-        cv2.imwrite(os.path.join("data/check0427/check/sample/" + str(m) + ".jpg"), p)
-        m += 1
-    with open("data/check0427/check/sample.txt","w",encoding='utf-8') as ff:
-        ff.write(str(label_list_sample) + "\n")
 
     logger.debug("随机抽取并成功加载[%d]张小图作为一个批次到内存中", len(image_list_sample))
     logger.debug("随机抽取并成功加载到内存中一个批次的小图的标签:%s", label_list_sample)
@@ -232,7 +184,6 @@ def rotate_to_0(image_list_sample,label_list_sample):
             k = 0
             label_list_rotate.append(k)
             image_list_rotate.append(img)
-
     #image_list_rotate = np.stack(image_list_rotate, axis=0)
     logger.debug("统一旋转正后加载[%s]张小图作为一个批次到内存中", len(image_list_rotate))
     return image_list_rotate, label_list_rotate
@@ -260,18 +211,7 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
         label_list_all.append(label_2)
         label_list_all.append(label_3)
 
-        # show(img, str(label_0))
-        # show(img_rotate_1, str(label_1))
-        # show(img_rotate_2, str(label_2))
-        # show(img_rotate_3, str(label_3))
-
-    #image_list_all = np.stack(image_list_all, axis=0)
-    i = 0
-    for p in image_list_all:
-        cv2.imwrite(os.path.join("data/check0427/check/train/" + str(i) + ".jpg"),p)
-        i +=1
-
-    #logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", label_list_all)
+    logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", label_list_all)
     logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", len(image_list_all))
     return image_list_all, label_list_all
 
@@ -284,7 +224,8 @@ def generator(label_file, batch_num):
         for i in range(0, len(image_label_list), batch_num):
             batch = image_label_list[i:i + batch_num]
             logger.debug("获得批次数量(%d)：从%d到%d的图片/标签的名字，准备加载...", batch_num, i, i + batch_num)
-            yield _load_batch_image_labels(batch)
+            image_list_all, label_list_all = load_batch_image_labels(batch)
+            yield sample_image_label(image_list_all, label_list_all)
 
 
 def get_batch(num_workers, label_file, batch_num, **kwargs):

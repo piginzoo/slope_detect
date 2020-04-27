@@ -140,7 +140,6 @@ def prepare4vgg(image_list):
     return np.array(result)
 
 
-
 # [123.68, 116.78, 103.94] 这个是VGG的预处理要求的，必须减去这个均值：https://blog.csdn.net/smilejiasmile/article/details/80807050
 def mean_image_subtraction(images,means=[124, 117, 104]): #means=[123.68, 116.78, 103.94]):
     # 干啥呢？ 按通道，多分出一个维度么？
