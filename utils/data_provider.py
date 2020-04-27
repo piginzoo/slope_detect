@@ -142,11 +142,11 @@ def _load_batch_image_labels(batch):
             image_list_all.extend(image_list)
             label_list_all.extend(label_list)
 
-            # check
-            i = 0
-            for img in image_list:
-                cv2.imwrite(os.path.join("data/check/cut/" + name[:-4] + "_" + str(i) + '.jpg'), img)
-                i += 1
+            # # check
+            # i = 0
+            # for img in image_list:
+            #     cv2.imwrite(os.path.join("data/check/cut/" + name[:-4] + "_" + str(i) + '.jpg'), img)
+            #     i += 1
 
         except BaseException as e:
             traceback.format_exc()
@@ -167,22 +167,21 @@ def _load_batch_image_labels(batch):
         try:
             image = image_label_pair[0]
             label = image_label_pair[1]
-            #show(image,str(label))
             image_list_sample.append(image)
             label_list_sample.append(label)
         except BaseException as e:
             traceback.format_exc()
             logger.error("加载一个批次图片出现异常：", str(e))
 
-    m = 0
-    for p in image_list_sample:
-        cv2.imwrite(os.path.join("data/check/sample/" + str(m) + ".jpg"), p)
-        m += 1
-    with open("data/check/sample.txt","w",encoding='utf-8') as ff:
-        ff.write(str(label_list_sample) + "\n")
+    # m = 0
+    # for p in image_list_sample:
+    #     cv2.imwrite(os.path.join("data/check/sample/" + str(m) + ".jpg"), p)
+    #     m += 1
+    # with open("data/check/sample.txt","w",encoding='utf-8') as ff:
+    #     ff.write(str(label_list_sample) + "\n")
 
     logger.debug("成功加载[%d]张小图作为一个批次到内存中", len(image_list_sample))
-    logger.debug("加载到内存中一个批次的小图的标签:%s", label_list_sample)
+    #logger.debug("加载到内存中一个批次的小图的标签:%s", label_list_sample)
 
     # 旋转做样本平衡
     image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
@@ -206,7 +205,6 @@ def rotate_to_0(image_list_sample,label_list_sample):
             l = 0
             label_list_rotate.append(l)
             image_list_rotate.append(img)
-
 
     if 1 in label_list_sample:
         index1 = np.where(arr == 1)
@@ -235,7 +233,7 @@ def rotate_to_0(image_list_sample,label_list_sample):
             label_list_rotate.append(k)
             image_list_rotate.append(img)
 
-    image_list_rotate = np.stack(image_list_rotate, axis=0)
+    #image_list_rotate = np.stack(image_list_rotate, axis=0)
     logger.debug("统一旋转正后加载[%s]张小图作为一个批次到内存中", len(label_list_rotate))
     return image_list_rotate, label_list_rotate
 
@@ -267,13 +265,13 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
         # show(img_rotate_2, str(label_2))
         # show(img_rotate_3, str(label_3))
 
-    image_list_all = np.stack(image_list_all, axis=0)
-    i = 0
-    for p in image_list_all:
-        cv2.imwrite(os.path.join("data/check/train/" + str(i) + ".jpg"),p)
-        i +=1
+    # image_list_all = np.stack(image_list_all, axis=0)
+    # i = 0
+    # for p in image_list_all:
+    #     cv2.imwrite(os.path.join("data/check/train/" + str(i) + ".jpg"),p)
+    #     i +=1
 
-    logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", label_list_all)
+    #logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", label_list_all)
     #logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", len(label_list_all))
     return image_list_all, label_list_all
 

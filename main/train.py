@@ -95,7 +95,7 @@ def main(argv=None):
     global_step = tf.get_variable('global_step', [], initializer=tf.constant_initializer(0), trainable=False)
     learning_rate = tf.Variable(FLAGS.learning_rate, trainable=False)
 
-    tf.summary.image('input', ph_input_image, 10)
+    tf.summary.image('input', ph_input_image, 12)
     tf.summary.scalar('learning_rate', learning_rate)
     adam_opt = tf.train.AdamOptimizer(learning_rate) # 默认是learning_rate是0.001，而且后期会不断的根据梯度调整，一般不用设这个数，所以我索性去掉了
 
@@ -277,10 +277,10 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
         # logger.debug("Label为：%r",image_label)
 
 
-        m = 0
-        for p in image_list:
-            cv2.imwrite(os.path.join("data/check/validate/" + str(m) + ".jpg"), p)
-            m += 1
+        # m = 0
+        # for p in image_list:
+        #     cv2.imwrite(os.path.join("data/check/validate/" + str(m) + ".jpg"), p)
+        #     m += 1
 
 
         image_label_all.append(image_label)

@@ -83,7 +83,7 @@ def get_patches(img):
         #因为后面有强制压缩成224 * 224和标准化，所以这里不需要标准化
         #patch = (patch - patch.mean()) / patch.std() # 做一下标准化----------！！！因为后面进VGG之前要减均值，所以这里我没有做标准化
         patches.append(patch)
-    patches = np.stack(patches, axis=0)
+    #patches = np.stack(patches, axis=0)
     return patches
 
 # 入参是256x256的小图，一堆
