@@ -57,7 +57,6 @@ def get_patches(img):
     # 随机取32个，之前按顺序来，并且只有16个，对比较大的图，如3000x4000这类的，就会值切到某个边缘，如果边缘没有单据图像就惨了
     # 所以，现在是随机取32个。改进后，效果好一些了。
     patch_idxes = np.arange(0, len(candidate_patches))
-    #print("patch_idxes:",patch_idxes)
     random.shuffle(patch_idxes)
 
     # 从随机里面只取32个出来，32 hardcode了
@@ -70,7 +69,7 @@ def get_patches(img):
         #show(candidate_patch,str(boxCnt))
         #print(hIdx, wIdx, boxCnt)
         # >5个才作为备选，用于检验歪斜
-        if boxCnt > 10:
+        if boxCnt >=5:
             candiIdx.append(backupIdx[patch_idx])
             done_counter+=1
         if done_counter>=32: break
@@ -82,7 +81,7 @@ def get_patches(img):
     for hStart, wStart in candiIdx[:32]:
         patch = img[hStart:(hStart + dim), wStart:(wStart + dim)]
         #因为后面有强制压缩成224 * 224和标准化，所以这里不需要标准化
-        patch = (patch - patch.mean()) / patch.std() # 做一下标准化----------！！！因为后面进VGG之前要减均值，所以这里我没有做标准化
+        #patch = (patch - patch.mean()) / patch.std() # 做一下标准化----------！！！因为后面进VGG之前要减均值，所以这里我没有做标准化
         patches.append(patch)
     patches = np.stack(patches, axis=0)
     return patches
@@ -176,8 +175,3 @@ if __name__ == '__main__':
         cv2.imwrite(os.path.join("utils/data/patches/" + str(i) + ".jpg"),p)
         i +=1
     #print(patches)
-
-# if __name__ == '__main__':
-#     gray = cv2.imread("data/0.jpg",0)
-#     boxCnt = getTextBoxCnt(gray)
-#     show(gray, str(boxCnt))
