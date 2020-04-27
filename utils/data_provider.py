@@ -111,26 +111,22 @@ def load_batch_image_labels(batch):
     return image_list_all, label_list_all
 
 
-# 随机抽取16张图片再旋转，保证训练集样本均衡
+# 随机抽取48张图片再旋转，保证训练集样本均衡
 def sample_image_label(image_list_all, label_list_all):
 
     image_label_list = list(zip(image_list_all, label_list_all))
     np.random.shuffle(image_label_list)
     logger.debug("shuffle了所有的小图和标签")
-    val_image_names = random.sample(image_label_list, 16)
+    val_image_names = random.sample(image_label_list, 48)
     logger.debug("一个批次随机抽取小图的数量[%d]张，准备加载...", len(val_image_names))
 
     image_list_sample = []
     label_list_sample = []
     for image_label_pair in val_image_names:  # 遍历所有的图片文件
-        try:
-            image = image_label_pair[0]
-            label = image_label_pair[1]
-            image_list_sample.append(image)
-            label_list_sample.append(label)
-        except BaseException as e:
-            traceback.format_exc()
-            logger.error("加载一个批次图片出现异常：", str(e))
+        image = image_label_pair[0]
+        label = image_label_pair[1]
+        image_list_sample.append(image)
+        label_list_sample.append(label)
 
     logger.debug("随机抽取并成功加载[%d]张小图作为一个批次到内存中", len(image_list_sample))
     logger.debug("随机抽取并成功加载到内存中一个批次的小图的标签:%s", label_list_sample)
@@ -194,26 +190,46 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
     '''
     image_list_all = []
     label_list_all = []
-    for img in image_list_rotate:
-        img_rotate_1 = rotate(img, 90, scale=1.0)
-        img_rotate_2 = rotate(img, 180, scale=1.0)
-        img_rotate_3 = rotate(img, 270, scale=1.0)
+
+    for img in image_list_rotate[0:12]:
         image_list_all.append(img)
+        label_list_all.append(0)
+
+    for img in image_list_rotate[12:24]:
+        img_rotate_1 = rotate(img, 90, scale=1.0)
         image_list_all.append(img_rotate_1)
+        label_list_all.append(1)
+
+    for img in image_list_rotate[24:36]:
+        img_rotate_2 = rotate(img, 180, scale=1.0)
         image_list_all.append(img_rotate_2)
+        label_list_all.append(2)
+
+    for img in image_list_rotate[36:48]:
+        img_rotate_3 = rotate(img, 270, scale=1.0)
         image_list_all.append(img_rotate_3)
-        label_0 = 0
-        label_1 = 1
-        label_2 = 2
-        label_3 = 3
-        label_list_all.append(label_0)
-        label_list_all.append(label_1)
-        label_list_all.append(label_2)
-        label_list_all.append(label_3)
+        label_list_all.append(3)
 
     logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", label_list_all)
     logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", len(image_list_all))
     return image_list_all, label_list_all
+
+
+def shuffle_image(image_list_all, label_list_all):
+    image_label_list = list(zip(image_list_all, label_list_all))
+    np.random.shuffle(image_label_list)
+    logger.debug("shuffle了随机抽取的的小图和标签")
+
+    image_list_sample = []
+    label_list_sample = []
+    for image_label_pair in image_label_list:  # 遍历所有的图片文件
+        image = image_label_pair[0]
+        label = image_label_pair[1]
+        image_list_sample.append(image)
+        label_list_sample.append(label)
+
+    logger.debug("shuffle后成功加载[%d]张小图作为一个批次到内存中", len(image_list_sample))
+    logger.debug("shuffle后成功加载到内存中一个批次的小图的标签:%s", label_list_sample)
 
 
 def generator(label_file, batch_num):
