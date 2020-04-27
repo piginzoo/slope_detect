@@ -272,7 +272,7 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
         i +=1
 
     logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", label_list_all)
-    logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", len(label_list_all))
+    logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", len(image_list_all))
     return image_list_all, label_list_all
 
 
