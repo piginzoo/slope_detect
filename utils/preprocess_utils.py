@@ -69,7 +69,7 @@ def get_patches(img):
         #show(candidate_patch,str(boxCnt))
         #print(hIdx, wIdx, boxCnt)
         # >5个才作为备选，用于检验歪斜
-        if boxCnt >=10:
+        if boxCnt >=8:
             candiIdx.append(backupIdx[patch_idx])
             done_counter+=1
         if done_counter>=32: break
@@ -167,11 +167,14 @@ def nms(boxes, overlapThresh):
 
 if __name__ == '__main__':
     #img = cv2.imread("data/debug/images/ocr_o_RJifyfKN1569570661198_e4UaHf891569570683130_7250508932517050569.JPG")
-    img = cv2.imread("utils/data/ocr_o_eRlSDoDy1570411113357_ZPEdhBzQ1570411141892_6659229788060993944.JPG")
-    #print(img.shape)
+    #img = cv2.imread("utils/data/ocr_o_eRlSDoDy1570411113357_ZPEdhBzQ1570411141892_6659229788060993944.JPG")
+
+    img = cv2.imread("utils/data/ocr_o_kHqEniGs1569291613729_bKvzmhEe1569291695834_1589145655907490510.JPG")
+    print(img.shape)
     patches = get_patches(img)
     i = 0
     for p in patches:
         cv2.imwrite(os.path.join("utils/data/patches/" + str(i) + ".jpg"),p)
         i +=1
+    print(i)
     #print(patches)
