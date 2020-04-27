@@ -15,8 +15,8 @@ import numpy as np
 
 logger = logging.getLogger("Train")
 FLAGS = tf.app.flags.FLAGS
-CLASS_NAME = [0,90,180,270]
-
+#CLASS_NAME = [0,90,180,270]
+CLASS_NAME = [0,270,180,90]
 
 def init_params(model_dir='model',model_name=''):
     tf.app.flags.DEFINE_string('image_name','', '')         # 被预测的图片名字，为空就预测目录下所有的文件

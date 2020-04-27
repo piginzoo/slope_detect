@@ -113,7 +113,6 @@ def main():
         input_images, classes = init_model()
         sess = restore_session()
         classes = pred(sess, classes, input_images, np.array(image_list))
-        #classes = pred(sess, classes, input_images, data_util.prepare4vgg(image_list))
         logger.debug("预测的标签:%s",classes)
 
         # TODO:预测出来多个小图的标签，取众数作为大图的标签

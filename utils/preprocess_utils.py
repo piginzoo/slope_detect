@@ -67,7 +67,7 @@ def get_patches(img):
         # 用MSER+NMS，找有多少个包含文字的框
         candidate_patch = candidate_patches[patch_idx]
         boxCnt = getTextBoxCnt(candidate_patch)
-        #show(candidate_patch,str(boxCnt))
+        show(candidate_patch,str(boxCnt))
         #print(hIdx, wIdx, boxCnt)
         # >5个才作为备选，用于检验歪斜
         if boxCnt > 10:
@@ -167,14 +167,17 @@ def nms(boxes, overlapThresh):
 
 
 if __name__ == '__main__':
-    img = cv2.imread("data/debug/images/ocr_o_RJifyfKN1569570661198_e4UaHf891569570683130_7250508932517050569.JPG")
+    #img = cv2.imread("data/debug/images/ocr_o_RJifyfKN1569570661198_e4UaHf891569570683130_7250508932517050569.JPG")
+    img = cv2.imread("utils/data/ocr_o_eRlSDoDy1570411113357_ZPEdhBzQ1570411141892_6659229788060993944.JPG")
     #print(img.shape)
-    #tuning_degree, tuning_image = tuning(img)
-
     patches = get_patches(img)
     i = 0
     for p in patches:
-        cv2.imwrite(os.path.join("data/debug/patches/" + str(i) + ".jpg"),p)
+        cv2.imwrite(os.path.join("utils/data/patches/" + str(i) + ".jpg"),p)
         i +=1
-
     #print(patches)
+
+# if __name__ == '__main__':
+#     gray = cv2.imread("data/0.jpg",0)
+#     boxCnt = getTextBoxCnt(gray)
+#     show(gray, str(boxCnt))

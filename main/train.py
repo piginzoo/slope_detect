@@ -1,5 +1,6 @@
 import datetime
 import os
+import cv2
 import time
 import numpy as np
 import tensorflow as tf
@@ -22,10 +23,10 @@ tf.app.flags.DEFINE_float('decay_rate', 0.5, '')#？？？
 tf.app.flags.DEFINE_float('moving_average_decay', 0.997, '')
 tf.app.flags.DEFINE_string('train_dir','data/train','')
 tf.app.flags.DEFINE_string('train_label','data/train.txt','')
-tf.app.flags.DEFINE_integer('train_batch',30,'')
+tf.app.flags.DEFINE_integer('train_batch',3,'')
 tf.app.flags.DEFINE_string('validate_dir','data/validate','')
 tf.app.flags.DEFINE_string('validate_label','data/validate.txt','')
-tf.app.flags.DEFINE_integer('validate_batch',32,'')
+tf.app.flags.DEFINE_integer('validate_batch',2,'')
 tf.app.flags.DEFINE_integer('validate_times',10,'')
 tf.app.flags.DEFINE_integer('early_stop',5,'')
 tf.app.flags.DEFINE_integer('num_readers', 2, '')#同时启动的进程2个
@@ -118,7 +119,7 @@ def main(argv=None):
     tf.summary.scalar("Recall",v_recall)
     tf.summary.scalar("Precision",v_precision)
     tf.summary.scalar("Accuracy", v_accuracy)
-    #tf.summary.scalar("F1",v_f1)
+    tf.summary.scalar("F1",v_f1)
 
 
 
@@ -198,10 +199,10 @@ def main(argv=None):
                     best_accuracy = accuracy_value
                     early_stop_counter = 0
                     # 每次效果好的话，就保存一个模型
-                    filename = ('ctpn-{:s}-{:d}'.format(train_start_time,step + 1) + '.ckpt')
+                    filename = ('rotate-{:s}-{:d}'.format(train_start_time,step + 1) + '.ckpt')
                     filename = os.path.join(FLAGS.model, filename)
                     saver.save(sess, filename)
-                    logger.info("在第%d步，保存了最好的模型文件：%s，Faccuracy：%f",step,filename,best_accuracy)
+                    logger.info("在第%d步，保存了最好的模型文件：%s，accuracy：%f",step,filename,best_accuracy)
                 else:
                     logger.info("新accuracy值[%f]小于过去最好的accuracy值[%f]，早停计数器+1", accuracy_value, best_accuracy)
                     early_stop_counter+= 1
@@ -274,6 +275,13 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
         image_label = np.argmax(counts)
         # logger.debug("预测结果为：%r",classes)
         # logger.debug("Label为：%r",image_label)
+
+
+        m = 0
+        for p in image_list:
+            cv2.imwrite(os.path.join("data/check/validate/" + str(m) + ".jpg"), p)
+            m += 1
+
 
         image_label_all.append(image_label)
         classes_all.append(classes)
