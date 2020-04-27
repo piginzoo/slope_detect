@@ -271,8 +271,8 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
         cv2.imwrite(os.path.join("data/check0427/check/train/" + str(i) + ".jpg"),p)
         i +=1
 
-    #logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", label_list_all)
-    #logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", len(label_list_all))
+    logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", label_list_all)
+    logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", len(label_list_all))
     return image_list_all, label_list_all
 
 
