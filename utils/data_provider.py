@@ -201,13 +201,9 @@ def rotate_to_0(image_list_sample,label_list_sample):
 
     if 0 in label_list_sample:
         index0 = np.where(arr == 0)
-        #print("0的个数：",len(index0[0]))
-        #print("index0[0]:",index0[0])
         for l in index0[0]:
-            #print("l:",l)
             img = image_list_sample[l]
             l = 0
-            #show(img, str(l))
             label_list_rotate.append(l)
             image_list_rotate.append(img)
 
@@ -218,7 +214,6 @@ def rotate_to_0(image_list_sample,label_list_sample):
             img = image_list_sample[i]
             img = rotate(img, -90, scale=1.0)
             i = 0
-            #show(img, str(i))
             label_list_rotate.append(i)
             image_list_rotate.append(img)
 
@@ -228,7 +223,6 @@ def rotate_to_0(image_list_sample,label_list_sample):
             img = image_list_sample[j]
             img = rotate(img, 180, scale=1.0)
             j = 0
-            #show(img, str(j))
             label_list_rotate.append(j)
             image_list_rotate.append(img)
 
@@ -237,11 +231,11 @@ def rotate_to_0(image_list_sample,label_list_sample):
         for k in index3[0]:
             img = image_list_sample[k]
             img = rotate(img, 90, scale=1.0)
-            #show(img, str(k))
             k = 0
             label_list_rotate.append(k)
             image_list_rotate.append(img)
 
+    image_list_rotate = np.stack(image_list_rotate, axis=0)
     logger.debug("统一旋转正后加载[%s]张小图作为一个批次到内存中", len(label_list_rotate))
     return image_list_rotate, label_list_rotate
 
@@ -273,6 +267,7 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
         # show(img_rotate_2, str(label_2))
         # show(img_rotate_3, str(label_3))
 
+    image_list_all = np.stack(image_list_all, axis=0)
     i = 0
     for p in image_list_all:
         cv2.imwrite(os.path.join("data/check/train/" + str(i) + ".jpg"),p)
