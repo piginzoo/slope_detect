@@ -279,7 +279,7 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
 
         m = 0
         for p in image_list:
-            cv2.imwrite(os.path.join("data/check/validate/" + str(m) + ".jpg"), p)
+            cv2.imwrite(os.path.join("data/check0427/check/validate/" + str(m) + ".jpg"), p)
             m += 1
 
 
