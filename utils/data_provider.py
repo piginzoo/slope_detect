@@ -95,7 +95,7 @@ def load_batch_image_labels(batch):
 
             # # TODO:将一张大图切成很多小图，再随机抽取小图灌到模型中进行训练
             image_list = preprocess_utils.get_patches(img)
-            logger.debug("将图像分成%d个patches", len(image_list))
+            logger.debug("将图像[%s]分成%d个patches", image_file,len(image_list))
             lab_list = [label]
             label_list = lab_list * len(image_list) # 保证同一张大图切出来的小图标签一致，小图数量和标签数量相同
             image_list_all.extend(image_list)
@@ -228,6 +228,14 @@ def shuffle_image(image_list_all, label_list_all):
         image_list_all_shuffle.append(image)
         label_list_all_shuffle.append(label)
 
+    i = 0
+    for p in image_list_all_shuffle:
+        cv2.imwrite(os.path.join("utils/data/check/" + str(i) + ".jpg"), p)
+        i += 1
+    with open("utils/data/check.txt","w", encoding='utf-8') as f:
+        f.write(str(label_list_all_shuffle))
+
+
     logger.debug("shuffle后成功加载[%d]张小图作为一个批次到内存中", len(image_list_all_shuffle))
     logger.debug("shuffle后成功加载到内存中一个批次的小图的标签:%s", label_list_all_shuffle)
     return image_list_all_shuffle,label_list_all_shuffle
@@ -281,6 +289,6 @@ if __name__ == '__main__':
     init_logger()
     # gen = get_batch(num_workers=1,batch_num=10,label_file="data/train.txt")
     # while True:
-    gen = generator(label_file="data/train.txt",batch_num=3)
+    gen = generator(label_file="data/train.txt",batch_num=8)
     image, bbox = next(gen)
     print('done')
