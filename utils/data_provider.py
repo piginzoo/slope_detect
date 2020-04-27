@@ -134,8 +134,9 @@ def sample_image_label(image_list_all, label_list_all):
     # 旋转做样本平衡
     image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
     image_list_all, label_list_all = rotate_and_balance(image_list_rotate, label_list_rotate)
-    logger.debug("旋转并做样本均衡后，加载[%s]张小图作为一个批次到内存中", len(label_list_all))
-    return image_list_all, label_list_all
+    #logger.debug("旋转并做样本均衡后，加载[%s]张小图作为一个批次到内存中", len(label_list_all))
+    image_list_all_shuffle, label_list_all_shuffle = shuffle_image(image_list_all, label_list_all)
+    return image_list_all_shuffle,label_list_all_shuffle
 
 
 def rotate_to_0(image_list_sample,label_list_sample):
@@ -210,8 +211,7 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
         image_list_all.append(img_rotate_3)
         label_list_all.append(3)
 
-    logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", label_list_all)
-    logger.debug("旋转并做样本均衡后，加载小图作为一个批次到内存中:%s", len(image_list_all))
+    logger.debug("旋转并做样本均衡后，加载[%s]张小图作为一个批次到内存中，标签：%s", len(image_list_all),label_list_all)
     return image_list_all, label_list_all
 
 
@@ -220,16 +220,17 @@ def shuffle_image(image_list_all, label_list_all):
     np.random.shuffle(image_label_list)
     logger.debug("shuffle了随机抽取的的小图和标签")
 
-    image_list_sample = []
-    label_list_sample = []
+    image_list_all_shuffle = []
+    label_list_all_shuffle = []
     for image_label_pair in image_label_list:  # 遍历所有的图片文件
         image = image_label_pair[0]
         label = image_label_pair[1]
-        image_list_sample.append(image)
-        label_list_sample.append(label)
+        image_list_all_shuffle.append(image)
+        label_list_all_shuffle.append(label)
 
-    logger.debug("shuffle后成功加载[%d]张小图作为一个批次到内存中", len(image_list_sample))
-    logger.debug("shuffle后成功加载到内存中一个批次的小图的标签:%s", label_list_sample)
+    logger.debug("shuffle后成功加载[%d]张小图作为一个批次到内存中", len(image_list_all_shuffle))
+    logger.debug("shuffle后成功加载到内存中一个批次的小图的标签:%s", label_list_all_shuffle)
+    return image_list_all_shuffle,label_list_all_shuffle
 
 
 def generator(label_file, batch_num):
