@@ -233,7 +233,7 @@ def rotate_to_0(image_list_sample,label_list_sample):
             label_list_rotate.append(k)
             image_list_rotate.append(img)
 
-    image_list_rotate = np.stack(image_list_rotate, axis=0)
+    #image_list_rotate = np.stack(image_list_rotate, axis=0)
     logger.debug("统一旋转正后加载[%s]张小图作为一个批次到内存中", len(label_list_rotate))
     return image_list_rotate, label_list_rotate
 
@@ -265,7 +265,7 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
         # show(img_rotate_2, str(label_2))
         # show(img_rotate_3, str(label_3))
 
-    image_list_all = np.stack(image_list_all, axis=0)
+    #image_list_all = np.stack(image_list_all, axis=0)
     i = 0
     for p in image_list_all:
         cv2.imwrite(os.path.join("data/check/train/" + str(i) + ".jpg"),p)
