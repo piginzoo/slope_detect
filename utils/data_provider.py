@@ -126,7 +126,7 @@ def _load_batch_image_labels(batch):
     for image_label_pair in batch:  # 遍历所有的图片文件
         try:
             image_file = image_label_pair[0]
-            _, _, name = image_file.split("/")
+            _, _, _, name = image_file.split("/")
             label = image_label_pair[1]
             if not os.path.exists(image_file):
                 logger.warning("样本图片%s不存在", image_file)
