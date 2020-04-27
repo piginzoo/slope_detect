@@ -241,8 +241,8 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
         classes = np.argmax(counts)
         counts = np.bincount(image_label)
         image_label = np.argmax(counts)
-        # logger.debug("预测结果为：%r",classes)
-        # logger.debug("Label为：%r",image_label)
+        logger.debug("预测结果为：%r",classes)
+        logger.debug("Label为：%r",image_label)
 
         # # check
         # m = 0
@@ -257,7 +257,7 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
 
     # pred和label格式如:[2,1,0,1,1,3]，0-3是对应的方向，0朝上，1朝右倒，2倒立，3朝左倒
     # accuracy: (tp + tn) / (p + n)
-    accuracy = accuracy + accuracy_score(image_label_all, classes_all,labels=[0,1,2,3],average='micro')
+    accuracy = accuracy + accuracy_score(image_label_all, classes_all)
     # precision tp / (tp + fp)
     precision = precision + precision_score(image_label_all, classes_all,labels=[0,1,2,3],average='micro')
     # recall: tp / (tp + fn)
