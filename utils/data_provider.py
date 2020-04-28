@@ -198,21 +198,21 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
     image_list_all = []
     label_list_all = []
 
-    for img in image_list_rotate[0:12]:
+    for img in image_list_rotate[0:16]:
         image_list_all.append(img)
         label_list_all.append(0)
 
-    for img in image_list_rotate[12:24]:
+    for img in image_list_rotate[16:32]:
         img_rotate_1 = rotate(img, 90, scale=1.0)
         image_list_all.append(img_rotate_1)
         label_list_all.append(1)
 
-    for img in image_list_rotate[24:36]:
+    for img in image_list_rotate[32:48]:
         img_rotate_2 = rotate(img, 180, scale=1.0)
         image_list_all.append(img_rotate_2)
         label_list_all.append(2)
 
-    for img in image_list_rotate[36:48]:
+    for img in image_list_rotate[48:64]:
         img_rotate_3 = rotate(img, 270, scale=1.0)
         image_list_all.append(img_rotate_3)
         label_list_all.append(3)
