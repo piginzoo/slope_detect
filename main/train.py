@@ -24,6 +24,7 @@ tf.app.flags.DEFINE_float('moving_average_decay', 0.997, '')
 tf.app.flags.DEFINE_string('train_dir','data/train','')
 tf.app.flags.DEFINE_string('train_label','data/train.txt','')
 tf.app.flags.DEFINE_integer('train_batch',3,'')
+tf.app.flags.DEFINE_integer('train_number',48,'')
 tf.app.flags.DEFINE_string('validate_dir','data/validate','')
 tf.app.flags.DEFINE_string('validate_label','data/validate.txt','')
 tf.app.flags.DEFINE_integer('validate_batch',2,'')
@@ -96,7 +97,7 @@ def main(argv=None):
     global_step = tf.get_variable('global_step', [], initializer=tf.constant_initializer(0), trainable=False)
     learning_rate = tf.Variable(FLAGS.learning_rate, trainable=False)
 
-    tf.summary.image('input', ph_input_image, 12)
+    tf.summary.image('input', ph_input_image, 48)
     tf.summary.scalar('learning_rate', learning_rate)
     adam_opt = tf.train.AdamOptimizer(learning_rate) # 默认是learning_rate是0.001，而且后期会不断的根据梯度调整，一般不用设这个数，所以我索性去掉了
 
@@ -121,8 +122,10 @@ def main(argv=None):
     tf.summary.scalar("Precision",v_precision)
     tf.summary.scalar("Accuracy", v_accuracy)
     tf.summary.scalar("F1",v_f1)
-    v_text = tf.Variable("",trainable=False)
-    tf.summary.text('tr_label', tf.convert_to_tensor(v_text))
+    v_pred_text = tf.Variable("",trainable=False)
+    v_ori_text = tf.Variable("", trainable=False)
+    tf.summary.text('pre_label', tf.convert_to_tensor(v_pred_text))
+    tf.summary.text('ori_label', tf.convert_to_tensor(v_ori_text))
     # v_accuracy = tf.Variable(0.001, trainable=False)
     # tf.summary.scalar("validate_Accuracy",v_f1)
 
@@ -190,27 +193,34 @@ def main(argv=None):
             logger.info("结束第%d步训练，结束sess.run",step)
             # logger.info("结束第%d步训练，结果%r",classes)
 
-            sess.run([tf.assign(v_text, tf.convert_to_tensor(str(pred_class)))])
-            summary_writer.add_summary(summary_str, global_step=step)
+            if step == 0:
+                sess.run([tf.assign(v_pred_text, tf.convert_to_tensor(str(pred_class)))])
+                sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
+                summary_writer.add_summary(summary_str, global_step=step)
 
             if step!=0 and step % FLAGS.evaluate_steps == 0:
                 logger.info("在第%d步，开始进行模型评估",step)
+                sess.run([tf.assign(v_pred_text, tf.convert_to_tensor(str(pred_class)))])
+                sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
+                summary_writer.add_summary(summary_str, global_step=step)
 
                 # data[4]是大框的坐标，是个数组，8个值
                 accuracy_value,precision_value,recall_value,f1_value = validate(sess,cls_preb,ph_input_image,ph_label)
 
-                if accuracy_value>best_accuracy:
-                    logger.info("新accuracy值[%f]大于过去最好的accuracy值[%f]，早停计数器重置",accuracy_value,best_accuracy)
-                    best_accuracy = accuracy_value
-                    early_stop_counter = 0
+                #if accuracy_value>best_accuracy:
+                logger.info("新accuracy值[%f]大于过去最好的accuracy值[%f]，早停计数器重置",accuracy_value,best_accuracy)
+                # 将原来的早停规则改成每100步保存一个新模型
+                if step % FLAGS.early_stop == 0:
+                    #best_accuracy = accuracy_value
+                    #early_stop_counter = 0
                     # 每次效果好的话，就保存一个模型
                     filename = ('rotate-{:s}-{:d}'.format(train_start_time,step + 1) + '.ckpt')
                     filename = os.path.join(FLAGS.model, filename)
                     saver.save(sess, filename)
                     logger.info("在第%d步，保存了最好的模型文件：%s，accuracy：%f",step,filename,best_accuracy)
-                else:
-                    logger.info("新accuracy值[%f]小于过去最好的accuracy值[%f]，早停计数器+1", accuracy_value, best_accuracy)
-                    early_stop_counter+= 1
+                #else:
+                    #logger.info("新accuracy值[%f]小于过去最好的accuracy值[%f]，早停计数器+1", accuracy_value, best_accuracy)
+                    #early_stop_counter+= 1
 
                 # 更新accuracy,Recall和Precision
                 sess.run([tf.assign(v_f1,       f1_value),
@@ -219,9 +229,9 @@ def main(argv=None):
                           tf.assign(v_accuracy, accuracy_value)])
                 logger.info("在第%d步，模型评估结束", step)
 
-                if early_stop_counter> FLAGS.early_stop:
-                    logger.warning("达到了早停计数次数：%d次，训练提前结束",early_stop_counter)
-                    break
+                # if early_stop_counter> FLAGS.early_stop:
+                #     logger.warning("达到了早停计数次数：%d次，训练提前结束",early_stop_counter)
+                #     break
 
             if step != 0 and step % FLAGS.decay_steps == 0:
                 logger.info("学习率(learning rate)衰减：%f=>%f",learning_rate.eval(),learning_rate.eval() * FLAGS.decay_rate)
