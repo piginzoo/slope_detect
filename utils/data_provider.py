@@ -85,7 +85,8 @@ def load_batch_image_labels(batch):
     for image_label_pair in batch:  # 遍历所有的图片文件
         try:
             image_file = image_label_pair[0]
-            _, _, name = image_file.split("/")
+            _, _, _, name = image_file.split("/")
+            # os.path.basename(image_file).
             label = image_label_pair[1]
             if not os.path.exists(image_file):
                 logger.warning("样本图片%s不存在", image_file)
@@ -228,12 +229,12 @@ def shuffle_image(image_list_all, label_list_all):
         image_list_all_shuffle.append(image)
         label_list_all_shuffle.append(label)
 
-    i = 0
-    for p in image_list_all_shuffle:
-        cv2.imwrite(os.path.join("utils/data/check/" + str(i) + ".jpg"), p)
-        i += 1
-    with open("utils/data/check.txt","w", encoding='utf-8') as f:
-        f.write(str(label_list_all_shuffle))
+    # i = 0
+    # for p in image_list_all_shuffle:
+    #     cv2.imwrite(os.path.join("utils/data/check/" + str(i) + ".jpg"), p)
+    #     i += 1
+    # with open("utils/data/check.txt","w", encoding='utf-8') as f:
+    #     f.write(str(label_list_all_shuffle))
 
 
     logger.debug("shuffle后成功加载[%d]张小图作为一个批次到内存中", len(image_list_all_shuffle))
