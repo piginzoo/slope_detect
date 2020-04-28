@@ -120,6 +120,9 @@ def main(argv=None):
     tf.summary.scalar("Precision",v_precision)
     tf.summary.scalar("Accuracy", v_accuracy)
     tf.summary.scalar("F1",v_f1)
+    # v_accuracy = tf.Variable(0.001, trainable=False)
+    # tf.summary.scalar("validate_Accuracy",v_f1)
+
     # with tf.name_scope('input_reshape'):
     #     image_shaped_input = tf.reshape(ph_input_image, [-1, 28, 28, 1])
     #     tf.summary.image('input', image_shaped_input, 48)
@@ -156,7 +159,7 @@ def main(argv=None):
     with tf.Session(config=config) as sess:
         if FLAGS.restore:
             ckpt = tf.train.latest_checkpoint(FLAGS.model)
-            logger.debug("最新的模型文件:%s",ckpt) #有点担心learning rate也被恢复
+            logger.debug("恢复最新的模型文件:%s",ckpt) #有点担心learning rate也被恢复
             saver.restore(sess, ckpt)
         else:
             logger.info("从头开始训练模型")
@@ -233,16 +236,17 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
         logger.debug("加载了验证集%d张",len(image_list))
 
         classes = sess.run(cls_pred,feed_dict={
-            ph_input_image:  data_util.prepare4vgg(image_list),
-            ph_label:        image_label
+            ph_input_image:  data_util.prepare4vgg(image_list)
+            # ,
+            # ph_label:        image_label
         })  # data[3]是图像的路径，传入sess是为了调试画图用
+        logger.debug("预测结果为：%r",classes)
+        logger.debug("Label为：%r",image_label)
 
         counts = np.bincount(classes)
         classes = np.argmax(counts)
         counts = np.bincount(image_label)
         image_label = np.argmax(counts)
-        # logger.debug("预测结果为：%r",classes)
-        # logger.debug("Label为：%r",image_label)
 
         # # check
         # m = 0
