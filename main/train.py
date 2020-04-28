@@ -120,6 +120,8 @@ def main(argv=None):
     tf.summary.scalar("Precision",v_precision)
     tf.summary.scalar("Accuracy", v_accuracy)
     tf.summary.scalar("F1",v_f1)
+    v_text = tf.Variable("",trainable=False)
+    tf.summary.text('tr_label', v_text)
     # v_accuracy = tf.Variable(0.001, trainable=False)
     # tf.summary.scalar("validate_Accuracy",v_f1)
 
@@ -159,7 +161,7 @@ def main(argv=None):
     with tf.Session(config=config) as sess:
         if FLAGS.restore:
             ckpt = tf.train.latest_checkpoint(FLAGS.model)
-            logger.debug("恢复最新的模型文件:%s",ckpt) #有点担心learning rate也被恢复
+            logger.debug("最新的模型文件:%s",ckpt) #有点担心learning rate也被恢复
             saver.restore(sess, ckpt)
         else:
             logger.info("从头开始训练模型")
@@ -185,6 +187,7 @@ def main(argv=None):
             _, summary_str,classes = sess.run([train_op, summary_op, cls_prob],
                 feed_dict = {ph_input_image: image_list , ph_label: label_list}) # data[3]是图像的路径，传入sess是为了调试画图用 np.array(image_list)
             logger.info("结束第%d步训练，结束sess.run",step)
+            sess.run([tf.assign(v_text, tf.convert_to_tensor(classes))])
             summary_writer.add_summary(summary_str, global_step=step)
 
             if step!=0 and step % FLAGS.evaluate_steps == 0:
