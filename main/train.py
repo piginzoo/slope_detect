@@ -84,7 +84,7 @@ def main(argv=None):
         FLAGS.save_checkpoint_steps)
 
     now = datetime.datetime.now()
-    # StyleTime = now.strftime("%Y-%m-%d-%H-%M-%S")
+    StyleTime = now.strftime("%Y-%m-%d-%H-%M-%S")
     # os.makedirs(os.path.join(FLAGS.logs_path, StyleTime))
     if not os.path.exists(FLAGS.model):
         os.makedirs(FLAGS.model)
