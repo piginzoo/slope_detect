@@ -34,6 +34,7 @@ tf.app.flags.DEFINE_string('gpu', '1', '') #使用第#1个GPU
 tf.app.flags.DEFINE_string('model', 'model', '')
 tf.app.flags.DEFINE_float('lambda1', 1000, '')
 tf.app.flags.DEFINE_string('logs_path', 'logs', '')
+tf.app.flags.DEFINE_string('tboard_path', '/app/tboard/rotate/', '')
 tf.app.flags.DEFINE_string('pretrained_model_path', 'data/vgg_16.ckpt', '')#VGG16的预训练好的模型，这个是直接拿来用的
 tf.app.flags.DEFINE_boolean('restore', False, '')
 tf.app.flags.DEFINE_boolean('debug', False, '')
@@ -141,7 +142,7 @@ def main(argv=None):
         train_op = tf.no_op(name='train_op') # no_op啥也不干，但是它依赖的操作都会被干一遍
 
     saver = tf.train.Saver(tf.global_variables(), max_to_keep=100)
-    summary_writer = tf.summary.FileWriter(os.path.join(FLAGS.logs_path,StyleTime), tf.get_default_graph())
+    summary_writer = tf.summary.FileWriter(os.path.join(FLAGS.tboard_path,StyleTime), tf.get_default_graph())
 
     if FLAGS.pretrained_model_path is not None:
         logger.info('加载vgg模型：%s',FLAGS.pretrained_model_path)
