@@ -121,7 +121,7 @@ def main(argv=None):
     tf.summary.scalar("Accuracy", v_accuracy)
     tf.summary.scalar("F1",v_f1)
     v_text = tf.Variable("",trainable=False)
-    tf.summary.text('tr_label', v_text)
+    tf.summary.text('tr_label', tf.convert_to_tensor(v_text))
     # v_accuracy = tf.Variable(0.001, trainable=False)
     # tf.summary.scalar("validate_Accuracy",v_f1)
 
