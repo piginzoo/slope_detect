@@ -187,7 +187,7 @@ def main(argv=None):
             _, summary_str,classes = sess.run([train_op, summary_op, cls_prob],
                 feed_dict = {ph_input_image: image_list , ph_label: label_list}) # data[3]是图像的路径，传入sess是为了调试画图用 np.array(image_list)
             logger.info("结束第%d步训练，结束sess.run",step)
-            sess.run([tf.assign(v_text, tf.convert_to_tensor(classes))])
+            sess.run([tf.assign(v_text, tf.convert_to_tensor(str(classes)))])
             summary_writer.add_summary(summary_str, global_step=step)
 
             if step!=0 and step % FLAGS.evaluate_steps == 0:
