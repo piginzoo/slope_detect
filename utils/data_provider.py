@@ -123,7 +123,7 @@ def sample_image_label(image_list_all, label_list_all):
     image_label_list = list(zip(image_list_all, label_list_all))
     np.random.shuffle(image_label_list)
     logger.debug("shuffle了所有的小图和标签")
-    val_image_names = random.sample(image_label_list, 64)
+    val_image_names = random.sample(image_label_list, 48)
     logger.debug("一个批次随机抽取小图的数量[%d]张，准备加载...", len(val_image_names))
 
     image_list_sample = []
@@ -198,21 +198,21 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
     image_list_all = []
     label_list_all = []
 
-    for img in image_list_rotate[0:16]:
+    for img in image_list_rotate[0:12]:
         image_list_all.append(img)
         label_list_all.append(0)
 
-    for img in image_list_rotate[16:32]:
+    for img in image_list_rotate[12:24]:
         img_rotate_1 = rotate(img, 90, scale=1.0)
         image_list_all.append(img_rotate_1)
         label_list_all.append(1)
 
-    for img in image_list_rotate[32:48]:
+    for img in image_list_rotate[24:36]:
         img_rotate_2 = rotate(img, 180, scale=1.0)
         image_list_all.append(img_rotate_2)
         label_list_all.append(2)
 
-    for img in image_list_rotate[48:64]:
+    for img in image_list_rotate[36:48]:
         img_rotate_3 = rotate(img, 270, scale=1.0)
         image_list_all.append(img_rotate_3)
         label_list_all.append(3)
