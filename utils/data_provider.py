@@ -73,9 +73,14 @@ def load_validate_data(validate_file, batch_num):
     logger.info("加载验证validate数据：%s，加载%d张", validate_file, batch_num)
     image_label_list = load_data(validate_file)
     val_image_names = random.sample(image_label_list, batch_num)
-    image_list, label_list = load_batch_image_labels(val_image_names)
+    image_list_all = []
+    label_list_all = []
+    for img_path in val_image_names:
+        image_list, label_list = load_batch_image_labels([img_path])
+        image_list_all.append(image_list)
+        label_list_all.append(label_list)
     # return np.array(image_list), label_list
-    return image_list, label_list
+    return image_list_all, label_list_all
 
 
 # 加载一个批次数量的图片和标签，数量为batch数
@@ -118,7 +123,7 @@ def sample_image_label(image_list_all, label_list_all):
     image_label_list = list(zip(image_list_all, label_list_all))
     np.random.shuffle(image_label_list)
     logger.debug("shuffle了所有的小图和标签")
-    val_image_names = random.sample(image_label_list, 16)
+    val_image_names = random.sample(image_label_list, 64)
     logger.debug("一个批次随机抽取小图的数量[%d]张，准备加载...", len(val_image_names))
 
     image_list_sample = []
