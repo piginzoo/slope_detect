@@ -55,7 +55,7 @@ def init_logger():
         level = logging.DEBUG
 
     logging.basicConfig(
-        format='%(asctime)s : %(levelname)s : %(message)s',
+        format='%(asctime)s - %(name)s : %(levelname)s : %(message)s',
         level=level,
         handlers=[logging.StreamHandler()])
 
@@ -231,15 +231,16 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
     f1 = 0
     image_label_all = []
     classes_all = []
-    for step in range(FLAGS.validate_times):
-        image_list, image_label = data_provider.load_validate_data(FLAGS.validate_label,FLAGS.validate_batch)
+    image_list_val, image_label_val = data_provider.load_validate_data(FLAGS.validate_label, FLAGS.validate_times)
+    for idx,image_list in enumerate(image_list_val):
+    # for step in range(FLAGS.validate_times):
         logger.debug("加载了验证集%d张",len(image_list))
-
         classes = sess.run(cls_pred,feed_dict={
             ph_input_image:  data_util.prepare4vgg(image_list)
             # ,
             # ph_label:        image_label
         })  # data[3]是图像的路径，传入sess是为了调试画图用
+        image_label = image_label_val[idx]
         logger.debug("预测结果为：%r",classes)
         logger.debug("Label为：%r",image_label)
 
