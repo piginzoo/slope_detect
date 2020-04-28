@@ -97,11 +97,11 @@ def load_batch_image_labels(batch):
                 logger.warning("样本图片%s不存在", image_file)
                 continue
             img = cv2.imread(image_file)
-            logger.debug("加载样本图片:%s", image_file)
+            # logger.debug("加载样本图片:%s", image_file)
 
             # # TODO:将一张大图切成很多小图，再随机抽取小图灌到模型中进行训练
             image_list = preprocess_utils.get_patches(img)
-            logger.debug("将图像[%s]分成%d个patches", image_file,len(image_list))
+            # logger.debug("将图像[%s]分成%d个patches", image_file,len(image_list))
             lab_list = [label]
             label_list = lab_list * len(image_list) # 保证同一张大图切出来的小图标签一致，小图数量和标签数量相同
             image_list_all.extend(image_list)
@@ -122,9 +122,9 @@ def sample_image_label(image_list_all, label_list_all):
 
     image_label_list = list(zip(image_list_all, label_list_all))
     np.random.shuffle(image_label_list)
-    logger.debug("shuffle了所有的小图和标签")
+    # logger.debug("shuffle了所有的小图和标签")
     val_image_names = random.sample(image_label_list, 48)
-    logger.debug("一个批次随机抽取小图的数量[%d]张，准备加载...", len(val_image_names))
+    # logger.debug("一个批次随机抽取小图的数量[%d]张，准备加载...", len(val_image_names))
 
     image_list_sample = []
     label_list_sample = []
@@ -134,8 +134,8 @@ def sample_image_label(image_list_all, label_list_all):
         image_list_sample.append(image)
         label_list_sample.append(label)
 
-    logger.debug("随机抽取并成功加载[%d]张小图作为一个批次到内存中", len(image_list_sample))
-    logger.debug("随机抽取并成功加载到内存中一个批次的小图的标签:%s", label_list_sample)
+    # logger.debug("随机抽取并成功加载[%d]张小图作为一个批次到内存中", len(image_list_sample))
+    # logger.debug("随机抽取并成功加载到内存中一个批次的小图的标签:%s", label_list_sample)
 
     # 旋转做样本平衡
     image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
@@ -188,7 +188,7 @@ def rotate_to_0(image_list_sample,label_list_sample):
             label_list_rotate.append(k)
             image_list_rotate.append(img)
     #image_list_rotate = np.stack(image_list_rotate, axis=0)
-    logger.debug("统一旋转正后加载[%s]张小图作为一个批次到内存中", len(image_list_rotate))
+    # logger.debug("统一旋转正后加载[%s]张小图作为一个批次到内存中", len(image_list_rotate))
     return image_list_rotate, label_list_rotate
 
 def rotate_and_balance(image_list_rotate, label_list_rotate):
@@ -217,14 +217,14 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
         image_list_all.append(img_rotate_3)
         label_list_all.append(3)
 
-    logger.debug("旋转并做样本均衡后，加载[%s]张小图作为一个批次到内存中，标签：%s", len(image_list_all),label_list_all)
+    # logger.debug("旋转并做样本均衡后，加载[%s]张小图作为一个批次到内存中，标签：%s", len(image_list_all),label_list_all)
     return image_list_all, label_list_all
 
 
 def shuffle_image(image_list_all, label_list_all):
     image_label_list = list(zip(image_list_all, label_list_all))
     np.random.shuffle(image_label_list)
-    logger.debug("shuffle了随机抽取的的小图和标签")
+    # logger.debug("shuffle了随机抽取的的小图和标签")
 
     image_list_all_shuffle = []
     label_list_all_shuffle = []
@@ -242,8 +242,8 @@ def shuffle_image(image_list_all, label_list_all):
     #     f.write(str(label_list_all_shuffle))
 
 
-    logger.debug("shuffle后成功加载[%d]张小图作为一个批次到内存中", len(image_list_all_shuffle))
-    logger.debug("shuffle后成功加载到内存中一个批次的小图的标签:%s", label_list_all_shuffle)
+    # logger.debug("shuffle后成功加载[%d]张小图作为一个批次到内存中", len(image_list_all_shuffle))
+    # logger.debug("shuffle后成功加载到内存中一个批次的小图的标签:%s", label_list_all_shuffle)
     return image_list_all_shuffle,label_list_all_shuffle
 
 
@@ -251,10 +251,10 @@ def generator(label_file, batch_num):
     image_label_list = load_data(label_file)
     while True:
         np.random.shuffle(image_label_list)
-        logger.debug("shuffle了所有的图片和标签")
+        # logger.debug("shuffle了所有的图片和标签")
         for i in range(0, len(image_label_list), batch_num):
             batch = image_label_list[i:i + batch_num]
-            logger.debug("获得批次数量(%d)：从%d到%d的图片/标签的名字，准备加载...", batch_num, i, i + batch_num)
+            # logger.debug("获得批次数量(%d)：从%d到%d的图片/标签的名字，准备加载...", batch_num, i, i + batch_num)
             image_list_all, label_list_all = load_batch_image_labels(batch)
             yield sample_image_label(image_list_all, label_list_all)
 

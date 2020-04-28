@@ -84,8 +84,8 @@ def main(argv=None):
         FLAGS.save_checkpoint_steps)
 
     now = datetime.datetime.now()
-    StyleTime = now.strftime("%Y-%m-%d-%H-%M-%S")
-    os.makedirs(os.path.join(FLAGS.logs_path, StyleTime))
+    # StyleTime = now.strftime("%Y-%m-%d-%H-%M-%S")
+    # os.makedirs(os.path.join(FLAGS.logs_path, StyleTime))
     if not os.path.exists(FLAGS.model):
         os.makedirs(FLAGS.model)
 
@@ -188,6 +188,8 @@ def main(argv=None):
             _, summary_str,classes = sess.run([train_op, summary_op, cls_prob],
                 feed_dict = {ph_input_image: image_list , ph_label: label_list}) # data[3]是图像的路径，传入sess是为了调试画图用 np.array(image_list)
             logger.info("结束第%d步训练，结束sess.run",step)
+            logger.info("结束第%d步训练，结果%r",classes)
+
             sess.run([tf.assign(v_text, tf.convert_to_tensor(str(classes)))])
             summary_writer.add_summary(summary_str, global_step=step)
 
