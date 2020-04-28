@@ -118,7 +118,7 @@ def sample_image_label(image_list_all, label_list_all):
     image_label_list = list(zip(image_list_all, label_list_all))
     np.random.shuffle(image_label_list)
     logger.debug("shuffle了所有的小图和标签")
-    val_image_names = random.sample(image_label_list, 48)
+    val_image_names = random.sample(image_label_list, 16)
     logger.debug("一个批次随机抽取小图的数量[%d]张，准备加载...", len(val_image_names))
 
     image_list_sample = []
