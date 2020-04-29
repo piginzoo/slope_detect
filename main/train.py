@@ -97,7 +97,7 @@ def main(argv=None):
     global_step = tf.get_variable('global_step', [], initializer=tf.constant_initializer(0), trainable=False)
     learning_rate = tf.Variable(FLAGS.learning_rate, trainable=False)
 
-    tf.summary.image('input', ph_input_image, 48)
+    tf.summary.image('input', ph_input_image, FLAGS.train_number)
     tf.summary.scalar('learning_rate', learning_rate)
     adam_opt = tf.train.AdamOptimizer(learning_rate) # 默认是learning_rate是0.001，而且后期会不断的根据梯度调整，一般不用设这个数，所以我索性去掉了
 
@@ -208,12 +208,12 @@ def main(argv=None):
             sess.run(v_tr_text)
             sess.run(v_ori_text)
 
-            # if step == 0:
-            #     sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
-            #     sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
-            #     summary_writer.add_summary(summary_str, global_step=step)
+            if step == 0:
+                sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
+                sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
+                summary_writer.add_summary(summary_str, global_step=step)
 
-            if step == 0 and step % FLAGS.evaluate_steps == 0:
+            if step != 0 and step % FLAGS.evaluate_steps == 0:
                 logger.info("在第%d步，开始进行模型评估",step)
                 sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
@@ -221,7 +221,7 @@ def main(argv=None):
 
                 accuracy_value,precision_value,recall_value,f1_value = validate(sess,cls_preb,ph_input_image,ph_label)
 
-                if accuracy_value>best_accuracy and accuracy_value >= 0.8:
+                if accuracy_value>best_accuracy and step >= 1000:
                     logger.info("新accuracy值[%f]大于过去最好的accuracy值[%f]，早停计数器重置",accuracy_value,best_accuracy)
                     best_accuracy = accuracy_value
                     early_stop_counter = 0
@@ -241,9 +241,9 @@ def main(argv=None):
                           tf.assign(v_accuracy, accuracy_value)])
                 logger.info("在第%d步，模型评估结束", step)
 
-                # if early_stop_counter> FLAGS.early_stop:
-                #     logger.warning("达到了早停计数次数：%d次，训练提前结束",early_stop_counter)
-                #     break
+                if early_stop_counter> FLAGS.early_stop:
+                    logger.warning("达到了早停计数次数：%d次，训练提前结束",early_stop_counter)
+                    break
 
             if step != 0 and step % FLAGS.decay_steps == 0:
                 logger.info("学习率(learning rate)衰减：%f=>%f",learning_rate.eval(),learning_rate.eval() * FLAGS.decay_rate)
