@@ -96,7 +96,7 @@ def load_batch_image_labels(batch):
                 logger.warning("样本图片%s不存在", image_file)
                 continue
             img = cv2.imread(image_file)
-            logger.debug("加载样本图片:%s", image_file)
+            logger.debug("加载样本图片:%s,标签为:%s", image_file,label)
 
             # # TODO:将一张大图切成很多小图，再随机抽取小图灌到模型中进行训练
             image_list = preprocess_utils.get_patches(img)
@@ -110,19 +110,19 @@ def load_batch_image_labels(batch):
             traceback.format_exc()
             logger.error("加载一个批次图片出现异常：", str(e))
 
-    #logger.debug("加载一个批次图片标签：%s", label_list_all)
+    logger.debug("加载一个批次图片标签：%s", label_list_all)
     #logger.debug("加载一个批次图片,切出小图[%s]张", len(image_list_all))
 
     return image_list_all, label_list_all
 
 
 # 随机抽取48张图片再旋转，保证训练集样本均衡
-def sample_image_label(image_list_all, label_list_all,train_number):
+def sample_image_label(image_list_all, label_list_all, train_number):
 
     image_label_list = list(zip(image_list_all, label_list_all))
     np.random.shuffle(image_label_list)
     # logger.debug("shuffle了所有的小图和标签")
-    val_image_names = random.sample(image_label_list,train_number)
+    val_image_names = random.sample(image_label_list, train_number)
     # logger.debug("一个批次随机抽取小图的数量[%d]张，准备加载...", len(val_image_names))
 
     image_list_sample = []
@@ -134,7 +134,7 @@ def sample_image_label(image_list_all, label_list_all,train_number):
         label_list_sample.append(label)
 
     # logger.debug("随机抽取并成功加载[%d]张小图作为一个批次到内存中", len(image_list_sample))
-    # logger.debug("随机抽取并成功加载到内存中一个批次的小图的标签:%s", label_list_sample)
+    logger.debug("随机抽取并成功加载到内存中一个批次的小图的标签:%s", label_list_sample)
 
     # 旋转做样本平衡
     #image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
@@ -245,7 +245,7 @@ def shuffle_image(image_list_all, label_list_all):
     return image_list_all_shuffle,label_list_all_shuffle
 
 
-def generator(label_file, batch_num,train_number=3):
+def generator(label_file, batch_num,train_number):
     image_label_list = load_data(label_file)
     while True:
         np.random.shuffle(image_label_list)
@@ -254,7 +254,7 @@ def generator(label_file, batch_num,train_number=3):
             batch = image_label_list[i:i + batch_num]
             # logger.debug("获得批次数量(%d)：从%d到%d的图片/标签的名字，准备加载...", batch_num, i, i + batch_num)
             image_list_all, label_list_all = load_batch_image_labels(batch)
-            if len(image_list_all) >= 48:
+            if len(image_list_all) >= train_number:
                 image_list_all_shuffle, label_list_all_shuffle = sample_image_label(image_list_all, label_list_all, train_number)
             else:
                 continue
