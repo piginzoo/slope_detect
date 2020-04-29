@@ -183,19 +183,16 @@ def main(argv=None):
         for step in range(FLAGS.max_steps):
 
             image_list,label_list = next(data_generator) # next(<迭代器>）来返回下一个结果
-
             # i = 0
             # for p in image_list:
             #     cv2.imwrite(os.path.join("data/0429/generator/" + str(i) + ".jpg"), p)
             #     i += 1
             # with open("data/0429/generator.txt","w", encoding='utf-8') as f:
             #     f.write(str(label_list))
-
             logger.debug("成功加载图片%d张，标签%d个：",len(image_list),len(label_list))
 
             image_list = data_util.prepare4vgg(image_list)
             logger.debug("开始第%d步训练，运行sess.run,数据shape：%r",step,image_list.shape)
-
             # i = 0
             # for p in image_list:
             #     cv2.imwrite(os.path.join("data/0429/prepare4vgg/" + str(i) + ".jpg"), p)
@@ -208,12 +205,12 @@ def main(argv=None):
             logger.info("结束第%d步训练，结束sess.run",step)
             # logger.info("结束第%d步训练，结果%r",classes)
 
-            if step == 0:
-                sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
-                sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
-                summary_writer.add_summary(summary_str, global_step=step)
+            # if step == 0:
+            #     sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
+            #     sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
+            #     summary_writer.add_summary(summary_str, global_step=step)
 
-            if step!=0 and step % FLAGS.evaluate_steps == 0:
+            if step == 0 and step % FLAGS.evaluate_steps == 0:
                 logger.info("在第%d步，开始进行模型评估",step)
                 sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
