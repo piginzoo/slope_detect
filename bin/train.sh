@@ -65,7 +65,7 @@ nohup python -m main.train \
     --tboard_path=tboard \
     --moving_average_decay=0.997 \
     --restore=False \
-    --early_stop=100 \
+    --early_stop=500 \
     --max_width=600 \
     --max_height=800 \
     >> ./logs/rotate_gpu0_$Date.log 2>&1 &
