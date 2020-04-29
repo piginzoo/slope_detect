@@ -183,20 +183,35 @@ def main(argv=None):
         for step in range(FLAGS.max_steps):
 
             image_list,label_list = next(data_generator) # next(<迭代器>）来返回下一个结果
+
+            i = 0
+            for p in image_list:
+                cv2.imwrite(os.path.join("data/0429/generator/" + str(i) + ".jpg"), p)
+                i += 1
+            with open("data/0429/generator.txt","w", encoding='utf-8') as f:
+                f.write(str(label_list))
+
             logger.debug("成功加载图片%d张，标签%d个：",len(image_list),len(label_list))
 
             image_list = data_util.prepare4vgg(image_list)
             logger.debug("开始第%d步训练，运行sess.run,数据shape：%r",step,image_list.shape)
+
+            i = 0
+            for p in image_list:
+                cv2.imwrite(os.path.join("data/0429/prepare4vgg/" + str(i) + ".jpg"), p)
+                i += 1
+            with open("data/0429/prepare4vgg.txt", "w", encoding='utf-8') as f:
+                f.write(str(label_list))
 
             _, summary_str,classes,pred_class = sess.run([train_op, summary_op, cls_prob,cls_preb],
                 feed_dict = {ph_input_image: image_list , ph_label: label_list}) # data[3]是图像的路径，传入sess是为了调试画图用 np.array(image_list)
             logger.info("结束第%d步训练，结束sess.run",step)
             # logger.info("结束第%d步训练，结果%r",classes)
 
-            if step == 0:
-                sess.run([tf.assign(v_pred_text, tf.convert_to_tensor(str(pred_class)))])
-                sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
-                summary_writer.add_summary(summary_str, global_step=step)
+            # if step == 0:
+            #     sess.run([tf.assign(v_pred_text, tf.convert_to_tensor(str(pred_class)))])
+            #     sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
+            #     summary_writer.add_summary(summary_str, global_step=step)
 
             if step!=0 and step % FLAGS.evaluate_steps == 0:
                 logger.info("在第%d步，开始进行模型评估",step)
@@ -207,20 +222,20 @@ def main(argv=None):
                 # data[4]是大框的坐标，是个数组，8个值
                 accuracy_value,precision_value,recall_value,f1_value = validate(sess,cls_preb,ph_input_image,ph_label)
 
-                #if accuracy_value>best_accuracy:
-                logger.info("新accuracy值[%f]大于过去最好的accuracy值[%f]，早停计数器重置",accuracy_value,best_accuracy)
+                if accuracy_value>best_accuracy and accuracy_value >= 0.8:
+                    logger.info("新accuracy值[%f]大于过去最好的accuracy值[%f]，早停计数器重置",accuracy_value,best_accuracy)
                 # 将原来的早停规则改成每100步保存一个新模型
-                if step % FLAGS.early_stop == 0:
-                    #best_accuracy = accuracy_value
-                    #early_stop_counter = 0
+                #if step % FLAGS.early_stop == 0:
+                    best_accuracy = accuracy_value
+                    early_stop_counter = 0
                     # 每次效果好的话，就保存一个模型
                     filename = ('rotate-{:s}-{:d}'.format(train_start_time,step + 1) + '.ckpt')
                     filename = os.path.join(FLAGS.model, filename)
                     saver.save(sess, filename)
                     logger.info("在第%d步，保存了最好的模型文件：%s，accuracy：%f",step,filename,best_accuracy)
-                #else:
-                    #logger.info("新accuracy值[%f]小于过去最好的accuracy值[%f]，早停计数器+1", accuracy_value, best_accuracy)
-                    #early_stop_counter+= 1
+                else:
+                    logger.info("新accuracy值[%f]小于过去最好的accuracy值[%f]，早停计数器+1", accuracy_value, best_accuracy)
+                    early_stop_counter+= 1
 
                 # 更新accuracy,Recall和Precision
                 sess.run([tf.assign(v_f1,       f1_value),
