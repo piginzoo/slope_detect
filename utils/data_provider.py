@@ -96,7 +96,7 @@ def load_batch_image_labels(batch):
                 logger.warning("样本图片%s不存在", image_file)
                 continue
             img = cv2.imread(image_file)
-            logger.debug("加载样本图片:%s,标签为:%s", image_file,label)
+            #logger.debug("加载样本图片:%s,标签为:%s", image_file,label)
 
             # # TODO:将一张大图切成很多小图，再随机抽取小图灌到模型中进行训练
             image_list = preprocess_utils.get_patches(img)
@@ -110,7 +110,7 @@ def load_batch_image_labels(batch):
             traceback.format_exc()
             logger.error("加载一个批次图片出现异常：", str(e))
 
-    logger.debug("加载一个批次图片标签：%s", label_list_all)
+    #logger.debug("加载一个批次图片标签：%s", label_list_all)
     #logger.debug("加载一个批次图片,切出小图[%s]张", len(image_list_all))
 
     return image_list_all, label_list_all
@@ -134,7 +134,7 @@ def sample_image_label(image_list_all, label_list_all, train_number):
         label_list_sample.append(label)
 
     # logger.debug("随机抽取并成功加载[%d]张小图作为一个批次到内存中", len(image_list_sample))
-    logger.debug("随机抽取并成功加载到内存中一个批次的小图的标签:%s", label_list_sample)
+    # logger.debug("随机抽取并成功加载到内存中一个批次的小图的标签:%s", label_list_sample)
 
     # 旋转做样本平衡
     image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
@@ -196,21 +196,21 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
     image_list_all = []
     label_list_all = []
 
-    for img in image_list_rotate[0:3]:
+    for img in image_list_rotate[0:16]:
         image_list_all.append(img)
         label_list_all.append(0)
 
-    for img in image_list_rotate[3:6]:
+    for img in image_list_rotate[16:32]:
         img_rotate_1 = rotate(img, 90, scale=1.0)
         image_list_all.append(img_rotate_1)
         label_list_all.append(1)
 
-    for img in image_list_rotate[6:9]:
+    for img in image_list_rotate[32:48]:
         img_rotate_2 = rotate(img, 180, scale=1.0)
         image_list_all.append(img_rotate_2)
         label_list_all.append(2)
 
-    for img in image_list_rotate[9:12]:
+    for img in image_list_rotate[48:64]:
         img_rotate_3 = rotate(img, 270, scale=1.0)
         image_list_all.append(img_rotate_3)
         label_list_all.append(3)
@@ -241,7 +241,7 @@ def shuffle_image(image_list_all, label_list_all):
 
 
     # logger.debug("shuffle后成功加载[%d]张小图作为一个批次到内存中", len(image_list_all_shuffle))
-    logger.debug("shuffle后成功加载到内存中一个批次的小图的标签:%s", label_list_all_shuffle)
+    # logger.debug("shuffle后成功加载到内存中一个批次的小图的标签:%s", label_list_all_shuffle)
     return image_list_all_shuffle,label_list_all_shuffle
 
 
