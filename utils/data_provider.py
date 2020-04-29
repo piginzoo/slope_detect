@@ -137,11 +137,11 @@ def sample_image_label(image_list_all, label_list_all, train_number):
     logger.debug("随机抽取并成功加载到内存中一个批次的小图的标签:%s", label_list_sample)
 
     # 旋转做样本平衡
-    #image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
-    #image_list_all, label_list_all = rotate_and_balance(image_list_rotate, label_list_rotate)
+    image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
+    image_list_all, label_list_all = rotate_and_balance(image_list_rotate, label_list_rotate)
     #logger.debug("旋转并做样本均衡后，加载[%s]张小图作为一个批次到内存中", len(label_list_all))
-    #image_list_all_shuffle, label_list_all_shuffle = shuffle_image(image_list_all, label_list_all)
-    return image_list_sample, label_list_sample
+    image_list_all_shuffle, label_list_all_shuffle = shuffle_image(image_list_all, label_list_all)
+    return image_list_all_shuffle, label_list_all_shuffle
 
 
 def rotate_to_0(image_list_sample,label_list_sample):
@@ -196,21 +196,21 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
     image_list_all = []
     label_list_all = []
 
-    for img in image_list_rotate[0:12]:
+    for img in image_list_rotate[0:3]:
         image_list_all.append(img)
         label_list_all.append(0)
 
-    for img in image_list_rotate[12:24]:
+    for img in image_list_rotate[3:6]:
         img_rotate_1 = rotate(img, 90, scale=1.0)
         image_list_all.append(img_rotate_1)
         label_list_all.append(1)
 
-    for img in image_list_rotate[24:36]:
+    for img in image_list_rotate[6:9]:
         img_rotate_2 = rotate(img, 180, scale=1.0)
         image_list_all.append(img_rotate_2)
         label_list_all.append(2)
 
-    for img in image_list_rotate[36:48]:
+    for img in image_list_rotate[9:12]:
         img_rotate_3 = rotate(img, 270, scale=1.0)
         image_list_all.append(img_rotate_3)
         label_list_all.append(3)
@@ -241,7 +241,7 @@ def shuffle_image(image_list_all, label_list_all):
 
 
     # logger.debug("shuffle后成功加载[%d]张小图作为一个批次到内存中", len(image_list_all_shuffle))
-    # logger.debug("shuffle后成功加载到内存中一个批次的小图的标签:%s", label_list_all_shuffle)
+    logger.debug("shuffle后成功加载到内存中一个批次的小图的标签:%s", label_list_all_shuffle)
     return image_list_all_shuffle,label_list_all_shuffle
 
 
