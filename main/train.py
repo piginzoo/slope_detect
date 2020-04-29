@@ -221,7 +221,7 @@ def main(argv=None):
 
                 accuracy_value,precision_value,recall_value,f1_value = validate(sess,cls_preb,ph_input_image,ph_label)
 
-                if accuracy_value>best_accuracy and step >= 1000:
+                if accuracy_value>best_accuracy and step >= 2000:
                     logger.info("新accuracy值[%f]大于过去最好的accuracy值[%f]，早停计数器重置",accuracy_value,best_accuracy)
                     best_accuracy = accuracy_value
                     early_stop_counter = 0
@@ -262,7 +262,7 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
     image_list_val, image_label_val = data_provider.load_validate_data(FLAGS.validate_label, FLAGS.validate_times)
     for idx,image_list in enumerate(image_list_val):
     # for step in range(FLAGS.validate_times):
-        logger.debug("加载了验证集%d张",len(image_list))
+        #logger.debug("加载了验证集%d张",len(image_list))
         classes = sess.run(cls_pred,feed_dict={
             ph_input_image:  data_util.prepare4vgg(image_list)
             # ,
