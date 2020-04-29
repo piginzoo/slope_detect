@@ -122,9 +122,9 @@ def main(argv=None):
     tf.summary.scalar("Precision",v_precision)
     tf.summary.scalar("Accuracy", v_accuracy)
     tf.summary.scalar("F1",v_f1)
-    v_pred_text = tf.Variable("",trainable=False)
+    v_tr_text = tf.Variable("",trainable=False)
     v_ori_text = tf.Variable("", trainable=False)
-    tf.summary.text('pre_label', tf.convert_to_tensor(v_pred_text))
+    tf.summary.text('tr_label', tf.convert_to_tensor(v_tr_text))
     tf.summary.text('ori_label', tf.convert_to_tensor(v_ori_text))
     # v_accuracy = tf.Variable(0.001, trainable=False)
     # tf.summary.scalar("validate_Accuracy",v_f1)
@@ -203,29 +203,26 @@ def main(argv=None):
             # with open("data/0429/prepare4vgg.txt", "w", encoding='utf-8') as f:
             #     f.write(str(label_list))
 
-            _, summary_str,classes,pred_class = sess.run([train_op, summary_op, cls_prob,cls_preb],
+            _, summary_str,classes,pred_class = sess.run([train_op, summary_op, cls_prob, cls_preb],
                 feed_dict = {ph_input_image: image_list , ph_label: label_list}) # data[3]是图像的路径，传入sess是为了调试画图用 np.array(image_list)
             logger.info("结束第%d步训练，结束sess.run",step)
             # logger.info("结束第%d步训练，结果%r",classes)
 
             if step == 0:
-                sess.run([tf.assign(v_pred_text, tf.convert_to_tensor(str(pred_class)))])
+                sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
                 summary_writer.add_summary(summary_str, global_step=step)
 
             if step!=0 and step % FLAGS.evaluate_steps == 0:
                 logger.info("在第%d步，开始进行模型评估",step)
-                sess.run([tf.assign(v_pred_text, tf.convert_to_tensor(str(pred_class)))])
+                sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
                 summary_writer.add_summary(summary_str, global_step=step)
 
-                # data[4]是大框的坐标，是个数组，8个值
                 accuracy_value,precision_value,recall_value,f1_value = validate(sess,cls_preb,ph_input_image,ph_label)
 
                 if accuracy_value>best_accuracy and accuracy_value >= 0.8:
                     logger.info("新accuracy值[%f]大于过去最好的accuracy值[%f]，早停计数器重置",accuracy_value,best_accuracy)
-                # 将原来的早停规则改成每100步保存一个新模型
-                #if step % FLAGS.early_stop == 0:
                     best_accuracy = accuracy_value
                     early_stop_counter = 0
                     # 每次效果好的话，就保存一个模型
