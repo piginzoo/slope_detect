@@ -167,7 +167,7 @@ def nms(boxes, overlapThresh):
 
 if __name__ == '__main__':
 
-    img = cv2.imread("data/debug/images/5.JPG")
+    img = cv2.imread("data/debug/images/20.JPG")
     print(img.shape)
     patches = get_patches(img)
     i = 0

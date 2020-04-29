@@ -19,7 +19,6 @@ logger = logging.getLogger("data provider")
 
 def init_logger():
     level = logging.DEBUG
-
     logging.basicConfig(
         format='%(asctime)s : %(levelname)s : %(message)s',
         level=level,
@@ -118,12 +117,12 @@ def load_batch_image_labels(batch):
 
 
 # 随机抽取48张图片再旋转，保证训练集样本均衡
-def sample_image_label(image_list_all, label_list_all):
+def sample_image_label(image_list_all, label_list_all,train_number):
 
     image_label_list = list(zip(image_list_all, label_list_all))
     np.random.shuffle(image_label_list)
     # logger.debug("shuffle了所有的小图和标签")
-    val_image_names = random.sample(image_label_list, 48)
+    val_image_names = random.sample(image_label_list,train_number)
     # logger.debug("一个批次随机抽取小图的数量[%d]张，准备加载...", len(val_image_names))
 
     image_list_sample = []
@@ -157,36 +156,36 @@ def rotate_to_0(image_list_sample,label_list_sample):
         index0 = np.where(arr == 0)
         for l in index0[0]:
             img = image_list_sample[l]
-            l = 0
-            label_list_rotate.append(l)
+            # l = 0
+            label_list_rotate.append(0)
             image_list_rotate.append(img)
 
     if 1 in label_list_sample:
         index1 = np.where(arr == 1)
         for i in index1[0]:
             img = image_list_sample[i]
-            img = rotate(img, -90, scale=1.0)
-            i = 0
-            label_list_rotate.append(i)
-            image_list_rotate.append(img)
+            img_rotate = rotate(img, -90, scale=1.0)
+            # i = 0
+            label_list_rotate.append(0)
+            image_list_rotate.append(img_rotate)
 
     if 2 in label_list_sample:
         index2 = np.where(arr == 2)
         for j in index2[0]:
             img = image_list_sample[j]
-            img = rotate(img, 180, scale=1.0)
-            j = 0
-            label_list_rotate.append(j)
-            image_list_rotate.append(img)
+            img_rotate = rotate(img, 180, scale=1.0)
+            # j = 0
+            label_list_rotate.append(0)
+            image_list_rotate.append(img_rotate)
 
     if 3 in label_list_sample:
         index3 = np.where(arr == 3)
         for k in index3[0]:
             img = image_list_sample[k]
-            img = rotate(img, 90, scale=1.0)
-            k = 0
-            label_list_rotate.append(k)
-            image_list_rotate.append(img)
+            img_rotate = rotate(img, 90, scale=1.0)
+            # k = 0
+            label_list_rotate.append(0)
+            image_list_rotate.append(img_rotate)
     #image_list_rotate = np.stack(image_list_rotate, axis=0)
     # logger.debug("统一旋转正后加载[%s]张小图作为一个批次到内存中", len(image_list_rotate))
     return image_list_rotate, label_list_rotate
@@ -247,7 +246,7 @@ def shuffle_image(image_list_all, label_list_all):
     return image_list_all_shuffle,label_list_all_shuffle
 
 
-def generator(label_file, batch_num):
+def generator(label_file, batch_num,train_number=3):
     image_label_list = load_data(label_file)
     while True:
         np.random.shuffle(image_label_list)
@@ -256,15 +255,19 @@ def generator(label_file, batch_num):
             batch = image_label_list[i:i + batch_num]
             # logger.debug("获得批次数量(%d)：从%d到%d的图片/标签的名字，准备加载...", batch_num, i, i + batch_num)
             image_list_all, label_list_all = load_batch_image_labels(batch)
-            yield sample_image_label(image_list_all, label_list_all)
+            if len(image_list_all) >= 48:
+                image_list_all_shuffle, label_list_all_shuffle = sample_image_label(image_list_all, label_list_all, train_number)
+            else:
+                continue
+            yield image_list_all_shuffle,label_list_all_shuffle
 
 
-def get_batch(num_workers, label_file, batch_num, **kwargs):
+def get_batch(num_workers, label_file, batch_num,train_number, **kwargs):
     try:
         # 这里又藏着一个generator，注意，这个函数get_batch()本身就是一个generator
         # 但是，这里，他的肚子里，还藏着一个generator()
         # 这个generator实际上就是真正去读一张图片，返回回来了
-        enqueuer = GeneratorEnqueuer(generator(label_file, batch_num, **kwargs), use_multiprocessing=True)
+        enqueuer = GeneratorEnqueuer(generator(label_file, batch_num,train_number, **kwargs), use_multiprocessing=True)
         enqueuer.start(max_queue_size=32, workers=num_workers)
         generator_output = None
         while True:
@@ -295,6 +298,6 @@ if __name__ == '__main__':
     init_logger()
     # gen = get_batch(num_workers=1,batch_num=10,label_file="data/train.txt")
     # while True:
-    gen = generator(label_file="data/train.txt",batch_num=8)
+    gen = generator(label_file="data/train.txt",batch_num=2)
     image, bbox = next(gen)
     print('done')

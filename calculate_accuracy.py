@@ -56,9 +56,9 @@ def calculate_accuracy(i,j,k):
 if __name__ == '__main__':
     # 2000张
     validate_path = "data/pred/2000/validate_2000.txt"
-    old_path = "data/pred/2000/pred_2000_20190507.txt"
-    new_path = "data/pred/2000/pred_2000_20200417.txt"
-    zhao_path = "data/pred/2000/pred_zhao.txt"
+    old_path = "data/pred/2000/pred_20190507.txt"
+    new_path = "data/pred/2000/pred_20200428.txt"
+    zhao_path = "data/pred/2000/pred_20200424_zhao.txt"
 
 
     # 测试

@@ -7,12 +7,26 @@ if [ "$1" = "help" ]; then
     exit
 fi
 
-echo "开始检测图片的倾斜....."
 
-python main/pred.py \
-    --gpu=1 \
+if [ "$1" = "old" ]; then
+    echo "老模型开始检测图片的倾斜....."
+    python main/pred.py \
+        --gpu=1 \
+        --image_name=$1 \
+        --pred_dir=data/validate \
+        --debug=True \
+        --model_dir=model \
+        --model_file=ctpn-2019-05-07-14-19-35-201.ckpt
+    exit
+fi
+
+
+echo "新模型开始检测图片的倾斜....."
+nohup python main/pred.py \
+    --gpu=0 \
     --image_name=$1 \
     --pred_dir=data/validate \
     --debug=True \
     --model_dir=model \
-    --model_file=ctpn-2019-05-07-14-19-35-201.ckpt
+    --model_file=rotate-2020-04-28-17-47-02-1101.ckpt \
+    >> ./logs/pred_rotate_gpu0_$Date.log 2>&1 &

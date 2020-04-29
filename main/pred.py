@@ -8,6 +8,7 @@ sys.path.append(os.getcwd())
 import nets.model as model
 from utils import data_util
 import numpy as np
+from utils import preprocess_utils
 
 '''
     旋转模型预测
@@ -15,8 +16,8 @@ import numpy as np
 
 logger = logging.getLogger("Train")
 FLAGS = tf.app.flags.FLAGS
-#CLASS_NAME = [0,90,180,270]
-CLASS_NAME = [0,270,180,90]
+NEW_CLASS_NAME = [0,90,180,270]
+OLD_CLASS_NAME = [0,270,180,90]
 
 def init_params(model_dir='model',model_name=''):
     tf.app.flags.DEFINE_string('image_name','', '')         # 被预测的图片名字，为空就预测目录下所有的文件
@@ -87,7 +88,7 @@ def restore_session():
     return sess
 
 
-def main():
+def main_old():
     image_name_list_all = get_images()
     lines = []
 
@@ -112,13 +113,54 @@ def main():
         sess = restore_session()
         classes = pred(sess, classes, input_images, np.array(image_list))
         for i in range(len(classes)):
-            logger.info("图片[%s]旋转角度为[%s]度", image_name_list[i], CLASS_NAME[classes[i]])
-            line = image_name_list[i] + " " + str(CLASS_NAME[classes[i]])
+            logger.info("图片[%s]旋转角度为[%s]度", image_name_list[i], OLD_CLASS_NAME[classes[i]])
+            line = image_name_list[i] + " " + str(OLD_CLASS_NAME[classes[i]])
             lines.append(line)
 
     with open("data/pred.txt", "w", encoding='utf-8') as f:
         for line in lines:
             f.write(str(line) + '\n')
+
+
+def main_new():
+    image_name_list_all = get_images()
+    lines = []
+
+    arr_split = np.array_split(image_name_list_all,2000)
+    for image_name_list in arr_split:
+        logger.info("批次处理：%r", len(image_name_list))
+
+        for image_name in image_name_list:
+            logger.info("探测图片[%s]开始", image_name)
+            try:
+                img = cv2.imread(image_name)
+
+                # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行预测
+                image_list = preprocess_utils.get_patches(img)
+                logger.debug("将图像分成%d个patches", len(image_list))
+                #logger.debug("需要检测的图片[%s]",image_list)
+            except:
+                print("Error reading image {}!".format(image_name))
+                continue
+        tf.reset_default_graph()  # 重置图表
+        input_images, classes = init_model()
+        sess = restore_session()
+        classes = pred(sess, classes, input_images, np.array(image_list))
+        logger.debug("预测的标签:%s",classes)
+
+        # TODO:预测出来多个小图的标签，取众数作为大图的标签
+        counts = np.bincount(classes)
+        classes = np.argmax(counts)
+        logger.debug("预测的标签:%s", classes)
+
+        logger.info("图片[%s]旋转角度为[%s]度", image_name, NEW_CLASS_NAME[classes])
+        line = image_name + " " + str(NEW_CLASS_NAME[classes])
+        lines.append(line)
+
+    with open("data/pred.txt", "w", encoding='utf-8') as f:
+        for line in lines:
+            f.write(str(line) + '\n')
+
 
 
 def pred(sess,classes,input_images,image_list):#,input_image,input_im_info,bbox_pred, cls_pred, cls_prob):
@@ -151,4 +193,8 @@ if __name__ == '__main__':
         exit()
     logger.info("使用GPU%s显卡进行训练", FLAGS.gpu)
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
-    main()
+
+    # 用创哥大图训练的模型预测
+    main_old()
+    # 用延美切小图训练的模型预测
+    main_new()
