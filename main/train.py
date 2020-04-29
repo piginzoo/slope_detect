@@ -184,24 +184,24 @@ def main(argv=None):
 
             image_list,label_list = next(data_generator) # next(<迭代器>）来返回下一个结果
 
-            i = 0
-            for p in image_list:
-                cv2.imwrite(os.path.join("data/0429/generator/" + str(i) + ".jpg"), p)
-                i += 1
-            with open("data/0429/generator.txt","w", encoding='utf-8') as f:
-                f.write(str(label_list))
+            # i = 0
+            # for p in image_list:
+            #     cv2.imwrite(os.path.join("data/0429/generator/" + str(i) + ".jpg"), p)
+            #     i += 1
+            # with open("data/0429/generator.txt","w", encoding='utf-8') as f:
+            #     f.write(str(label_list))
 
             logger.debug("成功加载图片%d张，标签%d个：",len(image_list),len(label_list))
 
             image_list = data_util.prepare4vgg(image_list)
             logger.debug("开始第%d步训练，运行sess.run,数据shape：%r",step,image_list.shape)
 
-            i = 0
-            for p in image_list:
-                cv2.imwrite(os.path.join("data/0429/prepare4vgg/" + str(i) + ".jpg"), p)
-                i += 1
-            with open("data/0429/prepare4vgg.txt", "w", encoding='utf-8') as f:
-                f.write(str(label_list))
+            # i = 0
+            # for p in image_list:
+            #     cv2.imwrite(os.path.join("data/0429/prepare4vgg/" + str(i) + ".jpg"), p)
+            #     i += 1
+            # with open("data/0429/prepare4vgg.txt", "w", encoding='utf-8') as f:
+            #     f.write(str(label_list))
 
             _, summary_str,classes,pred_class = sess.run([train_op, summary_op, cls_prob,cls_preb],
                 feed_dict = {ph_input_image: image_list , ph_label: label_list}) # data[3]是图像的路径，传入sess是为了调试画图用 np.array(image_list)
