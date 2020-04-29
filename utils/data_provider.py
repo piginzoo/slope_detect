@@ -111,7 +111,7 @@ def load_batch_image_labels(batch):
             logger.error("加载一个批次图片出现异常：", str(e))
 
     #logger.debug("加载一个批次图片标签：%s", label_list_all)
-    logger.debug("加载一个批次图片,切出小图[%s]张", len(image_list_all))
+    #logger.debug("加载一个批次图片,切出小图[%s]张", len(image_list_all))
 
     return image_list_all, label_list_all
 
