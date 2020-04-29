@@ -269,8 +269,8 @@ def validate(sess,cls_pred,ph_input_image,ph_label):
             # ph_label:        image_label
         })  # data[3]是图像的路径，传入sess是为了调试画图用
         image_label = image_label_val[idx]
-        logger.debug("预测结果为：%r",classes)
-        logger.debug("Label为：%r",image_label)
+        # logger.debug("预测结果为：%r",classes)
+        # logger.debug("Label为：%r",image_label)
 
         counts = np.bincount(classes)
         classes = np.argmax(counts)
