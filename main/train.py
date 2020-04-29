@@ -175,7 +175,7 @@ def main(argv=None):
 
         logger.debug("开始加载训练数据")
         # 是的，get_batch返回的是一个generator
-        data_generator = data_provider.get_batch(num_workers=FLAGS.num_readers,label_file=FLAGS.train_label,batch_num=FLAGS.train_batch)
+        data_generator = data_provider.get_batch(num_workers=FLAGS.num_readers,label_file=FLAGS.train_label,batch_num=FLAGS.train_batch,train_number=FLAGS.train_number)
         start = time.time()
         train_start_time = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime(start))
 
