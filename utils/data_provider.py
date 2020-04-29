@@ -137,11 +137,11 @@ def sample_image_label(image_list_all, label_list_all,train_number):
     # logger.debug("随机抽取并成功加载到内存中一个批次的小图的标签:%s", label_list_sample)
 
     # 旋转做样本平衡
-    image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
-    image_list_all, label_list_all = rotate_and_balance(image_list_rotate, label_list_rotate)
+    #image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
+    #image_list_all, label_list_all = rotate_and_balance(image_list_rotate, label_list_rotate)
     #logger.debug("旋转并做样本均衡后，加载[%s]张小图作为一个批次到内存中", len(label_list_all))
-    image_list_all_shuffle, label_list_all_shuffle = shuffle_image(image_list_all, label_list_all)
-    return image_list_all_shuffle,label_list_all_shuffle
+    #image_list_all_shuffle, label_list_all_shuffle = shuffle_image(image_list_all, label_list_all)
+    return image_list_sample, label_list_sample
 
 
 def rotate_to_0(image_list_sample,label_list_sample):
@@ -186,7 +186,6 @@ def rotate_to_0(image_list_sample,label_list_sample):
             # k = 0
             label_list_rotate.append(0)
             image_list_rotate.append(img_rotate)
-    #image_list_rotate = np.stack(image_list_rotate, axis=0)
     # logger.debug("统一旋转正后加载[%s]张小图作为一个批次到内存中", len(image_list_rotate))
     return image_list_rotate, label_list_rotate
 
