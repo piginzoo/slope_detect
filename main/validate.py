@@ -10,15 +10,14 @@ import random
 
 logger = logging.getLogger(__name__)
 
-
-tf.app.flags.DEFINE_string('validate_dir','data/validate','')
-tf.app.flags.DEFINE_string('validate_label','data/validate.txt','')
-tf.app.flags.DEFINE_integer('validate_times',10,'')
+tf.app.flags.DEFINE_string('validate_dir', 'data/validate', '')
+tf.app.flags.DEFINE_string('validate_label', 'data/validate.txt', '')
+tf.app.flags.DEFINE_integer('validate_times', 10, '')
 
 FLAGS = tf.app.flags.FLAGS
 
 
-def validate(sess,cls_pred,ph_input_image):
+def validate(sess, cls_pred, ph_input_image):
     #### 加载验证数据,随机加载FLAGS.validate_batch张
     accuracy = 0
     precision = 0
@@ -37,32 +36,35 @@ def validate(sess,cls_pred,ph_input_image):
     else:
         val_image_names = image_label_list
 
+    idx = 0
+    all_cnt = len(val_image_names)
+    true_cnt = 0
+    loop_cnt = 0
     for img_path in val_image_names:
         print("------------------------------")
         image_list, image_labels = data_provider.load_batch_image_labels([img_path])
-        logger.info("加载图片：%r,小图：%r", img_path ,len(image_list))
-        classes = sess.run(cls_pred,feed_dict={
-            ph_input_image:  data_util.prepare4vgg(image_list)
+        logger.info("加载图片：%r,小图：%r", img_path, len(image_list))
+        classes = sess.run(cls_pred, feed_dict={
+            ph_input_image: data_util.prepare4vgg(image_list)
             # ,
             # ph_label:        image_labels
         })  # data[3]是图像的路径，传入sess是为了调试画图用
-        logger.debug("预测结果为：%r",classes)
-        logger.debug("Label为：%r",image_labels[0])
+        logger.debug("预测结果为：%r", classes)
+        logger.debug("Label为：%r", image_labels[0])
 
         counts = np.bincount(classes)
         pred_class = np.argmax(counts)
-
         gt_label_counts = np.bincount(image_labels)
         gt_image_label = np.argmax(gt_label_counts)
-
-        # # check
-        # m = 0
-        # for p in image_list:
-        #     cv2.imwrite(os.path.join("data/check0427/check/validate/" + str(m) + ".jpg"), p)
-        #     m += 1
-
         image_label_all.append(gt_image_label)
         classes_all.append(pred_class)
+
+        loop_cnt += 1
+        logger.info("总%r第[%r]次验证，预测结果：%r,参考结果：%r", all_cnt, idx, pred_class, gt_image_label)
+        if str(gt_image_label) == str(pred_class):
+            true_cnt += 1
+        logger.info("总%r第[%r]次验证，正确条数：%r,正确率：%r", all_cnt, idx, true_cnt, true_cnt / loop_cnt)
+        idx += 1
     logger.debug("一个批次验证集的预测结果为：%r", classes_all)
     logger.debug("一个批次验证集的Label为：%r", image_label_all)
 
@@ -70,28 +72,28 @@ def validate(sess,cls_pred,ph_input_image):
     # accuracy: (tp + tn) / (p + n)
     accuracy = accuracy + accuracy_score(image_label_all, classes_all)
     # precision tp / (tp + fp)
-    precision = precision + precision_score(image_label_all, classes_all,labels=[0,1,2,3],average='micro')
+    precision = precision + precision_score(image_label_all, classes_all, labels=[0, 1, 2, 3], average='micro')
     # recall: tp / (tp + fn)
-    recall = recall + recall_score(image_label_all, classes_all,labels=[0,1,2,3],average='micro')
+    recall = recall + recall_score(image_label_all, classes_all, labels=[0, 1, 2, 3], average='micro')
     # f1: 2 tp / (2 tp + fp + fn)
-    f1 = f1 + f1_score(image_label_all, classes_all,labels=[0,1,2,3],average='micro')
+    f1 = f1 + f1_score(image_label_all, classes_all, labels=[0, 1, 2, 3], average='micro')
     # accuracy = accuracy/FLAGS.validate_times
     # precision = precision/FLAGS.validate_times
     # recall = recall/FLAGS.validate_times
     # f1 = f1/FLAGS.validate_times
 
-    return accuracy,precision,recall,f1
+    return accuracy, precision, recall, f1
 
 
-def restore_model(model_dir,model_file=None):
+def restore_model(model_dir, model_file=None):
     input_image = tf.placeholder(tf.float32, shape=[None, None, None, 3], name='input_image')
     _, class_pred = model.model(input_image)
     sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
     saver = tf.train.Saver(tf.global_variables())
     if model_file:
-        model_file_path = os.path.join(model_dir,model_file)
+        model_file_path = os.path.join(model_dir, model_file)
         logger.debug("恢复给定名字模型：%s", model_file_path)
-        saver.restore(sess,model_file_path)
+        saver.restore(sess, model_file_path)
     else:
         ckpt = tf.train.latest_checkpoint(model_dir)
         logger.debug("最新模型目录中最新模型文件:%s", ckpt)  # 有点担心learning rate也被恢复
@@ -99,13 +101,11 @@ def restore_model(model_dir,model_file=None):
     return sess, input_image, class_pred
 
 
-
 def init_logger():
     logging.basicConfig(
         format='%(asctime)s  - %(name)s- %(lineno)d : %(levelname)s : %(message)s',
         level=logging.DEBUG,
         handlers=[logging.StreamHandler()])
-
 
 
 def test2():
@@ -130,6 +130,7 @@ def test2():
     #         img_idx+=1
     #     x+=1
 
+
 def show(img, title='无标题'):
     """
     本地测试时展示图片
@@ -145,7 +146,6 @@ def show(img, title='无标题'):
     plt.show()
 
 
-
 if __name__ == '__main__':
     init_logger()
     tf.app.flags.DEFINE_boolean('debug', False, '')
@@ -155,4 +155,4 @@ if __name__ == '__main__':
 
     # tf.reset_default_graph()  # 重置图表
     sess, input_image, classes_pred = restore_model("model/")
-    validate(sess,classes_pred,input_image)
+    validate(sess, classes_pred, input_image)
