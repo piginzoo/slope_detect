@@ -73,20 +73,19 @@ def validate(sess,cls_pred,ph_input_image):
 
 
 def restore_model(model_dir,model_file=None):
+    input_image = tf.placeholder(tf.float32, shape=[None, None, None, 3], name='input_image')
+    _, class_pred = model.model(input_image)
     sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
     saver = tf.train.Saver(tf.global_variables())
-
     if model_file:
         model_file_path = os.path.join(model_dir,model_file)
         logger.debug("恢复给定名字模型：%s", model_file_path)
         saver.restore(sess,model_file_path)
     else:
-        ckpt = tf.train.latest_checkpoint(FLAGS.model_path)
+        ckpt = tf.train.latest_checkpoint(model_dir)
         logger.debug("最新模型目录中最新模型文件:%s", ckpt)  # 有点担心learning rate也被恢复
         saver.restore(sess, ckpt)
-    input_image = tf.placeholder(tf.float32, shape=[None, None, None, 3], name='input_image')
-    _, classes_pred = model.model(input_image)
-    return sess,input_image,classes_pred
+    return sess, input_image, class_pred
 
 
 
@@ -98,7 +97,6 @@ def init_logger():
 
 if __name__ == '__main__':
     init_logger()
-
-    tf.reset_default_graph()  # 重置图表
+    # tf.reset_default_graph()  # 重置图表
     sess, input_image, classes_pred = restore_model("model/")
     validate(sess,classes_pred,input_image)
