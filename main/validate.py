@@ -32,9 +32,9 @@ def validate(sess, cls_pred, ph_input_image):
     image_label_list = data_provider.load_data(validate_file)
     print("image_label_list:", image_label_list)
     if len(image_label_list) < batch_num:
-        val_image_names = random.sample(image_label_list, batch_num)
-    else:
         val_image_names = image_label_list
+    else:
+        val_image_names = random.sample(image_label_list, batch_num)
 
     idx = 0
     all_cnt = len(val_image_names)
