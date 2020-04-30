@@ -4,7 +4,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import nets.model as model
 import os
 import logging
-from utils import data_provider as data_provider, data_util
+from utils import data_provider as data_provider, data_util,preprocess_utils
 import cv2
 import random
 
@@ -24,7 +24,7 @@ def validate(sess, cls_pred, ph_input_image):
     recall = 0
     f1 = 0
     image_label_all = []
-    classes_all = []
+    pred_classes_all = []
     validate_file = FLAGS.validate_label
     batch_num = FLAGS.validate_times
 
@@ -42,22 +42,22 @@ def validate(sess, cls_pred, ph_input_image):
     loop_cnt = 0
     for img_path in val_image_names:
         print("------------------------------")
-        image_list, image_labels = data_provider.load_batch_image_labels([img_path])
+        image_file= img_path[0]
+        gt_image_label = img_path[1]
+        img = cv2.imread(image_file)
+        logger.debug("加载样本图片:%s,标签为:%s", image_file, gt_image_label)
+        # # TODO:将一张大图切成很多小图，再随机抽取小图灌到模型中进行训练
+        image_list = preprocess_utils.get_patches(img)
         logger.info("加载图片：%r,小图：%r", img_path, len(image_list))
         classes = sess.run(cls_pred, feed_dict={
             ph_input_image: data_util.prepare4vgg(image_list)
-            # ,
-            # ph_label:        image_labels
         })  # data[3]是图像的路径，传入sess是为了调试画图用
         logger.debug("预测结果为：%r", classes)
-        logger.debug("Label为：%r", image_labels[0])
 
         counts = np.bincount(classes)
         pred_class = np.argmax(counts)
-        gt_label_counts = np.bincount(image_labels)
-        gt_image_label = np.argmax(gt_label_counts)
         image_label_all.append(gt_image_label)
-        classes_all.append(pred_class)
+        pred_classes_all.append(pred_class)
 
         loop_cnt += 1
         logger.info("总%r第[%r]次验证，预测结果：%r,参考结果：%r", all_cnt, idx, pred_class, gt_image_label)
@@ -65,18 +65,18 @@ def validate(sess, cls_pred, ph_input_image):
             true_cnt += 1
         logger.info("总%r第[%r]次验证，正确条数：%r,正确率：%r", all_cnt, idx, true_cnt, true_cnt / loop_cnt)
         idx += 1
-    logger.debug("一个批次验证集的预测结果为：%r", classes_all)
+    logger.debug("一个批次验证集的预测结果为：%r", pred_classes_all)
     logger.debug("一个批次验证集的Label为：%r", image_label_all)
 
     # pred和label格式如:[2,1,0,1,1,3]，0-3是对应的方向，0朝上，1朝右倒，2倒立，3朝左倒
     # accuracy: (tp + tn) / (p + n)
-    accuracy = accuracy + accuracy_score(image_label_all, classes_all)
+    accuracy = accuracy + accuracy_score(image_label_all, pred_classes_all)
     # precision tp / (tp + fp)
-    precision = precision + precision_score(image_label_all, classes_all, labels=[0, 1, 2, 3], average='micro')
+    precision = precision + precision_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
     # recall: tp / (tp + fn)
-    recall = recall + recall_score(image_label_all, classes_all, labels=[0, 1, 2, 3], average='micro')
+    recall = recall + recall_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
     # f1: 2 tp / (2 tp + fp + fn)
-    f1 = f1 + f1_score(image_label_all, classes_all, labels=[0, 1, 2, 3], average='micro')
+    f1 = f1 + f1_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
     # accuracy = accuracy/FLAGS.validate_times
     # precision = precision/FLAGS.validate_times
     # recall = recall/FLAGS.validate_times
