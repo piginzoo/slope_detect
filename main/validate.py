@@ -98,7 +98,9 @@ def init_logger():
 if __name__ == '__main__':
     init_logger()
     tf.app.flags.DEFINE_boolean('debug', False, '')
-    os.environ['CUDA_VISIBLE_DEVICES'] = '3'
+    tf.app.flags.DEFINE_string('gpu', '0', '')  # 使用第#1个GPU
+
+    os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
 
     # tf.reset_default_graph()  # 重置图表
     sess, input_image, classes_pred = restore_model("model/")
