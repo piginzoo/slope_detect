@@ -154,5 +154,5 @@ if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
 
     # tf.reset_default_graph()  # 重置图表
-    sess, input_image, classes_pred = restore_model("model/")
+    sess, input_image, classes_pred = restore_model("model/","rotate-2020-04-29-22-34-44-2001.ckpt")
     validate(sess, classes_pred, input_image)
