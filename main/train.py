@@ -1,16 +1,12 @@
 import datetime
 import os
-import cv2
 import time
-import numpy as np
 import tensorflow as tf
 from tensorflow.contrib import slim
+
+from main.validate import validate
 from nets import model as model
 from utils import data_provider as data_provider
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import precision_score
-from sklearn.metrics import recall_score
-from sklearn.metrics import f1_score
 from utils import data_util
 import logging
 
@@ -25,10 +21,6 @@ tf.app.flags.DEFINE_string('train_dir','data/train','')
 tf.app.flags.DEFINE_string('train_label','data/train.txt','')
 tf.app.flags.DEFINE_integer('train_batch',3,'')
 tf.app.flags.DEFINE_integer('train_number',48,'')
-tf.app.flags.DEFINE_string('validate_dir','data/validate','')
-tf.app.flags.DEFINE_string('validate_label','data/validate.txt','')
-tf.app.flags.DEFINE_integer('validate_batch',2,'')
-tf.app.flags.DEFINE_integer('validate_times',10,'')
 tf.app.flags.DEFINE_integer('early_stop',5,'')
 tf.app.flags.DEFINE_integer('num_readers', 2, '')#同时启动的进程2个
 tf.app.flags.DEFINE_string('gpu', '1', '') #使用第#1个GPU
@@ -122,7 +114,7 @@ def main(argv=None):
     tf.summary.scalar("Precision",v_precision)
     tf.summary.scalar("Accuracy", v_accuracy)
     tf.summary.scalar("F1",v_f1)
-    v_tr_text = tf.Variable("",trainable=False)
+    v_tr_text = tf.Variable("abc",trainable=False)
     v_ori_text = tf.Variable("", trainable=False)
     tf.summary.text('tr_label', tf.convert_to_tensor(v_tr_text))
     tf.summary.text('ori_label', tf.convert_to_tensor(v_ori_text))
@@ -205,34 +197,29 @@ def main(argv=None):
             logger.info("结束第%d步训练，结束sess.run",step)
             # logger.info("结束第%d步训练，结果%r",classes)
 
-            sess.run(v_tr_text)
-            sess.run(v_ori_text)
-
             if step == 0:
+                summary_writer.add_summary(summary_str, global_step=step)
                 sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
-                summary_writer.add_summary(summary_str, global_step=step)
 
             if step != 0 and step % FLAGS.evaluate_steps == 0:
                 logger.info("在第%d步，开始进行模型评估",step)
+                summary_writer.add_summary(summary_str, global_step=step)
                 sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
-                summary_writer.add_summary(summary_str, global_step=step)
+                accuracy_value,precision_value,recall_value,f1_value = validate(sess, cls_preb, ph_input_image)
 
-                accuracy_value,precision_value,recall_value,f1_value = validate(sess,cls_preb,ph_input_image,ph_label)
-
-                if accuracy_value>best_accuracy and step >= 2000:
+                if accuracy_value>best_accuracy:
                     logger.info("新accuracy值[%f]大于过去最好的accuracy值[%f]，早停计数器重置",accuracy_value,best_accuracy)
                     best_accuracy = accuracy_value
                     early_stop_counter = 0
-                    # 每次效果好的话，就保存一个模型
-                    filename = ('rotate-{:s}-{:d}'.format(train_start_time,step + 1) + '.ckpt')
-                    filename = os.path.join(FLAGS.model, filename)
-                    saver.save(sess, filename)
-                    logger.info("在第%d步，保存了最好的模型文件：%s，accuracy：%f",step,filename,best_accuracy)
+                    save_model(saver, sess, best_accuracy, step, train_start_time)
                 else:
                     logger.info("新accuracy值[%f]小于过去最好的accuracy值[%f]，早停计数器+1", accuracy_value, best_accuracy)
                     early_stop_counter+= 1
+                    if early_stop_counter % 20:
+                        logger.info("新accuracy值[%f],早停[%d]次，保存模型", accuracy_value, early_stop_counter)
+                        save_model(saver, sess, accuracy_value, step, train_start_time)
 
                 # 更新accuracy,Recall和Precision
                 sess.run([tf.assign(v_f1,       f1_value),
@@ -250,59 +237,22 @@ def main(argv=None):
                 sess.run(tf.assign(learning_rate, learning_rate.eval() * FLAGS.decay_rate))
 
 
-def validate(sess,cls_pred,ph_input_image,ph_label):
+def save_model(saver, sess, best_accuracy, step, train_start_time):
+    """
+    保存模型
+    :param saver:
+    :param sess:
+    :param best_accuracy:
+    :param step:
+    :param train_start_time:
+    :return:
+    """
+    # 每次效果好的话，就保存一个模型
+    filename = ('rotate-{:s}-{:d}'.format(train_start_time, step + 1) + '.ckpt')
+    filename = os.path.join(FLAGS.model, filename)
+    saver.save(sess, filename)
+    logger.info("在第%d步，保存了最好的模型文件：%s，accuracy：%f", step, filename, best_accuracy)
 
-    #### 加载验证数据,随机加载FLAGS.validate_batch张
-    accuracy = 0
-    precision = 0
-    recall = 0
-    f1 = 0
-    image_label_all = []
-    classes_all = []
-    image_list_val, image_label_val = data_provider.load_validate_data(FLAGS.validate_label, FLAGS.validate_times)
-    for idx,image_list in enumerate(image_list_val):
-    # for step in range(FLAGS.validate_times):
-        #logger.debug("加载了验证集%d张",len(image_list))
-        classes = sess.run(cls_pred,feed_dict={
-            ph_input_image:  data_util.prepare4vgg(image_list)
-            # ,
-            # ph_label:        image_label
-        })  # data[3]是图像的路径，传入sess是为了调试画图用
-        image_label = image_label_val[idx]
-        # logger.debug("预测结果为：%r",classes)
-        # logger.debug("Label为：%r",image_label)
-
-        counts = np.bincount(classes)
-        classes = np.argmax(counts)
-        counts = np.bincount(image_label)
-        image_label = np.argmax(counts)
-
-        # # check
-        # m = 0
-        # for p in image_list:
-        #     cv2.imwrite(os.path.join("data/check0427/check/validate/" + str(m) + ".jpg"), p)
-        #     m += 1
-
-        image_label_all.append(image_label)
-        classes_all.append(classes)
-    logger.debug("一个批次验证集的预测结果为：%r", classes_all)
-    logger.debug("一个批次验证集的Label为：%r", image_label_all)
-
-    # pred和label格式如:[2,1,0,1,1,3]，0-3是对应的方向，0朝上，1朝右倒，2倒立，3朝左倒
-    # accuracy: (tp + tn) / (p + n)
-    accuracy = accuracy + accuracy_score(image_label_all, classes_all)
-    # precision tp / (tp + fp)
-    precision = precision + precision_score(image_label_all, classes_all,labels=[0,1,2,3],average='micro')
-    # recall: tp / (tp + fn)
-    recall = recall + recall_score(image_label_all, classes_all,labels=[0,1,2,3],average='micro')
-    # f1: 2 tp / (2 tp + fp + fn)
-    f1 = f1 + f1_score(image_label_all, classes_all,labels=[0,1,2,3],average='micro')
-    # accuracy = accuracy/FLAGS.validate_times
-    # precision = precision/FLAGS.validate_times
-    # recall = recall/FLAGS.validate_times
-    # f1 = f1/FLAGS.validate_times
-
-    return accuracy,precision,recall,f1
 
 if __name__ == '__main__':
     init_logger()

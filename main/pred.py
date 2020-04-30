@@ -14,7 +14,8 @@ from utils import preprocess_utils
     旋转模型预测
 '''
 
-logger = logging.getLogger("Train")
+logger = logging.getLogger(__name__)
+
 FLAGS = tf.app.flags.FLAGS
 NEW_CLASS_NAME = [0,90,180,270]
 OLD_CLASS_NAME = [0,270,180,90]

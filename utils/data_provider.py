@@ -14,7 +14,7 @@ from utils import preprocess_utils
 from utils import cut
 from utils.data_util import GeneratorEnqueuer
 
-logger = logging.getLogger("data provider")
+logger = logging.getLogger(__name__)
 
 
 def init_logger():
