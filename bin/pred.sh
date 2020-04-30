@@ -11,7 +11,7 @@ fi
 if [ "$1" = "old" ]; then
     echo "老模型开始检测图片的倾斜....."
     python main/pred.py \
-        --gpu=1 \
+        --gpu=0 \
         --image_name=$1 \
         --pred_dir=data/validate \
         --debug=True \
