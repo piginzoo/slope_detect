@@ -97,6 +97,8 @@ def init_logger():
 
 if __name__ == '__main__':
     init_logger()
+    tf.app.flags.DEFINE_string('debug', False, '')
+
     # tf.reset_default_graph()  # 重置图表
     sess, input_image, classes_pred = restore_model("model/")
     validate(sess,classes_pred,input_image)
