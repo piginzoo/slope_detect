@@ -91,7 +91,7 @@ def restore_model(model_dir,model_file=None):
 
 def init_logger():
     logging.basicConfig(
-        format='%(asctime)s : %(levelname)s : %(message)s',
+        format='%(asctime)s  - %(name)s : %(levelname)s : %(message)s',
         level=logging.DEBUG,
         handlers=[logging.StreamHandler()])
 
