@@ -5,13 +5,14 @@ import nets.model as model
 import os
 import logging
 from utils import data_provider as data_provider, data_util
+import cv2
+import random
 
 logger = logging.getLogger(__name__)
 
 
 tf.app.flags.DEFINE_string('validate_dir','data/validate','')
 tf.app.flags.DEFINE_string('validate_label','data/validate.txt','')
-tf.app.flags.DEFINE_integer('validate_batch',2,'')
 tf.app.flags.DEFINE_integer('validate_times',10,'')
 
 FLAGS = tf.app.flags.FLAGS
@@ -25,18 +26,28 @@ def validate(sess,cls_pred,ph_input_image):
     f1 = 0
     image_label_all = []
     classes_all = []
-    image_list_val, image_label_val = data_provider.load_validate_data(FLAGS.validate_label, FLAGS.validate_times)
-    for idx,image_list in enumerate(image_list_val):
-    # for step in range(FLAGS.validate_times):
-        #logger.debug("加载了验证集%d张",len(image_list))
+    validate_file = FLAGS.validate_label
+    batch_num = FLAGS.validate_times
+
+    logger.info("加载验证validate数据：%s，加载%d张", validate_file, batch_num)
+    image_label_list = data_provider.load_data(validate_file)
+    print("image_label_list:", image_label_list)
+    if len(image_label_list) < batch_num:
+        val_image_names = random.sample(image_label_list, batch_num)
+    else:
+        val_image_names = image_label_list
+
+    for img_path in val_image_names:
+        print("------------------------------")
+        image_list, image_labels = data_provider.load_batch_image_labels([img_path])
+        logger.info("加载图片：%r,小图：%r", img_path ,len(image_list))
         classes = sess.run(cls_pred,feed_dict={
             ph_input_image:  data_util.prepare4vgg(image_list)
             # ,
             # ph_label:        image_labels
         })  # data[3]是图像的路径，传入sess是为了调试画图用
-        image_labels = image_label_val[idx]
         logger.debug("预测结果为：%r",classes)
-        logger.debug("Label为：%r",image_labels)
+        logger.debug("Label为：%r",image_labels[0])
 
         counts = np.bincount(classes)
         pred_class = np.argmax(counts)
@@ -94,6 +105,46 @@ def init_logger():
         format='%(asctime)s  - %(name)s- %(lineno)d : %(levelname)s : %(message)s',
         level=logging.DEBUG,
         handlers=[logging.StreamHandler()])
+
+
+
+def test2():
+    validate_label = "data/pred.txt"
+    # image_list_val, image_label_val = load_validate_data(validate_label, 10)
+    # x = 0
+    # print(image_label_val)
+    # #show(image_list_val[0][0])
+    # #show(image_list_val[1][0])
+    # #show(image_list_val[2][0])
+    # # show(image_list_val[3][0])
+    # # show(image_list_val[4][0])
+    #
+    # for idx,image_list in enumerate(image_list_val):
+    #
+    #     #show(image_list[0])
+    #
+    #     print(idx,len(image_list))
+    #     img_idx=0
+    #     for img in image_list:
+    #         cv2.imwrite("data/output2/"+str(x) + "_"+ str(idx) +"_" + str(img_idx)+".jpg",img)
+    #         img_idx+=1
+    #     x+=1
+
+def show(img, title='无标题'):
+    """
+    本地测试时展示图片
+    :param img:
+    :param name:
+    :return:
+    """
+    import matplotlib.pyplot as plt
+    from matplotlib.font_manager import FontProperties
+    font = FontProperties(fname='/Users/yanmeima/workspace/ocr/crnn/data/data_generator/fonts/simhei.ttf')
+    plt.title(title, fontsize='large', fontweight='bold', FontProperties=font)
+    plt.imshow(img)
+    plt.show()
+
+
 
 if __name__ == '__main__':
     init_logger()

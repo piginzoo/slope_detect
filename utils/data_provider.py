@@ -67,20 +67,6 @@ def load_data(label_file):
     return list(zip(filenames, labels))
 
 
-# 按照FLAGS.validate_num 随机从目录中产生批量的数据，用于做验证集
-def load_validate_data(validate_file, batch_num):
-    logger.info("加载验证validate数据：%s，加载%d张", validate_file, batch_num)
-    image_label_list = load_data(validate_file)
-    val_image_names = random.sample(image_label_list, batch_num)
-    image_list_all = []
-    label_list_all = []
-    for img_path in val_image_names:
-        image_list, label_list = load_batch_image_labels([img_path])
-        image_list_all.append(image_list)
-        label_list_all.append(label_list)
-    # return np.array(image_list), label_list
-    return image_list_all, label_list_all
-
 
 # 加载一个批次数量的图片和标签，数量为batch数
 def load_batch_image_labels(batch):
@@ -89,18 +75,19 @@ def load_batch_image_labels(batch):
     for image_label_pair in batch:  # 遍历所有的图片文件
         try:
             image_file = image_label_pair[0]
-            #_, _, name = image_file.split("/")
-            #filepath,name = os.path.split(image_file)
             label = image_label_pair[1]
+            print("image_file:", image_file)
+            print("label:",label)
             if not os.path.exists(image_file):
                 logger.warning("样本图片%s不存在", image_file)
                 continue
             img = cv2.imread(image_file)
-            #logger.debug("加载样本图片:%s,标签为:%s", image_file,label)
+            logger.debug("加载样本图片:%s,标签为:%s", image_file,label)
 
             # # TODO:将一张大图切成很多小图，再随机抽取小图灌到模型中进行训练
             image_list = preprocess_utils.get_patches(img)
             # logger.debug("将图像[%s]分成%d个patches", image_file,len(image_list))
+
             lab_list = [label]
             label_list = lab_list * len(image_list) # 保证同一张大图切出来的小图标签一致，小图数量和标签数量相同
             image_list_all.extend(image_list)
@@ -118,7 +105,6 @@ def load_batch_image_labels(batch):
 
 # 随机抽取48张图片再旋转，保证训练集样本均衡
 def sample_image_label(image_list_all, label_list_all, train_number):
-
     image_label_list = list(zip(image_list_all, label_list_all))
     np.random.shuffle(image_label_list)
     # logger.debug("shuffle了所有的小图和标签")
@@ -140,8 +126,8 @@ def sample_image_label(image_list_all, label_list_all, train_number):
     image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
     image_list_all, label_list_all = rotate_and_balance(image_list_rotate, label_list_rotate)
     #logger.debug("旋转并做样本均衡后，加载[%s]张小图作为一个批次到内存中", len(label_list_all))
-    image_list_all_shuffle, label_list_all_shuffle = shuffle_image(image_list_all, label_list_all)
-    return image_list_all_shuffle, label_list_all_shuffle
+    #image_list_all_shuffle, label_list_all_shuffle = shuffle_image(image_list_all, label_list_all)
+    return image_list_all, label_list_all
 
 
 def rotate_to_0(image_list_sample,label_list_sample):
@@ -293,10 +279,15 @@ def get_batch(num_workers, label_file, batch_num,train_number, **kwargs):
             enqueuer.stop()
 
 
-if __name__ == '__main__':
+def test1():
     init_logger()
     # gen = get_batch(num_workers=1,batch_num=10,label_file="data/train.txt")
     # while True:
-    gen = generator(label_file="data/train.txt",batch_num=2)
+    gen = generator(label_file="data/train.txt", batch_num=2)
     image, bbox = next(gen)
     print('done')
+
+
+
+if __name__ == '__main__':
+    test1()
