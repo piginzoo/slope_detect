@@ -3,7 +3,6 @@
 Date=$(date +%Y%m%d%H%M)
 
 python -m main.validate \
-    --name=rotate_validate \
     --validate_dir=data/validate \
     --validate_batch=1 \
     --validate_times=100 \
