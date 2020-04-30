@@ -28,5 +28,5 @@ nohup python main/pred.py \
     --pred_dir=data/validate \
     --debug=True \
     --model_dir=model \
-    --model_file=rotate-2020-04-28-17-47-02-1101.ckpt \
+    --model_file=rotate-2020-04-29-22-34-44-5001.ckpt \
     >> ./logs/pred_rotate_gpu0_$Date.log 2>&1 &
