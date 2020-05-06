@@ -42,7 +42,6 @@ tf.logging.set_verbosity(tf.logging.DEBUG)
 
 logger = logging.getLogger("Train")
 
-
 def init_logger():
     level = logging.DEBUG
     if(FLAGS.debug):
@@ -93,9 +92,6 @@ def main(argv=None):
     tf.summary.scalar('learning_rate', learning_rate)
     adam_opt = tf.train.AdamOptimizer(learning_rate) # 默认是learning_rate是0.001，而且后期会不断的根据梯度调整，一般不用设这个数，所以我索性去掉了
 
-    # gpu_id = int(FLAGS.gpu)
-    # with tf.device('/gpu:%d' % gpu_id):
-    #     with tf.name_scope('model_%d' % gpu_id) as scope:
     cls_prob,cls_preb = model.model(ph_input_image)
     cross_entropy = model.loss(cls_prob,ph_label)
     batch_norm_updates_op = tf.group(*tf.get_collection(tf.GraphKeys.UPDATE_OPS))
@@ -114,12 +110,11 @@ def main(argv=None):
     tf.summary.scalar("Precision",v_precision)
     tf.summary.scalar("Accuracy", v_accuracy)
     tf.summary.scalar("F1",v_f1)
+    # 定义训练集训练前后的标签输出
     v_tr_text = tf.Variable("abc",trainable=False)
     v_ori_text = tf.Variable("", trainable=False)
     tf.summary.text('tr_label', tf.convert_to_tensor(v_tr_text))
     tf.summary.text('ori_label', tf.convert_to_tensor(v_ori_text))
-    # v_accuracy = tf.Variable(0.001, trainable=False)
-    # tf.summary.scalar("validate_Accuracy",v_f1)
 
     # with tf.name_scope('input_reshape'):
     #     image_shaped_input = tf.reshape(ph_input_image, [-1, 28, 28, 1])
@@ -173,14 +168,7 @@ def main(argv=None):
 
         logger.debug("开始训练")
         for step in range(FLAGS.max_steps):
-
             image_list,label_list = next(data_generator) # next(<迭代器>）来返回下一个结果
-            # i = 0
-            # for p in image_list:
-            #     cv2.imwrite(os.path.join("data/0429/generator/" + str(i) + ".jpg"), p)
-            #     i += 1
-            # with open("data/0429/generator.txt","w", encoding='utf-8') as f:
-            #     f.write(str(label_list))
             logger.debug("成功加载图片%d张，标签%d个：",len(image_list),len(label_list))
 
             image_list = data_util.prepare4vgg(image_list)
@@ -209,14 +197,14 @@ def main(argv=None):
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
                 accuracy_value,precision_value,recall_value,f1_value = validate(sess, cls_preb, ph_input_image)
 
-                if accuracy_value>best_accuracy:
+                if accuracy_value > best_accuracy:
                     logger.info("新accuracy值[%f]大于过去最好的accuracy值[%f]，早停计数器重置",accuracy_value,best_accuracy)
                     best_accuracy = accuracy_value
                     early_stop_counter = 0
                     save_model(saver, sess, best_accuracy, step, train_start_time)
                 else:
                     logger.info("新accuracy值[%f]小于过去最好的accuracy值[%f]，早停计数器+1", accuracy_value, best_accuracy)
-                    early_stop_counter+= 1
+                    early_stop_counter += 1
                     if early_stop_counter % 20:
                         logger.info("新accuracy值[%f],早停[%d]次，保存模型", accuracy_value, early_stop_counter)
                         save_model(saver, sess, accuracy_value, step, train_start_time)
@@ -228,7 +216,7 @@ def main(argv=None):
                           tf.assign(v_accuracy, accuracy_value)])
                 logger.info("在第%d步，模型评估结束", step)
 
-                if early_stop_counter> FLAGS.early_stop:
+                if early_stop_counter > FLAGS.early_stop:
                     logger.warning("达到了早停计数次数：%d次，训练提前结束",early_stop_counter)
                     break
 

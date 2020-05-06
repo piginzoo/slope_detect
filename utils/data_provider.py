@@ -103,7 +103,7 @@ def load_batch_image_labels(batch):
     return image_list_all, label_list_all
 
 
-# 随机抽取48张图片再旋转，保证训练集样本均衡
+# 随机抽取64张图片再旋转，保证训练集样本均衡
 def sample_image_label(image_list_all, label_list_all, train_number):
     image_label_list = list(zip(image_list_all, label_list_all))
     np.random.shuffle(image_label_list)
@@ -126,7 +126,7 @@ def sample_image_label(image_list_all, label_list_all, train_number):
     image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
     image_list_all, label_list_all = rotate_and_balance(image_list_rotate, label_list_rotate)
     #logger.debug("旋转并做样本均衡后，加载[%s]张小图作为一个批次到内存中", len(label_list_all))
-    #image_list_all_shuffle, label_list_all_shuffle = shuffle_image(image_list_all, label_list_all)
+    image_list_all_shuffle, label_list_all_shuffle = shuffle_image(image_list_all, label_list_all)
     return image_list_all, label_list_all
 
 
@@ -142,7 +142,6 @@ def rotate_to_0(image_list_sample,label_list_sample):
         index0 = np.where(arr == 0)
         for l in index0[0]:
             img = image_list_sample[l]
-            # l = 0
             label_list_rotate.append(0)
             image_list_rotate.append(img)
 
@@ -151,7 +150,6 @@ def rotate_to_0(image_list_sample,label_list_sample):
         for i in index1[0]:
             img = image_list_sample[i]
             img_rotate = rotate(img, -90, scale=1.0)
-            # i = 0
             label_list_rotate.append(0)
             image_list_rotate.append(img_rotate)
 
@@ -160,7 +158,6 @@ def rotate_to_0(image_list_sample,label_list_sample):
         for j in index2[0]:
             img = image_list_sample[j]
             img_rotate = rotate(img, 180, scale=1.0)
-            # j = 0
             label_list_rotate.append(0)
             image_list_rotate.append(img_rotate)
 
@@ -169,7 +166,6 @@ def rotate_to_0(image_list_sample,label_list_sample):
         for k in index3[0]:
             img = image_list_sample[k]
             img_rotate = rotate(img, 90, scale=1.0)
-            # k = 0
             label_list_rotate.append(0)
             image_list_rotate.append(img_rotate)
     # logger.debug("统一旋转正后加载[%s]张小图作为一个批次到内存中", len(image_list_rotate))
@@ -225,13 +221,12 @@ def shuffle_image(image_list_all, label_list_all):
     # with open("utils/data/check.txt","w", encoding='utf-8') as f:
     #     f.write(str(label_list_all_shuffle))
 
-
     # logger.debug("shuffle后成功加载[%d]张小图作为一个批次到内存中", len(image_list_all_shuffle))
     # logger.debug("shuffle后成功加载到内存中一个批次的小图的标签:%s", label_list_all_shuffle)
     return image_list_all_shuffle,label_list_all_shuffle
 
 
-def generator(label_file, batch_num,train_number):
+def generator(label_file, batch_num, train_number):
     image_label_list = load_data(label_file)
     while True:
         np.random.shuffle(image_label_list)
@@ -247,7 +242,7 @@ def generator(label_file, batch_num,train_number):
             yield image_list_all_shuffle,label_list_all_shuffle
 
 
-def get_batch(num_workers, label_file, batch_num,train_number, **kwargs):
+def get_batch(num_workers, label_file, batch_num, train_number, **kwargs):
     try:
         # 这里又藏着一个generator，注意，这个函数get_batch()本身就是一个generator
         # 但是，这里，他的肚子里，还藏着一个generator()

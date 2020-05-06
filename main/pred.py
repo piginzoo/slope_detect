@@ -126,6 +126,9 @@ def main_old():
 def main_new():
     image_name_list_all = get_images()
     lines = []
+    tf.reset_default_graph()  # 重置图表
+    input_images, classes = init_model()
+    sess = restore_session()
 
     arr_split = np.array_split(image_name_list_all,2000)
     for image_name_list in arr_split:
@@ -143,9 +146,7 @@ def main_new():
             except:
                 print("Error reading image {}!".format(image_name))
                 continue
-        tf.reset_default_graph()  # 重置图表
-        input_images, classes = init_model()
-        sess = restore_session()
+
         classes = pred(sess, classes, input_images, np.array(image_list))
         logger.debug("预测的标签:%s",classes)
 

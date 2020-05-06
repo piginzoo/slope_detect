@@ -4,14 +4,14 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import nets.model as model
 import os
 import logging
-from utils import data_provider as data_provider, data_util,preprocess_utils
+from utils import data_provider as data_provider, data_util, preprocess_utils
 import cv2
 import random
 
 logger = logging.getLogger(__name__)
 
 tf.app.flags.DEFINE_string('validate_dir', 'data/validate', '')
-tf.app.flags.DEFINE_string('validate_label', 'data/validate.txt', '')
+tf.app.flags.DEFINE_string('validate_label', 'data/pred.txt', '')
 tf.app.flags.DEFINE_integer('validate_times', 10, '')
 
 FLAGS = tf.app.flags.FLAGS
@@ -30,7 +30,7 @@ def validate(sess, cls_pred, ph_input_image):
 
     logger.info("加载验证validate数据：%s，加载%d张", validate_file, batch_num)
     image_label_list = data_provider.load_data(validate_file)
-    print("image_label_list:", image_label_list)
+    #print("image_label_list:", image_label_list)
     if len(image_label_list) < batch_num:
         val_image_names = image_label_list
     else:
@@ -41,8 +41,8 @@ def validate(sess, cls_pred, ph_input_image):
     true_cnt = 0
     loop_cnt = 0
     for img_path in val_image_names:
-        print("------------------------------")
-        image_file= img_path[0]
+        #print("------------------------------")
+        image_file = img_path[0]
         gt_image_label = img_path[1]
 
         if not os.path.exists(image_file):
@@ -53,11 +53,12 @@ def validate(sess, cls_pred, ph_input_image):
         # # TODO:将一张大图切成很多小图，再随机抽取小图灌到模型中进行训练
         image_list = preprocess_utils.get_patches(img)
         logger.info("加载图片：%r,小图：%r", img_path, len(image_list))
+        input_img_list = data_util.prepare4vgg(image_list)
         classes = sess.run(cls_pred, feed_dict={
-            ph_input_image: data_util.prepare4vgg(image_list)
+            ph_input_image: input_img_list
         })  # data[3]是图像的路径，传入sess是为了调试画图用
         logger.debug("预测结果为：%r", classes)
-
+        show(input_img_list[0])
         counts = np.bincount(classes)
         pred_class = np.argmax(counts)
         image_label_all.append(gt_image_label)
@@ -135,6 +136,23 @@ def test2():
     #     x+=1
 
 
+def test_single():
+    init_logger()
+    tf.app.flags.DEFINE_boolean('debug', False, '')
+
+    img = cv2.imread("data/test/4.jpg")
+    # tf.reset_default_graph()  # 重置图表
+    sess, ph_input_image, classes_pred = restore_model("model/")
+    classes = sess.run(classes_pred, feed_dict={
+        ph_input_image: np.array([img])
+    })  # data[3]是图像的路径，传入sess是为了调试画图用
+    logger.debug("预测结果为：%r", classes)
+
+    counts = np.bincount(classes)
+    pred_class = np.argmax(counts)
+    print(pred_class)
+
+
 def show(img, title='无标题'):
     """
     本地测试时展示图片
@@ -150,13 +168,18 @@ def show(img, title='无标题'):
     plt.show()
 
 
-if __name__ == '__main__':
+def main():
     init_logger()
     tf.app.flags.DEFINE_boolean('debug', False, '')
     tf.app.flags.DEFINE_string('gpu', '0', '')  # 使用第#1个GPU
 
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
-
+    # "rotate-2020-04-29-22-34-44-2001.ckpt"
     # tf.reset_default_graph()  # 重置图表
-    sess, input_image, classes_pred = restore_model("model/","rotate-2020-04-29-22-34-44-2001.ckpt")
+    sess, input_image, classes_pred = restore_model("model/")
     validate(sess, classes_pred, input_image)
+
+
+if __name__ == '__main__':
+    # main()
+    test_single()
