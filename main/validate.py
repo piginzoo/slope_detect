@@ -19,10 +19,6 @@ FLAGS = tf.app.flags.FLAGS
 
 def validate(sess, cls_pred, ph_input_image):
     #### 加载验证数据,随机加载FLAGS.validate_batch张
-    accuracy = 0
-    precision = 0
-    recall = 0
-    f1 = 0
     image_label_all = []
     pred_classes_all = []
     validate_file = FLAGS.validate_label
@@ -58,7 +54,7 @@ def validate(sess, cls_pred, ph_input_image):
             ph_input_image: input_img_list
         })  # data[3]是图像的路径，传入sess是为了调试画图用
         logger.debug("预测结果为：%r", classes)
-        show(input_img_list[0])
+        #show(input_img_list[0])
         counts = np.bincount(classes)
         pred_class = np.argmax(counts)
         image_label_all.append(gt_image_label)
@@ -75,18 +71,13 @@ def validate(sess, cls_pred, ph_input_image):
 
     # pred和label格式如:[2,1,0,1,1,3]，0-3是对应的方向，0朝上，1朝右倒，2倒立，3朝左倒
     # accuracy: (tp + tn) / (p + n)
-    accuracy = accuracy + accuracy_score(image_label_all, pred_classes_all)
+    accuracy = accuracy_score(image_label_all, pred_classes_all)
     # precision tp / (tp + fp)
-    precision = precision + precision_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
+    precision = precision_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
     # recall: tp / (tp + fn)
-    recall = recall + recall_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
+    recall = recall_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
     # f1: 2 tp / (2 tp + fp + fn)
-    f1 = f1 + f1_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
-    # accuracy = accuracy/FLAGS.validate_times
-    # precision = precision/FLAGS.validate_times
-    # recall = recall/FLAGS.validate_times
-    # f1 = f1/FLAGS.validate_times
-
+    f1 = f1_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
     return accuracy, precision, recall, f1
 
 
@@ -113,7 +104,7 @@ def init_logger():
         handlers=[logging.StreamHandler()])
 
 
-def test2():
+#def test2():
     validate_label = "data/pred.txt"
     # image_list_val, image_label_val = load_validate_data(validate_label, 10)
     # x = 0

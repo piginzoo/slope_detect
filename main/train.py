@@ -112,13 +112,10 @@ def main(argv=None):
     tf.summary.scalar("F1",v_f1)
     # 定义训练集训练前后的标签输出
     v_tr_text = tf.Variable("abc",trainable=False)
-    v_ori_text = tf.Variable("", trainable=False)
+    v_ori_text = tf.Variable("123", trainable=False)
     tf.summary.text('tr_label', tf.convert_to_tensor(v_tr_text))
     tf.summary.text('ori_label', tf.convert_to_tensor(v_ori_text))
 
-    # with tf.name_scope('input_reshape'):
-    #     image_shaped_input = tf.reshape(ph_input_image, [-1, 28, 28, 1])
-    #     tf.summary.image('input', image_shaped_input, 48)
     summary_op = tf.summary.merge_all()
     logger.info("summary定义完毕")
 
@@ -140,7 +137,6 @@ def main(argv=None):
                                                              slim.get_trainable_variables(),
                                                              ignore_missing_vars=True)
     # 早停用的变量
-    #best_f1 = 0
     best_accuracy = 0
     early_stop_counter = 0
 
@@ -162,7 +158,10 @@ def main(argv=None):
 
         logger.debug("开始加载训练数据")
         # 是的，get_batch返回的是一个generator
-        data_generator = data_provider.get_batch(num_workers=FLAGS.num_readers,label_file=FLAGS.train_label,batch_num=FLAGS.train_batch,train_number=FLAGS.train_number)
+        data_generator = data_provider.get_batch(num_workers=FLAGS.num_readers,
+                                                 label_file=FLAGS.train_label,
+                                                 batch_num=FLAGS.train_batch,
+                                                 train_number=FLAGS.train_number)
         start = time.time()
         train_start_time = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime(start))
 
@@ -180,8 +179,13 @@ def main(argv=None):
             # with open("data/0429/prepare4vgg.txt", "w", encoding='utf-8') as f:
             #     f.write(str(label_list))
 
-            _, summary_str,classes,pred_class = sess.run([train_op, summary_op, cls_prob, cls_preb],
-                feed_dict = {ph_input_image: image_list , ph_label: label_list}) # data[3]是图像的路径，传入sess是为了调试画图用 np.array(image_list)
+            _, summary_str,classes,pred_class = sess.run([train_op,
+                                                          summary_op,
+                                                          cls_prob,
+                                                          cls_preb],
+                                                        feed_dict = {
+                                                            ph_input_image: image_list,
+                                                            ph_label: label_list}) # data[3]是图像的路径，传入sess是为了调试画图用 np.array(image_list)
             logger.info("结束第%d步训练，结束sess.run",step)
             # logger.info("结束第%d步训练，结果%r",classes)
 
@@ -240,6 +244,7 @@ def save_model(saver, sess, best_accuracy, step, train_start_time):
     filename = os.path.join(FLAGS.model, filename)
     saver.save(sess, filename)
     logger.info("在第%d步，保存了最好的模型文件：%s，accuracy：%f", step, filename, best_accuracy)
+
 
 
 if __name__ == '__main__':
