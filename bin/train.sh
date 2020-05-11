@@ -10,7 +10,7 @@ fi
 
 if [ "$1" = "console" ]; then
     echo "调试模式:只训练一次"
-    python -m main.train \
+    python -m main.train_pb \
         --name=rotate_detect \
         --pretrained_model_path=data/vgg_16.ckpt \
         --num_readers=1 \
@@ -33,7 +33,7 @@ if [ "$1" = "console" ]; then
         --logs_path=logs \
         --moving_average_decay=0.997 \
         --restore=False \
-        --early_stop=5 \
+        --early_stop=6 \
         --max_width=1200 \
         --max_height=1600
     exit
