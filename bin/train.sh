@@ -10,7 +10,7 @@ fi
 
 if [ "$1" = "console" ]; then
     echo "调试模式:只训练一次"
-    python -m main.train_pb \
+    python -m main.train \
         --name=rotate_detect \
         --pretrained_model_path=data/vgg_16.ckpt \
         --num_readers=1 \
