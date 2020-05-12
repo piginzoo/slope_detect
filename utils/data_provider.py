@@ -76,8 +76,8 @@ def load_batch_image_labels(batch):
         try:
             image_file = image_label_pair[0]
             label = image_label_pair[1]
-            print("image_file:", image_file)
-            print("label:",label)
+            #print("image_file:", image_file)
+            #print("label:",label)
             if not os.path.exists(image_file):
                 logger.warning("样本图片%s不存在", image_file)
                 continue
