@@ -16,78 +16,6 @@ tf.app.flags.DEFINE_integer('validate_times', 10, '')
 
 FLAGS = tf.app.flags.FLAGS
 
-def validate_pb():
-    with tf.Session() as sess:
-        meta_graph_def = tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING], FLAGS.model_path)
-        signature = meta_graph_def.signature_def
-        in_tensor_name = signature['serving_default'].inputs['x'].name
-        out_tensor_name = signature['serving_default'].outputs['predCls'].name
-
-        input_x = sess.graph.get_tensor_by_name(in_tensor_name)
-        output = sess.graph.get_tensor_by_name(out_tensor_name)
-
-        #### 加载验证数据,随机加载FLAGS.validate_batch张
-        image_label_all = []
-        pred_classes_all = []
-        validate_file = FLAGS.validate_label
-        batch_num = FLAGS.validate_times
-
-        logger.info("加载验证validate数据：%s，加载%d张", validate_file, batch_num)
-        image_label_list = data_provider.load_data(validate_file)
-        # print("image_label_list:", image_label_list)
-        if len(image_label_list) < batch_num:
-            val_image_names = image_label_list
-        else:
-            val_image_names = random.sample(image_label_list, batch_num)
-
-        idx = 0
-        all_cnt = len(val_image_names)
-        true_cnt = 0
-        loop_cnt = 0
-        for img_path in val_image_names:
-            image_file = img_path[0]
-            gt_image_label = img_path[1]
-
-            if not os.path.exists(image_file):
-                logger.warning("样本图片%s不存在", image_file)
-                continue
-            img = cv2.imread(image_file)
-            logger.debug("加载样本图片:%s,标签为:%s", image_file, gt_image_label)
-            # # TODO:将一张大图切成很多小图，再随机抽取小图灌到模型中进行训练
-            image_list = preprocess_utils.get_patches(img)
-            logger.info("加载图片：%r,小图：%r", img_path, len(image_list))
-            input_img_list = data_util.prepare4vgg(image_list)
-            classes = sess.run(output, feed_dict={
-                input_x: input_img_list
-            })  # data[3]是图像的路径，传入sess是为了调试画图用
-            logger.debug("预测结果为：%r", classes)
-            # show(input_img_list[0])
-            counts = np.bincount(classes)
-            pred_class = np.argmax(counts)
-            image_label_all.append(gt_image_label)
-            pred_classes_all.append(pred_class)
-
-            loop_cnt += 1
-            logger.info("总%r第[%r]次验证，预测结果：%r,参考结果：%r", all_cnt, idx, pred_class, gt_image_label)
-            if str(gt_image_label) == str(pred_class):
-                true_cnt += 1
-            logger.info("总%r第[%r]次验证，正确条数：%r,正确率：%r", all_cnt, idx, true_cnt, true_cnt / loop_cnt)
-            idx += 1
-        logger.debug("一个批次验证集的预测结果为：%r", pred_classes_all)
-        logger.debug("一个批次验证集的Label为：%r", image_label_all)
-
-        # pred和label格式如:[2,1,0,1,1,3]，0-3是对应的方向，0朝上，1朝右倒，2倒立，3朝左倒
-        # accuracy: (tp + tn) / (p + n)
-        accuracy = accuracy_score(image_label_all, pred_classes_all)
-        # precision tp / (tp + fp)
-        precision = precision_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
-        # recall: tp / (tp + fn)
-        recall = recall_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
-        # f1: 2 tp / (2 tp + fp + fn)
-        f1 = f1_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
-        return accuracy, precision, recall, f1
-
-
 
 def validate(sess, cls_pred, ph_input_image):
     #### 加载验证数据,随机加载FLAGS.validate_batch张
@@ -95,10 +23,8 @@ def validate(sess, cls_pred, ph_input_image):
     pred_classes_all = []
     validate_file = FLAGS.validate_label
     batch_num = FLAGS.validate_times
-
     logger.info("加载验证validate数据：%s，加载%d张", validate_file, batch_num)
     image_label_list = data_provider.load_data(validate_file)
-    #print("image_label_list:", image_label_list)
     if len(image_label_list) < batch_num:
         val_image_names = image_label_list
     else:
@@ -109,7 +35,6 @@ def validate(sess, cls_pred, ph_input_image):
     true_cnt = 0
     loop_cnt = 0
     for img_path in val_image_names:
-        #print("------------------------------")
         image_file = img_path[0]
         gt_image_label = img_path[1]
 
