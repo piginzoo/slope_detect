@@ -110,8 +110,8 @@ def main(argv=None):
     tf.summary.scalar("F1",v_f1)
 
     # 定义训练集训练前后的标签输出
-    v_tr_text = tf.Variable("abc",trainable=False)
-    v_ori_text = tf.Variable("123", trainable=False)
+    v_tr_text = tf.Variable("",trainable=False)
+    v_ori_text = tf.Variable("", trainable=False)
     tf.summary.text('tr_label', tf.convert_to_tensor(v_tr_text))
     tf.summary.text('ori_label', tf.convert_to_tensor(v_ori_text))
 
@@ -189,15 +189,14 @@ def main(argv=None):
             # logger.info("结束第%d步训练，结果%r",classes)
 
             if step == 0:
-                summary_writer.add_summary(summary_str, global_step=step)
-                summary_writer.add_image(image_list, global_step=step)
+                summary_writer.add_summary(summary_str, image_list, global_step=step)
                 sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
 
             if step != 0 and step % FLAGS.evaluate_steps == 0:
                 logger.info("在第%d步，开始进行模型评估",step)
-                summary_writer.add_summary(summary_str, global_step=step)
-                summary_writer.add_image(image_list, global_step=step)
+                summary_writer.add_summary(summary_str, image_list, global_step=step)
+
                 sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
                 accuracy_value,precision_value,recall_value,f1_value = validate(sess, cls_preb, ph_input_image)
