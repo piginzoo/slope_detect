@@ -31,10 +31,8 @@ def validate(sess, cls_pred, ph_input_image):
         val_image_names = random.sample(image_label_list, batch_num)
 
     idx = 0
-    #all_cnt = len(val_image_names)
     true_cnt = 0
     loop_cnt = 0
-    #loop_cnt_all = 0
     for img_path in val_image_names:
         image_file = img_path[0]
         gt_image_label = img_path[1]
