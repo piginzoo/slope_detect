@@ -168,7 +168,7 @@ def main(argv=None):
             image_list,label_list = next(data_generator) # next(<迭代器>）来返回下一个结果
             logger.debug("成功加载图片%d张，标签%d个：",len(image_list),len(label_list))
 
-            image_list = data_util.prepare4vgg(image_list)
+            #image_list = data_util.prepare4vgg(image_list)
             logger.debug("开始第%d步训练，运行sess.run,数据shape：%r",step,image_list.shape)
 
             _, summary_str,classes,pred_class = sess.run([train_op,
@@ -194,7 +194,7 @@ def main(argv=None):
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
                 accuracy_value,precision_value,recall_value,f1_value = validate(sess, cls_preb, ph_input_image)
 
-                if accuracy_value > best_accuracy:
+                if accuracy_value >= 0.8 and accuracy_value > best_accuracy:
                     logger.info("新accuracy值[%f]大于过去最好的accuracy值[%f]，早停计数器重置",accuracy_value,best_accuracy)
                     best_accuracy = accuracy_value
                     early_stop_counter = 0
