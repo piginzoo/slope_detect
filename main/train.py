@@ -189,13 +189,13 @@ def main(argv=None):
             # logger.info("结束第%d步训练，结果%r",classes)
 
             if step == 0:
-                summary_writer.add_summary(summary_str, image_list, global_step=step)
+                summary_writer.add_summary(summary_str, global_step=step)
                 sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
 
             if step != 0 and step % FLAGS.evaluate_steps == 0:
                 logger.info("在第%d步，开始进行模型评估",step)
-                summary_writer.add_summary(summary_str, image_list, global_step=step)
+                summary_writer.add_summary(summary_str, global_step=step)
 
                 sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
