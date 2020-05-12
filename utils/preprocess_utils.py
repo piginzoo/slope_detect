@@ -67,7 +67,6 @@ def get_patches(img):
         candidate_patch = candidate_patches[patch_idx]
         boxCnt = getTextBoxCnt(candidate_patch)
         #show(candidate_patch,str(boxCnt))
-        #print(hIdx, wIdx, boxCnt)
         # >5个才作为备选，用于检验歪斜
         if boxCnt >=8:
             candiIdx.append(backupIdx[patch_idx])
@@ -92,9 +91,6 @@ def getTextBoxCnt(gray):
     # 使用最大稳定极值区域MSER找所有的明显的文字区域
     mser = cv2.MSER_create(_min_area=20, _max_area=600)
     regions, boxes = mser.detectRegions(gray)
-    # print(regions[:5])
-    # print(boxes[:5])
-    # print(type(boxes), len(boxes), boxes.shape)
     keep = []
     for box in boxes:
         x, y, w, h = box

@@ -170,12 +170,6 @@ def main(argv=None):
 
             image_list = data_util.prepare4vgg(image_list)
             logger.debug("开始第%d步训练，运行sess.run,数据shape：%r",step,image_list.shape)
-            # i = 0
-            # for p in image_list:
-            #     cv2.imwrite(os.path.join("data/0429/prepare4vgg/" + str(i) + ".jpg"), p)
-            #     i += 1
-            # with open("data/0429/prepare4vgg.txt", "w", encoding='utf-8') as f:
-            #     f.write(str(label_list))
 
             _, summary_str,classes,pred_class = sess.run([train_op,
                                                           summary_op,
@@ -188,13 +182,13 @@ def main(argv=None):
             # logger.info("结束第%d步训练，结果%r",classes)
 
             if step == 0:
-                summary_writer.add_summary(summary_str, image_list, global_step=step)
+                summary_writer.add_summary(summary_str, global_step=step)
                 sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
 
             if step != 0 and step % FLAGS.evaluate_steps == 0:
                 logger.info("在第%d步，开始进行模型评估",step)
-                summary_writer.add_summary(summary_str, image_list, global_step=step)
+                summary_writer.add_summary(summary_str, global_step=step)
 
                 sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])

@@ -53,7 +53,7 @@ nohup python -m main.train \
     --validate_label=data/validate.txt \
     --train_dir=data/train \
     --train_batch=10 \
-    --train_number=64 \
+    --train_number=48 \
     --train_label=data/train.txt \
     --learning_rate=0.0001 \
     --save_checkpoint_steps=5000 \

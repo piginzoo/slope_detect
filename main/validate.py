@@ -31,9 +31,10 @@ def validate(sess, cls_pred, ph_input_image):
         val_image_names = random.sample(image_label_list, batch_num)
 
     idx = 0
-    all_cnt = len(val_image_names)
+    #all_cnt = len(val_image_names)
     true_cnt = 0
     loop_cnt = 0
+    #loop_cnt_all = 0
     for img_path in val_image_names:
         image_file = img_path[0]
         gt_image_label = img_path[1]
@@ -51,24 +52,26 @@ def validate(sess, cls_pred, ph_input_image):
             ph_input_image: input_img_list
         })  # data[3]是图像的路径，传入sess是为了调试画图用
         logger.debug("预测结果为：%r", classes)
-        #show(input_img_list[0])
+
+        for c in classes:
+            loop_cnt += 1
+            if str(gt_image_label) == str(c):
+                true_cnt += 1
+        logger.info("第%s次验证，正确条数：%r,正确率：%r", idx, true_cnt, true_cnt / loop_cnt)
+        idx += 1
+
         counts = np.bincount(classes)
         pred_class = np.argmax(counts)
         image_label_all.append(gt_image_label)
         pred_classes_all.append(pred_class)
 
-        loop_cnt += 1
-        logger.info("总%r第[%r]次验证，预测结果：%r,参考结果：%r", all_cnt, idx, pred_class, gt_image_label)
-        if str(gt_image_label) == str(pred_class):
-            true_cnt += 1
-        logger.info("总%r第[%r]次验证，正确条数：%r,正确率：%r", all_cnt, idx, true_cnt, true_cnt / loop_cnt)
-        idx += 1
     logger.debug("一个批次验证集的预测结果为：%r", pred_classes_all)
     logger.debug("一个批次验证集的Label为：%r", image_label_all)
 
     # pred和label格式如:[2,1,0,1,1,3]，0-3是对应的方向，0朝上，1朝右倒，2倒立，3朝左倒
     # accuracy: (tp + tn) / (p + n)
-    accuracy = accuracy_score(image_label_all, pred_classes_all)
+    #accuracy = accuracy_score(image_label_all, pred_classes_all)
+    accuracy = true_cnt / loop_cnt
     # precision tp / (tp + fp)
     precision = precision_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
     # recall: tp / (tp + fn)
@@ -101,25 +104,40 @@ def init_logger():
         handlers=[logging.StreamHandler()])
 
 
-#def test2():
+def test2():
+    init_logger()
+    tf.app.flags.DEFINE_boolean('debug', False, '')
     validate_label = "data/pred.txt"
-    # image_list_val, image_label_val = load_validate_data(validate_label, 10)
-    # x = 0
-    # print(image_label_val)
-    # #show(image_list_val[0][0])
-    # #show(image_list_val[1][0])
-    # #show(image_list_val[2][0])
-    # # show(image_list_val[3][0])
-    # # show(image_list_val[4][0])
-    #
-    # for idx,image_list in enumerate(image_list_val):
-    #     #show(image_list[0])
-    #     print(idx,len(image_list))
-    #     img_idx=0
-    #     for img in image_list:
-    #         cv2.imwrite("data/output2/"+str(x) + "_"+ str(idx) +"_" + str(img_idx)+".jpg",img)
-    #         img_idx+=1
-    #     x+=1
+    image_label_val = data_provider.load_data(validate_label)
+
+    image_file = image_label_val[1][0]
+    label = image_label_val[1][1]
+    img = cv2.imread(image_file)
+    logger.debug("加载样本图片:%s,标签为:%s", image_file, label)
+    image_list = preprocess_utils.get_patches(img)
+    logger.info("加载图片：%r,小图：%r", image_file, len(image_list))
+
+    lab_list = [label]
+    label_list = lab_list * len(image_list)
+
+    # 旋转做样本平衡
+    image_list_rotate, label_list_rotate = data_provider.rotate_to_0(image_list, label_list)
+    image_list_all, label_list_all = data_provider.rotate_and_balance(image_list_rotate, label_list_rotate)
+    image_list_all_shuffle, label_list_all_shuffle = data_provider.shuffle_image(image_list_all, label_list_all)
+
+    i = 0
+    for p in image_list_all_shuffle:
+        cv2.imwrite(os.path.join("data/val0512/output11/" + str(i) + ".jpg"), p)
+        i += 1
+
+    sess, ph_input_image, classes_pred = restore_model("model/")
+    classes = sess.run(classes_pred, feed_dict={ph_input_image: data_util.prepare4vgg(image_list_all_shuffle)})
+    logger.debug("预测结果为：%r", classes)
+    logger.debug("原始标签为：%r", label_list_all_shuffle)
+
+    # counts = np.bincount(classes)
+    # pred_class = np.argmax(counts)
+    # logger.debug("加载样本图片:%s,标签为:%s，预测标签:s%", image_file, label, pred_class)
 
 
 def test_single():
@@ -167,5 +185,6 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    test_single()
+    #main()
+    #test_single()
+    test2()
