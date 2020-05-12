@@ -79,7 +79,6 @@ def main(argv=None):
     if not os.path.exists(FLAGS.model):
         os.makedirs(FLAGS.model)
 
-
     # 输入图像数据的维度[批次,  高度,  宽度,  3通道]
     ph_input_image = tf.placeholder(tf.float32, shape=[None, None, None, 3], name='ph_input_image')
     ph_label = tf.placeholder(tf.int64,   shape=[None], name='ph_label')
@@ -189,13 +188,13 @@ def main(argv=None):
             # logger.info("结束第%d步训练，结果%r",classes)
 
             if step == 0:
-                summary_writer.add_summary(summary_str, global_step=step)
+                summary_writer.add_summary(summary_str, image_list, global_step=step)
                 sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
 
             if step != 0 and step % FLAGS.evaluate_steps == 0:
                 logger.info("在第%d步，开始进行模型评估",step)
-                summary_writer.add_summary(summary_str, global_step=step)
+                summary_writer.add_summary(summary_str, image_list, global_step=step)
 
                 sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
