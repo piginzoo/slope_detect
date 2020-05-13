@@ -145,16 +145,16 @@ def main_new():
                 print("Error reading image {}!".format(image_name))
                 continue
 
-        classes = pred(sess, classes, input_images, image_list)
-        logger.debug("预测的标签:%s",classes)
+        pred_classes = pred(sess, classes, input_images, image_list)
+        logger.debug("预测的标签:%s",pred_classes)
 
         # TODO:预测出来多个小图的标签，取众数作为大图的标签
-        counts = np.bincount(classes)
-        classes = np.argmax(counts)
-        logger.debug("预测的标签:%s", classes)
+        counts = np.bincount(pred_classes)
+        _classes = np.argmax(counts)
+        logger.debug("预测的标签:%s", _classes)
 
-        logger.info("图片[%s]旋转角度为[%s]度", image_name, NEW_CLASS_NAME[classes])
-        line = image_name + " " + str(NEW_CLASS_NAME[classes])
+        logger.info("图片[%s]旋转角度为[%s]度", image_name, NEW_CLASS_NAME[_classes])
+        line = image_name + " " + str(NEW_CLASS_NAME[_classes])
         lines.append(line)
 
     with open("data/pred.txt", "w", encoding='utf-8') as f:
