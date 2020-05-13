@@ -23,7 +23,7 @@ fi
 
 echo "新模型（小图）开始检测图片的倾斜....."
 nohup python main/pred.py \
-    --gpu=0 \
+    --gpu=1 \
     --image_name=$1 \
     --pred_dir=data/validate \
     --debug=True \
