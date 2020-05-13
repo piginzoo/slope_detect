@@ -170,8 +170,8 @@ def main(argv=None):
             _, summary_str,classes,pred_class,_ = sess.run([train_op,
                                                           summary_op,
                                                           cls_prob,
-                                                          cls_preb,
-                                                          debug_info],
+                                                          cls_preb
+                                                          ],
                                                         feed_dict = {
                                                             ph_input_image: image_list,
                                                             ph_label: label_list}) # data[3]是图像的路径，传入sess是为了调试画图用 np.array(image_list)
