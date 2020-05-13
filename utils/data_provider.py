@@ -228,8 +228,9 @@ def get_batch(num_workers, label_file, batch_num, train_number, **kwargs):
 
             generator_output = None
     except BaseException as e:
-        traceback.format_exc()
-        logger.error("读取图片出现异常：", str(e))
+        # traceback.format_exc()
+        traceback.print_exc()
+        # logger.error("读取图片出现异常：", str(e))
     finally:
         logger.info("训练进程退出读样本循环")
         if enqueuer is not None:
