@@ -138,11 +138,9 @@ def main_new():
             logger.info("探测图片[%s]开始", image_name)
             try:
                 img = cv2.imread(image_name)
-
                 # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行预测
                 image_list = preprocess_utils.get_patches(img)
-                logger.debug("将图像分成%d个patches", len(image_list))
-                #logger.debug("需要检测的图片[%s]",image_list)
+                logger.debug("将图像[%s]分成%d个patches", image_list, len(image_list))
             except:
                 print("Error reading image {}!".format(image_name))
                 continue
@@ -176,7 +174,7 @@ def pred(sess,classes,input_images,image_list):#,input_image,input_im_info,bbox_
 
 if __name__ == '__main__':
     init_logger()
-    init_params(model_name="ctpn-2019-05-07-14-19-35-201.ckpt")
+    init_params(model_name="rotate-2020-05-12-20-26-08-14701.ckpt")
     if not os.path.exists(FLAGS.pred_dir):
         logger.error("要识别的图片的目录[%s]不存在",FLAGS.pred_dir)
         exit()

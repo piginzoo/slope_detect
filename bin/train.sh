@@ -52,7 +52,7 @@ nohup python -m main.train \
     --validate_times=100 \
     --validate_label=data/validate.txt \
     --train_dir=data/train \
-    --train_batch=10 \
+    --train_batch=6 \
     --train_number=48 \
     --train_label=data/train.txt \
     --learning_rate=0.0001 \
@@ -65,7 +65,7 @@ nohup python -m main.train \
     --tboard_path=tboard \
     --moving_average_decay=0.997 \
     --restore=False \
-    --early_stop=1000 \
+    --early_stop=100 \
     --max_width=600 \
     --max_height=800 \
     >> ./logs/rotate_gpu0_$Date.log 2>&1 &

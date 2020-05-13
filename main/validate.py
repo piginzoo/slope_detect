@@ -68,7 +68,6 @@ def validate(sess, cls_pred, ph_input_image):
 
     # pred和label格式如:[2,1,0,1,1,3]，0-3是对应的方向，0朝上，1朝右倒，2倒立，3朝左倒
     # accuracy: (tp + tn) / (p + n)
-    #accuracy = accuracy_score(image_label_all, pred_classes_all)
     accuracy = true_cnt / loop_cnt
     # precision tp / (tp + fp)
     precision = precision_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
@@ -79,7 +78,7 @@ def validate(sess, cls_pred, ph_input_image):
     return accuracy, precision, recall, f1
 
 
-def restore_model(model_dir, model_file=None):
+def restore_model(model_dir, model_file="rotate-2020-05-12-20-26-08-14701.ckpt"):
     input_image = tf.placeholder(tf.float32, shape=[None, None, None, 3], name='input_image')
     _, class_pred = model.model(input_image)
     sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
@@ -128,7 +127,7 @@ def test2():
         cv2.imwrite(os.path.join("data/val0512/output11/" + str(i) + ".jpg"), p)
         i += 1
 
-    sess, ph_input_image, classes_pred = restore_model("model/")
+    sess, ph_input_image, classes_pred = restore_model("model_new/")
     classes = sess.run(classes_pred, feed_dict={ph_input_image: data_util.prepare4vgg(image_list_all_shuffle)})
     logger.debug("预测结果为：%r", classes)
     logger.debug("原始标签为：%r", label_list_all_shuffle)

@@ -87,7 +87,6 @@ def sample_image_label(image_list_all, label_list_all, train_number):
     # logger.debug("shuffle了所有的小图和标签")
     val_image_names = random.sample(image_label_list, train_number)
     # logger.debug("一个批次随机抽取小图的数量[%d]张，准备加载...", len(val_image_names))
-
     image_list_sample = []
     label_list_sample = []
     for image_label_pair in val_image_names:  # 遍历所有的图片文件
@@ -95,8 +94,6 @@ def sample_image_label(image_list_all, label_list_all, train_number):
         label = image_label_pair[1]
         image_list_sample.append(image)
         label_list_sample.append(label)
-    # logger.debug("随机抽取并成功加载[%d]张小图作为一个批次到内存中", len(image_list_sample))
-    # logger.debug("随机抽取并成功加载到内存中一个批次的小图的标签:%s", label_list_sample)
 
     # 旋转做样本平衡
     image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)

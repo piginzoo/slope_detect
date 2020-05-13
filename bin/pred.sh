@@ -9,7 +9,7 @@ fi
 
 
 if [ "$1" = "old" ]; then
-    echo "老模型开始检测图片的倾斜....."
+    echo "老模型(大图)开始检测图片的倾斜....."
     python main/pred.py \
         --gpu=0 \
         --image_name=$1 \
@@ -21,12 +21,12 @@ if [ "$1" = "old" ]; then
 fi
 
 
-echo "新模型开始检测图片的倾斜....."
+echo "新模型（小图）开始检测图片的倾斜....."
 nohup python main/pred.py \
     --gpu=0 \
     --image_name=$1 \
     --pred_dir=data/validate \
     --debug=True \
     --model_dir=model \
-    --model_file=rotate-2020-04-29-22-34-44-5001.ckpt \
+    --model_file=rotate-2020-05-12-20-26-08-8201.ckpt \
     >> ./logs/pred_rotate_gpu0_$Date.log 2>&1 &
