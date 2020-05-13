@@ -167,7 +167,7 @@ def main(argv=None):
             image_list = data_util.prepare4vgg(image_list)
             logger.debug("开始第%d步训练，运行sess.run,数据shape：%r",step,image_list.shape)
 
-            _, summary_str,classes,pred_class,_ = sess.run([train_op,
+            _, summary_str,classes,pred_class = sess.run([train_op,
                                                           summary_op,
                                                           cls_prob,
                                                           cls_preb
