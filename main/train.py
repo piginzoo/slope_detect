@@ -193,7 +193,7 @@ def main(argv=None):
                 sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
                 accuracy_value,precision_value,recall_value,f1_value = validate(sess, cls_preb, ph_input_image)
 
-                if accuracy_value >= 0.8 and accuracy_value > best_accuracy:
+                if accuracy_value >= 0.9 and accuracy_value > best_accuracy:
                     logger.info("新accuracy值[%f]大于过去最好的accuracy值[%f]，早停计数器重置",accuracy_value,best_accuracy)
                     best_accuracy = accuracy_value
                     early_stop_counter = 0
@@ -201,9 +201,9 @@ def main(argv=None):
                 else:
                     logger.info("新accuracy值[%f]小于过去最好的accuracy值[%f]，早停计数器+1", accuracy_value, best_accuracy)
                     early_stop_counter += 1
-                    if early_stop_counter % 20:
-                        logger.info("新accuracy值[%f],早停[%d]次，保存模型", accuracy_value, early_stop_counter)
-                        save_model(saver, sess, accuracy_value, step, train_start_time)
+                    # if early_stop_counter % 20:
+                    #     logger.info("新accuracy值[%f],早停[%d]次，保存模型", accuracy_value, early_stop_counter)
+                    #     save_model(saver, sess, accuracy_value, step, train_start_time)
 
                 # 更新accuracy,Recall和Precision
                 sess.run([tf.assign(v_f1,       f1_value),
