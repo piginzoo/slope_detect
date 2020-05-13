@@ -140,12 +140,12 @@ def main_new():
                 img = cv2.imread(image_name)
                 # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行预测
                 image_list = preprocess_utils.get_patches(img)
-                logger.debug("将图像[%s]分成%d个patches", image_list, len(image_list))
+                logger.debug("将图像[%s]分成%d个patches", image_name, len(image_list))
             except:
                 print("Error reading image {}!".format(image_name))
                 continue
 
-        classes = pred(sess, classes, input_images, np.array(image_list))
+        classes = pred(sess, classes, input_images, image_list)
         logger.debug("预测的标签:%s",classes)
 
         # TODO:预测出来多个小图的标签，取众数作为大图的标签
