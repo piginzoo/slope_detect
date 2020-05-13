@@ -57,8 +57,6 @@ def model(image):
     classes = tf.argmax(tf.nn.softmax(fc2),axis=1)
     classes = _p_shape(classes, "classes shape:\t")
 
-
-
     return fc2,classes
 
 def loss(fc2,labels):
@@ -68,8 +66,8 @@ def loss(fc2,labels):
     return cross_entropy
 
 
-def debug_info(cls_pred,labels):
-    # 定义训练集训练前后的标签输出
-    tf.summary.text('tr_label', tf.convert_to_tensor(str(cls_pred)))
-    tf.summary.text('ori_label', tf.convert_to_tensor(str(labels)))
-    return None
+# def debug_info(cls_pred,labels):
+#     # 定义训练集训练前后的标签输出
+#     tf.summary.text('tr_label', tf.convert_to_tensor(str(cls_pred)))
+#     tf.summary.text('ori_label', tf.convert_to_tensor(str(labels)))
+#     return None
