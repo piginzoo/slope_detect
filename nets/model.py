@@ -70,6 +70,6 @@ def loss(fc2,labels):
 
 def debug_info(cls_pred,labels):
     # 定义训练集训练前后的标签输出
-    tf.summary.text('tr_label', tf.convert_to_tensor(cls_pred))
-    tf.summary.text('ori_label', tf.convert_to_tensor(labels))
+    tf.summary.text('tr_label', tf.convert_to_tensor(str(cls_pred)))
+    tf.summary.text('ori_label', tf.convert_to_tensor(str(labels)))
     return None
