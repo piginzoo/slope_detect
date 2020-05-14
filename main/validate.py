@@ -18,7 +18,6 @@ FLAGS = tf.app.flags.FLAGS
 
 
 def validate(sess, cls_pred, ph_input_image):
-    #### 加载验证数据,随机加载FLAGS.validate_batch张
     image_label_all = []
     pred_classes_all = []
     validate_file = FLAGS.validate_label
@@ -32,7 +31,9 @@ def validate(sess, cls_pred, ph_input_image):
 
     idx = 0
     true_cnt = 0
+    true_cnt_0 = 0
     loop_cnt = 0
+    label_0 = 0
     for img_path in val_image_names:
         image_file = img_path[0]
         gt_image_label = img_path[1]
@@ -55,8 +56,15 @@ def validate(sess, cls_pred, ph_input_image):
             loop_cnt += 1
             if str(gt_image_label) == str(c):
                 true_cnt += 1
-        logger.info("第%s次验证，正确条数：%r,正确率：%r", idx, true_cnt, true_cnt / loop_cnt)
+            if str(gt_image_label) == "0":
+                label_0 += 1
+                if str(c) == "0":
+                    true_cnt_0 += 1
+
+        logger.info("第%s次验证,正确条数：%r,正确率：%r", idx, true_cnt, true_cnt / loop_cnt)
+        logger.info("第%s次验证，标签为0的条数：%r,标签为0的正确条数：%r,标签为0的正确率：%r", idx, label_0, true_cnt_0, true_cnt_0 / loop_cnt)
         idx += 1
+
 
         counts = np.bincount(classes)
         pred_class = np.argmax(counts)
@@ -78,7 +86,7 @@ def validate(sess, cls_pred, ph_input_image):
     return accuracy, precision, recall, f1
 
 
-def restore_model(model_dir, model_file="rotate-2020-05-12-20-26-08-14701.ckpt"):
+def restore_model(model_dir, model_file=None):
     input_image = tf.placeholder(tf.float32, shape=[None, None, None, 3], name='input_image')
     _, class_pred = model.model(input_image)
     sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
@@ -100,7 +108,7 @@ def init_logger():
         level=logging.DEBUG,
         handlers=[logging.StreamHandler()])
 
-
+# 验证测试
 def test2():
     init_logger()
     tf.app.flags.DEFINE_boolean('debug', False, '')
@@ -137,38 +145,6 @@ def test2():
     # logger.debug("加载样本图片:%s,标签为:%s，预测标签:s%", image_file, label, pred_class)
 
 
-def test_single():
-    init_logger()
-    tf.app.flags.DEFINE_boolean('debug', False, '')
-
-    img = cv2.imread("data/test/4.jpg")
-    # tf.reset_default_graph()  # 重置图表
-    sess, ph_input_image, classes_pred = restore_model("model/")
-    classes = sess.run(classes_pred, feed_dict={
-        ph_input_image: np.array([img])
-    })  # data[3]是图像的路径，传入sess是为了调试画图用
-    logger.debug("预测结果为：%r", classes)
-
-    counts = np.bincount(classes)
-    pred_class = np.argmax(counts)
-    print(pred_class)
-
-
-def show(img, title='无标题'):
-    """
-    本地测试时展示图片
-    :param img:
-    :param name:
-    :return:
-    """
-    import matplotlib.pyplot as plt
-    from matplotlib.font_manager import FontProperties
-    font = FontProperties(fname='/Users/yanmeima/workspace/ocr/crnn/data/data_generator/fonts/simhei.ttf')
-    plt.title(title, fontsize='large', fontweight='bold', FontProperties=font)
-    plt.imshow(img)
-    plt.show()
-
-
 def main():
     init_logger()
     tf.app.flags.DEFINE_boolean('debug', False, '')
@@ -183,5 +159,4 @@ def main():
 
 if __name__ == '__main__':
     #main()
-    #test_single()
     test2()
