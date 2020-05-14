@@ -19,29 +19,25 @@ def rotate_to_0(lines):
 
         if label == "0":
             cv2.imwrite(os.path.join(path + ".jpg"), img)
-            label = "0"
-            line_new_0 = path + ".jpg" + " " + label
+            line_new_0 = path + ".jpg" + " " + "0"
             lines_new.append(line_new_0)
 
         if label == "1":
             rotated_1 = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
             cv2.imwrite(os.path.join(path + ".jpg"),rotated_1)
-            label = "0"
-            line_new_1 = path + ".jpg" + " " + label
+            line_new_1 = path + ".jpg" + " " + "0"
             lines_new.append(line_new_1)
 
         if label == "2":
             rotated_2 = cv2.rotate(img, cv2.ROTATE_180)
             cv2.imwrite(os.path.join(path + ".jpg"), rotated_2)
-            label = "0"
-            line_new_2 = path + ".jpg" + " " + label
+            line_new_2 = path + ".jpg" + " " + "0"
             lines_new.append(line_new_2)
 
         if label == "3":
             rotated_3 = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
             cv2.imwrite(os.path.join(path + ".jpg"), rotated_3)
-            label = "0"
-            line_new_3 = path + ".jpg" + " " + label
+            line_new_3 = path + ".jpg" + " " + "0"
             lines_new.append(line_new_3)
     return lines_new
 
@@ -68,20 +64,17 @@ def all_rotate(lines_new):
 
         rotated_1 = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
         cv2.imwrite(os.path.join(path + "_" + "1" + ".jpg"), rotated_1)
-        label = "1"
-        line_new_1 = path + "_" + "1" + ".jpg" + " " + label
+        line_new_1 = path + "_" + "1" + ".jpg" + " " + "1"
         lines.append(line_new_1)
 
         rotated_2 = cv2.rotate(img, cv2.ROTATE_180)
         cv2.imwrite(os.path.join(path + "_" + "2" + ".jpg"), rotated_2)
-        label = "2"
-        line_new_2 = path + "_" + "2" + ".jpg" + " " + label
+        line_new_2 = path + "_" + "2" + ".jpg" + " " + "2"
         lines.append(line_new_2)
 
         rotated_3 = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
         cv2.imwrite(os.path.join(path + "_" + "3" + ".jpg"), rotated_3)
-        label = "3"
-        line_new_3 = path + "_" + "3" + ".jpg" + " " + label
+        line_new_3 = path + "_" + "3" + ".jpg" + " " + "3"
         lines.append(line_new_3)
 
     with open("data/validate_2000.txt","w",encoding='utf-8') as f1:
