@@ -28,7 +28,7 @@ if [ "$1" = "console" ]; then
         --save_checkpoint_steps=2000 \
         --decay_rate=0.1 \
         --lambda1=1000 \
-        --gpu=0\
+        --gpu=1\
         --debug=True \
         --logs_path=logs \
         --tboard_path=tboard \
@@ -59,7 +59,7 @@ nohup python -m main.train \
     --save_checkpoint_steps=5000 \
     --decay_rate=0.5 \
     --lambda1=1000 \
-    --gpu=0 \
+    --gpu=1 \
     --debug=False \
     --logs_path=logs \
     --tboard_path=tboard \
