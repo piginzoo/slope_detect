@@ -77,7 +77,7 @@ def load_batch_image_labels(batch):
     return image_list_all, label_list_all
 
 
-# 随机抽取64张图片再旋转，保证训练集样本均衡
+# 随机抽取48张图片再旋转，保证训练集样本均衡
 def sample_image_label(image_list_all, label_list_all, train_number):
     image_label_list = list(zip(image_list_all, label_list_all))
     np.random.shuffle(image_label_list)
