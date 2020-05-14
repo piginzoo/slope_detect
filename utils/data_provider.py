@@ -119,26 +119,26 @@ def rotate_to_0(image_list_sample,label_list_sample):
     if 1 in label_list_sample:
         index1 = np.where(arr == 1)
         for i in index1[0]:
-            img = image_list_sample[i]
-            img_rotate = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            img1 = image_list_sample[i]
+            img_rotate1 = cv2.rotate(img1, cv2.ROTATE_90_COUNTERCLOCKWISE)
             label_list_rotate.append(0)
-            image_list_rotate.append(img_rotate)
+            image_list_rotate.append(img_rotate1)
 
     if 2 in label_list_sample:
         index2 = np.where(arr == 2)
         for j in index2[0]:
-            img = image_list_sample[j]
-            img_rotate = cv2.rotate(img, cv2.ROTATE_180)
+            img2 = image_list_sample[j]
+            img_rotate2 = cv2.rotate(img2, cv2.ROTATE_180)
             label_list_rotate.append(0)
-            image_list_rotate.append(img_rotate)
+            image_list_rotate.append(img_rotate2)
 
     if 3 in label_list_sample:
         index3 = np.where(arr == 3)
         for k in index3[0]:
-            img = image_list_sample[k]
-            img_rotate = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+            img3 = image_list_sample[k]
+            img_rotate3 = cv2.rotate(img3, cv2.ROTATE_90_CLOCKWISE)
             label_list_rotate.append(0)
-            image_list_rotate.append(img_rotate)
+            image_list_rotate.append(img_rotate3)
     logger.debug("统一旋转正后加载[%s]张小图作为一个批次到内存中", len(image_list_rotate))
     return image_list_rotate, label_list_rotate
 
@@ -238,7 +238,7 @@ def get_batch(num_workers, label_file, batch_num, train_number, **kwargs):
 
 def test1():
     init_logger()
-    gen = generator(label_file="data/train.txt", batch_num=5,train_number=64)
+    gen = generator(label_file="data/train.txt", batch_num=5,train_number=48)
     image, bbox = next(gen)
     i = 0
     for p in image:
