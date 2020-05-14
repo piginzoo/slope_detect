@@ -90,7 +90,7 @@ def main(argv=None):
     adam_opt = tf.train.AdamOptimizer(learning_rate) # 默认是learning_rate是0.001，而且后期会不断的根据梯度调整，一般不用设这个数，所以我索性去掉了
 
     cls_prob,cls_preb = model.model(ph_input_image)
-    debug_info = model.debug_info(cls_preb,ph_label)
+    #debug_info = model.debug_info(cls_preb,ph_label)
 
     cross_entropy = model.loss(cls_prob,ph_label)
     batch_norm_updates_op = tf.group(*tf.get_collection(tf.GraphKeys.UPDATE_OPS))
@@ -109,6 +109,12 @@ def main(argv=None):
     tf.summary.scalar("Precision",v_precision)
     tf.summary.scalar("Accuracy", v_accuracy)
     tf.summary.scalar("F1",v_f1)
+
+    # 定义训练集训练前后的标签输出
+    v_tr_text = tf.Variable("", trainable=False)
+    v_ori_text = tf.Variable("", trainable=False)
+    tf.summary.text('tr_label', tf.convert_to_tensor(v_tr_text))
+    tf.summary.text('ori_label', tf.convert_to_tensor(v_ori_text))
 
     summary_op = tf.summary.merge_all()
     logger.info("summary定义完毕")
@@ -178,7 +184,8 @@ def main(argv=None):
             logger.info("结束第%d步训练，结束sess.run",step)
 
             if step == 0:
-
+                sess.run([tf.assign(v_tr_text, tf.convert_to_tensor(str(pred_class)))])
+                sess.run([tf.assign(v_ori_text, tf.convert_to_tensor(str(label_list)))])
                 summary_writer.add_summary(summary_str, global_step=step)
 
             if step != 0 and step % FLAGS.evaluate_steps == 0:
