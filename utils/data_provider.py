@@ -41,6 +41,7 @@ def load_data(label_file):
         filenames.append(filename)
         label = int(label)
         labels.append(label)
+
     logger.info("最终样本标签数量[%d],样本图像数量[%d]", len(labels), len(filenames))
     return list(zip(filenames, labels))
 
@@ -58,7 +59,7 @@ def load_batch_image_labels(batch):
                 logger.warning("样本图片%s不存在", image_file)
                 continue
             img = cv2.imread(image_file)
-            #logger.debug("加载样本图片:%s,标签为:%s", image_file,label)
+            logger.debug("加载样本图片:%s,标签为:%s", image_file,label)
 
             # # TODO:将一张大图切成很多小图，再随机抽取小图灌到模型中进行训练
             image_list = preprocess_utils.get_patches(img)

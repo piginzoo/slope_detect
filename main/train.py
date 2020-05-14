@@ -91,7 +91,6 @@ def main(argv=None):
 
     cls_prob,cls_preb = model.model(ph_input_image)
     #debug_info = model.debug_info(cls_preb,ph_label)
-
     cross_entropy = model.loss(cls_prob,ph_label)
     batch_norm_updates_op = tf.group(*tf.get_collection(tf.GraphKeys.UPDATE_OPS))
     #计算梯度
@@ -176,8 +175,7 @@ def main(argv=None):
             _, summary_str,classes,pred_class = sess.run([train_op,
                                                           summary_op,
                                                           cls_prob,
-                                                          cls_preb
-                                                          ],
+                                                          cls_preb],
                                                         feed_dict = {
                                                             ph_input_image: image_list,
                                                             ph_label: label_list}) # data[3]是图像的路径，传入sess是为了调试画图用 np.array(image_list)

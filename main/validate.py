@@ -24,13 +24,6 @@ def validate(sess, cls_pred, ph_input_image):
     batch_num = FLAGS.validate_times
     logger.info("加载验证validate数据：%s，加载%d张", validate_file, batch_num)
     image_label_list = data_provider.load_data(validate_file)
-    #i = 0
-    #image_label_list = image_label_list[i:i + batch_num]
-
-    # for i in range(0, len(image_label_list), batch_num):
-
-    #     image_label_list = image_label_list[i:i + batch_num]
-
     if len(image_label_list) < batch_num:
         val_image_names = image_label_list
     else:
