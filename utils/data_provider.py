@@ -59,7 +59,7 @@ def load_batch_image_labels(batch):
                 logger.warning("样本图片%s不存在", image_file)
                 continue
             img = cv2.imread(image_file)
-            logger.debug("加载样本图片:%s,标签为:%s", image_file,label)
+            #logger.debug("加载样本图片:%s,标签为:%s", image_file,label)
 
             # # TODO:将一张大图切成很多小图，再随机抽取小图灌到模型中进行训练
             image_list = preprocess_utils.get_patches(img)
@@ -195,6 +195,7 @@ def generator(label_file, batch_num, train_number):
             batch = image_label_list[i:i + batch_num]
             # logger.debug("获得批次数量(%d)：从%d到%d的图片/标签的名字，准备加载...", batch_num, i, i + batch_num)
             image_list_all, label_list_all = load_batch_image_labels(batch)
+            logger.debug("加载一个批次切出小图：r%张", len(image_list_all))
             if len(image_list_all) >= train_number:
                 image_list_all_shuffle, label_list_all_shuffle = sample_image_label(image_list_all, label_list_all, train_number)
             else:
