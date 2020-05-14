@@ -24,11 +24,18 @@ def validate(sess, cls_pred, ph_input_image):
     batch_num = FLAGS.validate_times
     logger.info("加载验证validate数据：%s，加载%d张", validate_file, batch_num)
     image_label_list = data_provider.load_data(validate_file)
+    #i = 0
+    #image_label_list = image_label_list[i:i + batch_num]
+
+    # for i in range(0, len(image_label_list), batch_num):
+
+    #     image_label_list = image_label_list[i:i + batch_num]
+
     if len(image_label_list) < batch_num:
         val_image_names = image_label_list
     else:
         val_image_names = random.sample(image_label_list, batch_num)
-
+    #
     idx = 0
     true_cnt = 0
     true_cnt_0 = 0
@@ -62,7 +69,10 @@ def validate(sess, cls_pred, ph_input_image):
                     true_cnt_0 += 1
 
         logger.info("第%s次验证,正确条数：%r,正确率：%r", idx, true_cnt, true_cnt / loop_cnt)
-        logger.info("第%s次验证，标签为0的条数：%r,标签为0的正确条数：%r,标签为0的正确率：%r", idx, label_0, true_cnt_0, true_cnt_0 / label_0)
+        if label_0 == 0:
+            logger.info("第%s次验证，标签为0的条数：0", idx)
+        else:
+            logger.info("第%s次验证，标签为0的条数：%r,标签为0的正确条数：%r,标签为0的正确率：%r", idx, label_0, true_cnt_0, true_cnt_0 / label_0)
         idx += 1
 
 
@@ -77,14 +87,16 @@ def validate(sess, cls_pred, ph_input_image):
     # pred和label格式如:[2,1,0,1,1,3]，0-3是对应的方向，0朝上，1朝右倒，2倒立，3朝左倒
     '''
         accuracy:小图正确率，F1:大图正确率，recall是标签为0的小图的正确率
-    ''' 
+    '''
     # accuracy: (tp + tn) / (p + n)
     accuracy = true_cnt / loop_cnt
     # precision tp / (tp + fp)
     precision = precision_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
     # recall: tp / (tp + fn)
-    #recall = recall_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
-    recall = true_cnt_0 / label_0
+    if label_0 == 0:
+        recall = 0
+    else:
+        recall = true_cnt_0 / label_0
     # f1: 2 tp / (2 tp + fp + fn)
     f1 = f1_score(image_label_all, pred_classes_all, labels=[0, 1, 2, 3], average='micro')
     return accuracy, precision, recall, f1
