@@ -43,10 +43,10 @@ def validate(sess, cls_pred, ph_input_image):
             logger.warning("样本图片%s不存在", image_file)
             continue
         img = cv2.imread(image_file)
-        logger.debug("加载样本图片:%s,标签为:%s", image_file, gt_image_label)
+        #logger.debug("加载样本图片:%s,标签为:%s", image_file, gt_image_label)
         # # TODO:将一张大图切成很多小图，再随机抽取小图灌到模型中进行训练
         image_list = preprocess_utils.get_patches(img)
-        logger.info("加载图片：%r,小图：%r", img_path, len(image_list))
+        #logger.info("加载图片：%r,小图：%r", img_path, len(image_list))
         input_img_list = data_util.prepare4vgg(image_list)
         classes = sess.run(cls_pred, feed_dict={
             ph_input_image: input_img_list
