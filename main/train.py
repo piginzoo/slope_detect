@@ -167,7 +167,7 @@ def main(argv=None):
         logger.debug("开始训练")
         for step in range(FLAGS.max_steps):
             image_list,label_list = next(data_generator) # next(<迭代器>）来返回下一个结果
-            logger.debug("成功加载图片%d张，标签%d个：",len(image_list),len(label_list))
+            #logger.debug("成功加载图片%d张，标签%d个：",len(image_list),len(label_list))
 
             image_list = data_util.prepare4vgg(image_list)
             logger.debug("开始第%d步训练，运行sess.run,数据shape：%r",step,image_list.shape)
