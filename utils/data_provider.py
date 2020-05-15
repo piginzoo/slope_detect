@@ -84,7 +84,7 @@ def sample_image_label(image_list_all, label_list_all, train_number):
     np.random.shuffle(image_label_list)
     # logger.debug("shuffle了所有的小图和标签")
     val_image_names = random.sample(image_label_list, train_number)
-    logger.debug("一个批次随机抽取小图的数量[%d]张，准备加载...", len(val_image_names))
+    #logger.debug("一个批次随机抽取小图的数量[%d]张，准备加载...", len(val_image_names))
     image_list_sample = []
     label_list_sample = []
     for image_label_pair in val_image_names:  # 遍历所有的图片文件
@@ -96,7 +96,7 @@ def sample_image_label(image_list_all, label_list_all, train_number):
     # 旋转做样本平衡
     image_list_rotate, label_list_rotate = rotate_to_0(image_list_sample, label_list_sample)
     image_list_all, label_list_all = rotate_and_balance(image_list_rotate, label_list_rotate)
-    logger.debug("旋转并做样本均衡后，加载[%s]张小图作为一个批次到内存中", len(label_list_all))
+    #logger.debug("旋转并做样本均衡后，加载[%s]张小图作为一个批次到内存中", len(label_list_all))
     image_list_all_shuffle, label_list_all_shuffle = shuffle_image(image_list_all, label_list_all)
     return image_list_all_shuffle, label_list_all_shuffle
 
@@ -139,7 +139,7 @@ def rotate_to_0(image_list_sample,label_list_sample):
             img_rotate3 = cv2.rotate(img3, cv2.ROTATE_90_CLOCKWISE)
             label_list_rotate.append(0)
             image_list_rotate.append(img_rotate3)
-    logger.debug("统一旋转正后加载[%s]张小图作为一个批次到内存中", len(image_list_rotate))
+    #logger.debug("统一旋转正后加载[%s]张小图作为一个批次到内存中", len(image_list_rotate))
     return image_list_rotate, label_list_rotate
 
 def rotate_and_balance(image_list_rotate, label_list_rotate):
@@ -195,7 +195,7 @@ def generator(label_file, batch_num, train_number):
             batch = image_label_list[i:i + batch_num]
             # logger.debug("获得批次数量(%d)：从%d到%d的图片/标签的名字，准备加载...", batch_num, i, i + batch_num)
             image_list_all, label_list_all = load_batch_image_labels(batch)
-            logger.debug("加载一个批次切出小图:%d张", len(image_list_all))
+            #logger.debug("加载一个批次切出小图:%d张", len(image_list_all))
             if len(image_list_all) >= train_number:
                 image_list_all_shuffle, label_list_all_shuffle = sample_image_label(image_list_all, label_list_all, train_number)
             else:
