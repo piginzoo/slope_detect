@@ -11,7 +11,7 @@ import numpy as np
 from utils import preprocess_utils
 
 '''
-    旋转模型预测
+    旋转模型预测,老模型和新模型
 '''
 
 logger = logging.getLogger(__name__)
@@ -118,7 +118,7 @@ def main_old():
             line = image_name_list[i] + " " + str(OLD_CLASS_NAME[classes[i]])
             lines.append(line)
 
-    with open("data/pred.txt", "w", encoding='utf-8') as f:
+    with open("data/pred_20190507.txt", "w", encoding='utf-8') as f:
         for line in lines:
             f.write(str(line) + '\n')
 
