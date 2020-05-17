@@ -157,10 +157,9 @@ def main_new():
         line = image_name + " " + str(NEW_CLASS_NAME[_classes])
         lines.append(line)
 
-    with open("data/pred.txt", "w", encoding='utf-8') as f:
+    with open("data/pred_20200517.txt", "w", encoding='utf-8') as f:
         for line in lines:
             f.write(str(line) + '\n')
-
 
 
 def pred(sess,classes,input_images,image_list):#,input_image,input_im_info,bbox_pred, cls_pred, cls_prob):
@@ -174,7 +173,7 @@ def pred(sess,classes,input_images,image_list):#,input_image,input_im_info,bbox_
 
 if __name__ == '__main__':
     init_logger()
-    init_params(model_name="rotate-2020-05-12-20-26-08-14701.ckpt")
+    init_params(model_name="rotate-2020-05-12-20-26-08-8201.ckpt")
     if not os.path.exists(FLAGS.pred_dir):
         logger.error("要识别的图片的目录[%s]不存在",FLAGS.pred_dir)
         exit()
