@@ -63,39 +63,6 @@ def get_images():
     return files
 
 
-# def restore_model(model_path, input_dict, output_dict):
-#     """
-#         直接指定模型
-#     :param model_path:
-#     :return:
-#     """
-#     print("恢复模型：", model_path,input_dict,output_dict)
-#     # tf.reset_default_graph()
-#     params = {}
-#     # g = tf.get_default_graph()
-#     g = tf.Graph()
-#     with g.as_default():
-#         # 从pb模型直接恢复 TODO ! 这里的config也可以从参数里传过来
-#         sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
-#         # init = tf.global_variables_initializer()
-#         # sess.run(init)
-#         meta_graph_def = tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING], model_path)
-#         signature = meta_graph_def.signature_def
-#         if input_dict:
-#             for input_k in input_dict:
-#                 in_tensor_name = signature['serving_default'].inputs[input_k].name
-#                 input_param = sess.graph.get_tensor_by_name(in_tensor_name)
-#                 params[input_dict[input_k]] = input_param
-#         if output_dict:
-#             for output_k in output_dict:
-#                 out_tensor_name = signature['serving_default'].outputs[output_k].name
-#                 output_param = sess.graph.get_tensor_by_name(out_tensor_name)
-#                 params[output_dict[output_k]] = output_param
-#         params["session"] = sess
-#         params["graph"] = g
-#     return params
-
-
 def main():
     with tf.Session() as sess:
         # 从pb模型直接恢复
@@ -110,10 +77,8 @@ def main():
         input_x = sess.graph.get_tensor_by_name(in_tensor_name)
         output = sess.graph.get_tensor_by_name(out_tensor_name)
 
-
         image_name_list_all = get_images()
         lines = []
-        classes_all = []
         arr_split = np.array_split(image_name_list_all,2000)
         for image_name_list in arr_split:
             logger.info("批次处理：%r", len(image_name_list))
@@ -122,51 +87,35 @@ def main():
                 logger.info("探测图片[%s]开始", image_name)
                 try:
                     img = cv2.imread(image_name)
-
                     # # TODO:将一张大图切成很多小图，直接把小图灌到模型中进行预测
                     image_list = preprocess_utils.get_patches(img)
                     logger.debug("将图像分成%d个patches", len(image_list))
-                    #logger.debug("需要检测的图片[%s]",image_list)
-
-                    # # check
-                    # _, _, name = image_name.split("/")
-                    # i = 0
-                    # for img in image_list:
-                    #     cv2.imwrite(os.path.join("data/checkout/check/" + name[:-4] + "_" + str(i) + '.jpg'), img)
-                    #     i += 1
-
                 except:
                     print("Error reading image {}!".format(image_name))
                     continue
 
-
-                logger.info("开始探测图片")
-                start = time.time()
-                #image_list = data_util.prepare4vgg(image_list)
-                classes = sess.run(output, feed_dict={input_x: image_list})
-                logger.info("探测图片完成，耗时: %f", (time.time() - start))
-
-                # # TODO:check
-                # classes_line = name + " " + str(classes)
-                # classes_all.append(classes_line)
-
-
+                classes = pred_pb(sess, output, input_x, image_list)
                 # TODO:预测出来多个小图的标签，取众数作为大图的标签
                 counts = np.bincount(classes)
-                classes = np.argmax(counts)
+                pred_classes = np.argmax(counts)
 
-                logger.info("图片[%s]旋转角度为[%s]度", image_name, CLASS_NAME[classes])
-                line = image_name + " " + str(CLASS_NAME[classes])
+                logger.info("图片[%s]旋转角度为[%s]度", image_name, CLASS_NAME[pred_classes])
+                line = image_name + " " + str(CLASS_NAME[pred_classes])
                 lines.append(line)
 
-    with open("data/pred.txt", "w", encoding='utf-8') as f:
+    with open("data/pred_zhao.txt", "w", encoding='utf-8') as f:
         for line in lines:
             f.write(str(line) + '\n')
 
-    # # check
-    # with open("data/checkout/check.txt", "w", encoding='utf-8') as f1:
-    #     for c in classes_all:
-    #         f1.write(str(c) + "\n")
+
+def pred_pb(sess, output, input_x, image_list):
+    logger.info("开始探测图片")
+    start = time.time()
+    classes = sess.run(output, feed_dict={input_x: image_list})
+    logger.info("探测图片完成，耗时: %f", (time.time() - start))
+    return classes
+
+
 
 
 if __name__ == '__main__':
@@ -198,6 +147,4 @@ if __name__ == '__main__':
         'output': {'predCls':'output'}
     }
 
-    #params = restore_model(FLAGS.model_path, param_dict['inputs'], param_dict['output'])
-    #main(params)
     main()
