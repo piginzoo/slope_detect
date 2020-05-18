@@ -8,7 +8,7 @@ fi
 
 name=slope_detect \
 model_dir=model \
-model_file=ctpn-2019-05-07-14-19-35-201.ckpt \
+model_file=rotate-2020-05-15-11-54-22-16101.ckpt \
 CUDA_VISIBLE_DEVICES=0 \
 nohup \
     gunicorn \
