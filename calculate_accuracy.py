@@ -5,7 +5,7 @@
     这个代码用来帮我们计算三个旋转模型的正确率比较：
     - 老模型（大图）--2019-05-07
     - 赵毅模型
-    - 新模型（切图）--2020-04-17
+    - 新模型（切图）--2020-05-15
 '''
 
 def read_file(path):
@@ -14,9 +14,7 @@ def read_file(path):
     test_labels = []
     for line in lines:
         file, label = line.split(" ")
-        #print("修改之前file:",file)
         file = file[:-4] + ".jpg"
-        #print("修改之后file:",file)
         label = label.replace("\n", "")
         test_files.append(file)
         test_labels.append(label)
@@ -54,12 +52,17 @@ def calculate_accuracy(i,j,k):
 
 
 if __name__ == '__main__':
-    # 2000张
-    validate_path = "data/pred/2000/validate_2000.txt"
-    old_path = "data/pred/2000/pred_20190507.txt"
-    new_path = "data/pred/2000/pred_20200428.txt"
-    zhao_path = "data/pred/2000/pred_20200424_zhao.txt"
+    # 2000张，减均值
+    # validate_path = "data/pred/2000/validate.txt"
+    # old_path = "data/pred/2000/pred_20190507.txt"
+    # new_path = "data/pred/2000/pred_20200512.txt"
+    # zhao_path = "data/pred/2000/pred_20200424_zhao.txt"
 
+    # 不减均值
+    validate_path = "data/pred/0515/validate_2000.txt"
+    old_path = "data/pred/0515/pred_20190507.txt"
+    new_path = "data/pred/0515/pred_20200517.txt"
+    zhao_path = "data/pred/0515/pred_zhao.txt"
 
     # 测试
     # validate_path = "data/test/00.txt"
