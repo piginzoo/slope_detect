@@ -15,7 +15,7 @@ if [ "$1" = "old" ]; then
         --image_name=$1 \
         --pred_dir=data/validate \
         --debug=True \
-        --model_dir=model \
+        --model_dir=model/old_2019 \
         --model_file=ctpn-2019-05-07-14-19-35-201.ckpt
     exit
 fi
