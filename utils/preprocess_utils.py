@@ -80,7 +80,7 @@ def get_patches(img):
     for hStart, wStart in candiIdx[:32]:
         patch = img[hStart:(hStart + dim), wStart:(wStart + dim)]
         #因为后面有强制压缩成224 * 224和标准化，所以这里不需要标准化
-        #patch = (patch - patch.mean()) / patch.std() # 做一下标准化----------！！！因为后面进VGG之前要减均值，所以这里我没有做标准化
+        patch = (patch - patch.mean()) / patch.std() # 做一下标准化----------！！！因为后面进VGG之前要减均值，所以这里我没有做标准化
         patches.append(patch)
     patches = np.stack(patches, axis=0)
     return patches
@@ -163,7 +163,7 @@ def nms(boxes, overlapThresh):
 
 if __name__ == '__main__':
 
-    img = cv2.imread("data/debug/images/20.JPG")
+    img = cv2.imread("data/debug/images/bug.jpg")
     print(img.shape)
     patches = get_patches(img)
     i = 0

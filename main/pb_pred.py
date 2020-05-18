@@ -15,7 +15,8 @@ import logging
 from utils import preprocess_utils
 
 '''
-    用赵毅训练的模型预测图片
+    用赵毅训练的模型预测图片,
+    注：模型在预测的时候需要加标准化，调用preprocess_utils.get_patches()函数
 '''
 
 logger = logging.getLogger("Pred")
