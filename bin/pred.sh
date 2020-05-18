@@ -8,25 +8,34 @@ if [ "$1" = "help" ]; then
 fi
 
 
-if [ "$1" = "old" ]; then
-    echo "老模型(大图)开始检测图片的倾斜....."
-    python main/pred.py \
-        --gpu=0 \
-        --image_name=$1 \
-        --pred_dir=data/validate \
-        --debug=True \
-        --model_dir=model/old_2019 \
-        --model_file=ctpn-2019-05-07-14-19-35-201.ckpt
-    exit
-fi
+#if [ "$1" = "old" ]; then
+#    echo "老模型(大图)开始检测图片的倾斜....."
+#    python main/pred.py \
+#        --gpu=0 \
+#        --image_name=$1 \
+#        --pred_dir=data/validate \
+#        --debug=True \
+#        --model_dir=model/old_2019 \
+#        --model_file=ctpn-2019-05-07-14-19-35-201.ckpt
+#    exit
+#fi
 
 
-echo "新模型（小图）开始检测图片的倾斜....."
-nohup python main/pred.py \
-    --gpu=0 \
+#echo "新模型（小图）开始检测图片的倾斜....."
+#nohup python main/pred.py \
+#    --gpu=0 \
+#    --image_name=$1 \
+#    --pred_dir=data/validate \
+#    --debug=True \
+#    --model_dir=model \
+ #   --model_file=rotate-2020-05-15-11-54-22-16101.ckpt \
+#    >> ./logs/pred_rotate_gpu0_$Date.log 2>&1 &
+
+echo "开始检测图片的倾斜....."
+
+python main/pred.py \
     --image_name=$1 \
     --pred_dir=data/validate \
     --debug=True \
-    --model_dir=model \
-    --model_file=rotate-2020-05-15-11-54-22-16101.ckpt \
-    >> ./logs/pred_rotate_gpu0_$Date.log 2>&1 &
+    --model_dir=model/old_2019 \
+    --model_file=ctpn-2019-05-07-14-19-35-201.ckpt
