@@ -9,10 +9,9 @@ fi
 echo "开始检测图片的倾斜....."
 
 #python main/pb_pred.py \
-nohup python -m main.pb_pred \
+python -m main.pb_pred \
     --gpu=0 \
     --image_name=$1 \
     --pred_dir=data/validate \
     --debug=True \
-    --model_path=model/pb/100000 \
-    >> ./logs/pred_rotate_gpu0_$Date.log 2>&1 &
+    --model_path=model/pb/100000
