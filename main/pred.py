@@ -194,6 +194,6 @@ if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
 
     # 用创哥大图训练的模型预测
-    #main_old()
+    main_old()
     # 用延美切小图训练的模型预测
-    main_new()
+    #main_new()
