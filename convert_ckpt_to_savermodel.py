@@ -33,8 +33,6 @@ def convert():
             saveModDir = cur
             break
 
-    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.3, allow_growth=True)
-    ses_config = tf.ConfigProto(gpu_options=gpu_options)
     print("模型保存目录", saveModDir)
     # 原ckpt模型
     ckptModPath = FLAGS.ckpt_mod_path
@@ -42,16 +40,13 @@ def convert():
     # 获取字符库
 
     # 定义张量
-    input_images = tf.placeholder(tf.float32, shape=[None, None, None, 3], name='input_images')
-    global_step = tf.get_variable('global_step', [], initializer=tf.constant_initializer(0), trainable=False)
+    input_images = tf.placeholder(tf.float32, shape=[None, None, None, 3], name='input_image')
     _, classes = model.model(input_images)
-
-    variable_averages = tf.train.ExponentialMovingAverage(0.997, global_step)
-    saver = tf.train.Saver(variable_averages.variables_to_restore())
     sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
+    saver = tf.train.Saver(tf.global_variables())
+
     model_path = tf.train.latest_checkpoint(ckptModPath)
     saver.restore(sess, model_path)
-
 
     # 保存转换训练好的模型
     builder = tf.saved_model.builder.SavedModelBuilder(saveModDir)
