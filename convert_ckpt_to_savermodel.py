@@ -4,7 +4,6 @@
 import os
 import tensorflow as tf
 from nets import model
-import numpy as np
 
 
 '''
