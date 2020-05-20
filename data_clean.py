@@ -12,15 +12,19 @@ def compare(txt, writePath):
     lines_seen = set()
 
     i = 1
-    for line in f:
-        #file,label = line.split()
-        #if file not in lines_seen:
-        if line not in lines_seen:
-            outfiile.write(line)
-            lines_seen.add(line)
-            if i % 1000 == 0:
-                print("已经处理行数：", i)
-                i += 1
+    for line in f.readlines():
+        # print("line:",line)
+        # print(len(line))
+        if len(line) > 1:
+            #print("========", line)
+            #file,label = line.split()
+            #if file not in lines_seen:
+            if line not in lines_seen:
+                outfiile.write(line)
+                lines_seen.add(line)
+                if i % 1000 == 0:
+                    print("已经处理行数：", i)
+                    i += 1
 
 
 
@@ -29,9 +33,10 @@ def count_char(writePath, count_path):
     s = ""
     for line in f.readlines():
         print("line:", line)
-        file, label = line.split()
-        label = label.replace("\n", "")
-        s = s + label
+        if len(line) != 0:
+            file, label = line.split(" ")
+            label = label.replace("\n", "")
+            s = s + label
 
     resoult = {}
     for i in s:
@@ -74,4 +79,5 @@ if __name__ == "__main__":
     compare(txt, writePath)
 
     # 统计各个字符个数
-    count_char(writePath, count_path)
+    #count_char(writePath, count_path)
+
