@@ -79,5 +79,5 @@ if __name__ == "__main__":
     compare(txt, writePath)
 
     # 统计各个字符个数
-    #count_char(writePath, count_path)
+    count_char(writePath, count_path)
 
