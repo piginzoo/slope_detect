@@ -23,7 +23,7 @@ def compare(txt, writePath):
             if line not in lines_seen:
                 outfiile.write(line)
                 lines_seen.add(line)
-                if i % 1000 == 0:
+                if i % 5000 == 0:
                     print("已经处理行数：", i)
 
 
@@ -36,10 +36,10 @@ def count_char(writePath, count_path):
         j += 1
         #print("line:", line)
         if len(line) != 0:
-            file, label = line.split(" ")
+            file, label = line.split()
             label = label.replace("\n", "")
             s = s + label
-            if j % 1000 == 0:
+            if j % 5000 == 0:
                 print("已经处理行数：", j)
 
     resoult = {}
@@ -84,5 +84,6 @@ if __name__ == "__main__":
 
     # 统计各个字符个数
     count_char(writePath, count_path)
+
 
 
