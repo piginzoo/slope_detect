@@ -13,7 +13,7 @@ if [ "$1" = "old" ]; then
     python main/pred.py \
         --gpu=0 \
         --image_name=$1 \
-        --pred_dir=data/validate \
+        --pred_dir=data/problem_image \
         --debug=True \
         --model_dir=model/old_2019 \
         --model_file=ctpn-2019-05-07-14-19-35-201.ckpt
@@ -25,7 +25,7 @@ echo "新模型（小图）开始检测图片的倾斜....."
 nohup python main/pred.py \
     --gpu=0 \
     --image_name=$1 \
-    --pred_dir=data/validate \
+    --pred_dir=data/problem_image \
     --debug=True \
     --model_dir=model \
     --model_file=rotate-2020-05-15-11-54-22-16101.ckpt \
