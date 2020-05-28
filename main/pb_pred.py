@@ -26,7 +26,7 @@ CLASS_NAME = [0,270,180,90]
 
 def init_params(model_path=''):
     tf.app.flags.DEFINE_string('image_name','', '')         # 被预测的图片名字，为空就预测目录下所有的文件
-    tf.app.flags.DEFINE_string('pred_dir', 'data/test', '') # 预测后的结果的输出目录
+    tf.app.flags.DEFINE_string('pred_dir', 'data/validate', '') # 预测后的结果的输出目录
     tf.app.flags.DEFINE_string('model_path',model_path, '')   # model的存放目录，会自动加载最新的那个模型
     #tf.app.flags.DEFINE_string('model_file',model_name, '') # 为了支持单独文件，如果为空，就预测pred_dir中的所有文件
     tf.app.flags.DEFINE_boolean('debug', False, '')
@@ -97,7 +97,7 @@ def main():
 
                 classes = pred_pb(sess, output, input_x, image_list)
                 # TODO:预测出来多个小图的标签，取众数作为大图的标签
-                print("classes:",classes)
+                #print("classes:",classes)
                 counts = np.bincount(classes)
                 pred_classes = np.argmax(counts)
 
@@ -113,7 +113,7 @@ def main():
 def pred_pb(sess, output, input_x, image_list):
     logger.info("开始探测图片")
     start = time.time()
-
+    #
     # from utils import data_util
     # image_list = data_util.prepare4vgg(image_list)
 
@@ -126,7 +126,7 @@ def pred_pb(sess, output, input_x, image_list):
 
 if __name__ == '__main__':
     init_logger()
-    init_params(model_path="model/multi_pb/zhao")
+    init_params(model_path="model/multi_pb/20200519")
 
     if not os.path.exists(FLAGS.pred_dir):
         logger.error("要识别的图片的目录[%s]不存在",FLAGS.pred_dir)

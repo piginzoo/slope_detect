@@ -140,12 +140,12 @@ def test2():
     image_list_all, label_list_all = data_provider.rotate_and_balance(image_list_rotate, label_list_rotate)
     image_list_all_shuffle, label_list_all_shuffle = data_provider.shuffle_image(image_list_all, label_list_all)
 
-    i = 0
-    for p in image_list_all_shuffle:
-        cv2.imwrite(os.path.join("data/val0512/output11/" + str(i) + ".jpg"), p)
-        i += 1
+    # i = 0
+    # for p in image_list_all_shuffle:
+    #     cv2.imwrite(os.path.join("data/val0512/output11/" + str(i) + ".jpg"), p)
+    #     i += 1
 
-    sess, ph_input_image, classes_pred = restore_model("model_new/")
+    sess, ph_input_image, classes_pred = restore_model("model/0517/")
     classes = sess.run(classes_pred, feed_dict={ph_input_image: data_util.prepare4vgg(image_list_all_shuffle)})
     logger.debug("预测结果为：%r", classes)
     logger.debug("原始标签为：%r", label_list_all_shuffle)

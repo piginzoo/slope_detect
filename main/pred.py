@@ -22,8 +22,8 @@ OLD_CLASS_NAME = [0,270,180,90]
 
 def init_params(model_dir='model',model_name=''):
     tf.app.flags.DEFINE_string('image_name','', '')         # 被预测的图片名字，为空就预测目录下所有的文件
-    tf.app.flags.DEFINE_string('pred_dir', 'data/validate', '') # 被预测的图片路径
-    tf.app.flags.DEFINE_string('model_dir',model_dir, '')   # model的存放目录，会自动加载最新的那个模型
+    tf.app.flags.DEFINE_string('pred_dir', 'data/test', '') # 被预测的图片路径
+    tf.app.flags.DEFINE_string('model_dir','model/0517', '')   # model的存放目录，会自动加载最新的那个模型
     tf.app.flags.DEFINE_string('model_file',model_name, '') # 为了支持单独文件，如果为空，就预测pred_dir中的所有文件
     tf.app.flags.DEFINE_boolean('debug', False, '')
     # 这个是为了兼容
@@ -118,7 +118,7 @@ def main_old():
             line = image_name_list[i] + " " + str(OLD_CLASS_NAME[classes[i]])
             lines.append(line)
 
-    with open("data/pred_20190507_28.txt", "w", encoding='utf-8') as f:
+    with open("data/pred_20190507.txt", "w", encoding='utf-8') as f:
         for line in lines:
             f.write(str(line) + '\n')
 
@@ -173,7 +173,7 @@ def pred(sess,classes,input_images,image_list):#,input_image,input_im_info,bbox_
 
 if __name__ == '__main__':
     init_logger()
-    init_params(model_name="rotate-2020-05-12-20-26-08-8201.ckpt")
+    init_params(model_name="rotate-2020-05-15-11-54-22-16101.ckpt")
     if not os.path.exists(FLAGS.pred_dir):
         logger.error("要识别的图片的目录[%s]不存在",FLAGS.pred_dir)
         exit()
@@ -194,6 +194,6 @@ if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
 
     # 用创哥大图训练的模型预测
-    main_old()
+    #main_old()
     # 用延美切小图训练的模型预测
-    #main_new()
+    main_new()
