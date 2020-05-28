@@ -26,7 +26,7 @@ CLASS_NAME = [0,270,180,90]
 
 def init_params(model_path=''):
     tf.app.flags.DEFINE_string('image_name','', '')         # 被预测的图片名字，为空就预测目录下所有的文件
-    tf.app.flags.DEFINE_string('pred_dir', 'data/validate', '') # 预测后的结果的输出目录
+    tf.app.flags.DEFINE_string('pred_dir', 'data/test', '') # 预测后的结果的输出目录
     tf.app.flags.DEFINE_string('model_path',model_path, '')   # model的存放目录，会自动加载最新的那个模型
     #tf.app.flags.DEFINE_string('model_file',model_name, '') # 为了支持单独文件，如果为空，就预测pred_dir中的所有文件
     tf.app.flags.DEFINE_boolean('debug', False, '')
@@ -80,7 +80,7 @@ def main():
 
         image_name_list_all = get_images()
         lines = []
-        arr_split = np.array_split(image_name_list_all,2000)
+        arr_split = np.array_split(image_name_list_all,16)
         for image_name_list in arr_split:
             logger.info("批次处理：%r", len(image_name_list))
 
@@ -97,6 +97,7 @@ def main():
 
                 classes = pred_pb(sess, output, input_x, image_list)
                 # TODO:预测出来多个小图的标签，取众数作为大图的标签
+                print("classes:",classes)
                 counts = np.bincount(classes)
                 pred_classes = np.argmax(counts)
 
@@ -104,7 +105,7 @@ def main():
                 line = image_name + " " + str(CLASS_NAME[pred_classes])
                 lines.append(line)
 
-    with open("data/pred_zhao.txt", "w", encoding='utf-8') as f:
+    with open("data/pred_zhao_0528.txt", "w", encoding='utf-8') as f:
         for line in lines:
             f.write(str(line) + '\n')
 
@@ -112,6 +113,10 @@ def main():
 def pred_pb(sess, output, input_x, image_list):
     logger.info("开始探测图片")
     start = time.time()
+
+    # from utils import data_util
+    # image_list = data_util.prepare4vgg(image_list)
+
     classes = sess.run(output, feed_dict={input_x: image_list})
     logger.info("探测图片完成，耗时: %f", (time.time() - start))
     return classes
@@ -121,7 +126,7 @@ def pred_pb(sess, output, input_x, image_list):
 
 if __name__ == '__main__':
     init_logger()
-    init_params(model_path="model/pb/100000/")
+    init_params(model_path="model/multi_pb/zhao")
 
     if not os.path.exists(FLAGS.pred_dir):
         logger.error("要识别的图片的目录[%s]不存在",FLAGS.pred_dir)
