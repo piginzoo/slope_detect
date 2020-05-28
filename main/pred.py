@@ -17,8 +17,8 @@ from utils import preprocess_utils
 logger = logging.getLogger(__name__)
 
 FLAGS = tf.app.flags.FLAGS
-NEW_CLASS_NAME = [0,90,180,270]
-OLD_CLASS_NAME = [0,270,180,90]
+# NEW_CLASS_NAME = [0,90,180,270]
+CLASS_NAME = [0,270,180,90]
 
 def init_params(model_dir='model',model_name=''):
     tf.app.flags.DEFINE_string('image_name','', '')         # 被预测的图片名字，为空就预测目录下所有的文件
@@ -114,8 +114,8 @@ def main_old():
         sess = restore_session()
         classes = pred(sess, classes, input_images, np.array(image_list))
         for i in range(len(classes)):
-            logger.info("图片[%s]旋转角度为[%s]度", image_name_list[i], OLD_CLASS_NAME[classes[i]])
-            line = image_name_list[i] + " " + str(OLD_CLASS_NAME[classes[i]])
+            logger.info("图片[%s]旋转角度为[%s]度", image_name_list[i], CLASS_NAME[classes[i]])
+            line = image_name_list[i] + " " + str(CLASS_NAME[classes[i]])
             lines.append(line)
 
     with open("data/pred_20190507.txt", "w", encoding='utf-8') as f:
@@ -153,11 +153,11 @@ def main_new():
         _classes = np.argmax(counts)
         logger.debug("预测的标签:%s", _classes)
 
-        logger.info("图片[%s]旋转角度为[%s]度", image_name, NEW_CLASS_NAME[_classes])
-        line = image_name + " " + str(NEW_CLASS_NAME[_classes])
+        logger.info("图片[%s]旋转角度为[%s]度", image_name, CLASS_NAME[_classes])
+        line = image_name + " " + str(CLASS_NAME[_classes])
         lines.append(line)
 
-    with open("data/pred_20200517_28.txt", "w", encoding='utf-8') as f:
+    with open("data/pred_20200517.txt", "w", encoding='utf-8') as f:
         for line in lines:
             f.write(str(line) + '\n')
 

@@ -145,7 +145,7 @@ def test2():
     #     cv2.imwrite(os.path.join("data/val0512/output11/" + str(i) + ".jpg"), p)
     #     i += 1
 
-    sess, ph_input_image, classes_pred = restore_model("model/0517/")
+    sess, ph_input_image, classes_pred = restore_model("model/")
     classes = sess.run(classes_pred, feed_dict={ph_input_image: data_util.prepare4vgg(image_list_all_shuffle)})
     logger.debug("预测结果为：%r", classes)
     logger.debug("原始标签为：%r", label_list_all_shuffle)
