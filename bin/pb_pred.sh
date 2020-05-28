@@ -14,4 +14,4 @@ python -m main.pb_pred \
     --image_name=$1 \
     --pred_dir=data/problem_image \
     --debug=True \
-    --model_path=model/pb/100000
+    --model_path=model/zhao
