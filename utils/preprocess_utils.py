@@ -68,7 +68,7 @@ def get_patches(img):
         boxCnt = getTextBoxCnt(candidate_patch)
         #show(candidate_patch,str(boxCnt))
         # >5个才作为备选，用于检验歪斜
-        if boxCnt >=8:
+        if boxCnt >=5:
             candiIdx.append(backupIdx[patch_idx])
             done_counter+=1
         if done_counter>=32: break
