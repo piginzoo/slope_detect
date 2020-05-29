@@ -116,8 +116,8 @@ def rotate_to_0(image_list_sample,label_list_sample):
             label_list_rotate.append(0)
             image_list_rotate.append(img)
 
-    if 1 in label_list_sample:
-        index1 = np.where(arr == 1)
+    if 3 in label_list_sample:
+        index1 = np.where(arr == 3)
         for i in index1[0]:
             img1 = image_list_sample[i]
             img_rotate1 = cv2.rotate(img1, cv2.ROTATE_90_COUNTERCLOCKWISE)
@@ -132,8 +132,8 @@ def rotate_to_0(image_list_sample,label_list_sample):
             label_list_rotate.append(0)
             image_list_rotate.append(img_rotate2)
 
-    if 3 in label_list_sample:
-        index3 = np.where(arr == 3)
+    if 1 in label_list_sample:
+        index3 = np.where(arr == 1)
         for k in index3[0]:
             img3 = image_list_sample[k]
             img_rotate3 = cv2.rotate(img3, cv2.ROTATE_90_CLOCKWISE)
@@ -156,7 +156,7 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
     for img in image_list_rotate[12:24]:
         img_rotate_1 = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
         image_list_all.append(img_rotate_1)
-        label_list_all.append(1)
+        label_list_all.append(3)
 
     for img in image_list_rotate[24:36]:
         img_rotate_2 = cv2.rotate(img, cv2.ROTATE_180)
@@ -166,7 +166,7 @@ def rotate_and_balance(image_list_rotate, label_list_rotate):
     for img in image_list_rotate[36:48]:
         img_rotate_3 = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
         image_list_all.append(img_rotate_3)
-        label_list_all.append(3)
+        label_list_all.append(1)
 
     return image_list_all, label_list_all
 
