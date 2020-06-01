@@ -61,14 +61,9 @@ if __name__ == '__main__':
     # 不减均值
     validate_path = "data/pred/0515/validate_2000.txt"
     old_path = "data/pred/0515/pred_20190507.txt"
-    new_path = "data/pred/0515/pred_20200517.txt"
+    new_path = "data/pred/0515/pred_20200529.txt"
     zhao_path = "data/pred/0515/pred_zhao.txt"
 
-    # 测试
-    # validate_path = "data/test/00.txt"
-    # old_path = "data/test/11.txt"
-    # new_path = "data/test/22.txt"
-    # zhao_path = "data/test/33.txt"
 
     test_files_old, test_labels_old = read_file(old_path)
     correct_old = compare(test_files_old, test_labels_old, validate_path)
