@@ -17,13 +17,12 @@ from utils import preprocess_utils
 logger = logging.getLogger(__name__)
 
 FLAGS = tf.app.flags.FLAGS
-# NEW_CLASS_NAME = [0,90,180,270]
 CLASS_NAME = [0,270,180,90]
 
 def init_params(model_dir='model',model_name=''):
     tf.app.flags.DEFINE_string('image_name','', '')         # 被预测的图片名字，为空就预测目录下所有的文件
-    tf.app.flags.DEFINE_string('pred_dir', 'data/test', '') # 被预测的图片路径
-    tf.app.flags.DEFINE_string('model_dir','model/0517', '')   # model的存放目录，会自动加载最新的那个模型
+    tf.app.flags.DEFINE_string('pred_dir', 'data/validate', '') # 被预测的图片路径
+    tf.app.flags.DEFINE_string('model_dir','model/', '')   # model的存放目录，会自动加载最新的那个模型
     tf.app.flags.DEFINE_string('model_file',model_name, '') # 为了支持单独文件，如果为空，就预测pred_dir中的所有文件
     tf.app.flags.DEFINE_boolean('debug', False, '')
     # 这个是为了兼容
