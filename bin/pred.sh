@@ -26,7 +26,7 @@ echo "新模型（小图）开始检测图片的倾斜....."
     python main/pred.py \
         --gpu=0 \
         --image_name=$1 \
-        --pred_dir=data/validate \
+        --pred_dir=data/zhengxinbaogao_200 \
         --debug=True \
         --model_dir=model \
         --model_file=rotate-2020-05-29-10-25-49-11901.ckpt
