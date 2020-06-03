@@ -129,7 +129,7 @@ def main_new():
     input_images, classes = init_model()
     sess = restore_session()
 
-    arr_split = np.array_split(image_name_list_all,200)
+    arr_split = np.array_split(image_name_list_all,202)
     for image_name_list in arr_split:
         logger.info("批次处理：%r", len(image_name_list))
 
