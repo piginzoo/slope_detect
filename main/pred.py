@@ -156,7 +156,7 @@ def main_new():
         line = image_name + " " + str(CLASS_NAME[_classes])
         lines.append(line)
 
-    with open("data/pred_20200529.txt", "w", encoding='utf-8') as f:
+    with open("data/pred_zhengxin.txt", "w", encoding='utf-8') as f:
         for line in lines:
             f.write(str(line) + '\n')
 
