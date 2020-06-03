@@ -22,11 +22,12 @@ fi
 
 
 echo "新模型（小图）开始检测图片的倾斜....."
-nohup python main/pred.py \
-    --gpu=0 \
-    --image_name=$1 \
-    --pred_dir=data/validate \
-    --debug=True \
-    --model_dir=model \
-    --model_file=rotate-2020-05-29-10-25-49-11901.ckpt \
-    >> ./logs/pred_rotate_gpu0_$Date.log 2>&1 &
+#nohup
+    python main/pred.py \
+        --gpu=0 \
+        --image_name=$1 \
+        --pred_dir=data/validate \
+        --debug=True \
+        --model_dir=model \
+        --model_file=rotate-2020-05-29-10-25-49-11901.ckpt
+    #>> ./logs/pred_rotate_gpu0_$Date.log 2>&1 &
