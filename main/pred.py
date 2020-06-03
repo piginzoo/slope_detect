@@ -129,7 +129,7 @@ def main_new():
     input_images, classes = init_model()
     sess = restore_session()
 
-    arr_split = np.array_split(image_name_list_all,202)
+    arr_split = np.array_split(image_name_list_all,2000)
     for image_name_list in arr_split:
         logger.info("批次处理：%r", len(image_name_list))
 
@@ -156,7 +156,7 @@ def main_new():
         line = image_name + " " + str(CLASS_NAME[_classes])
         lines.append(line)
 
-    with open("data/pred_zhengxin.txt", "w", encoding='utf-8') as f:
+    with open("data/pred_20200529.txt", "w", encoding='utf-8') as f:
         for line in lines:
             f.write(str(line) + '\n')
 
