@@ -1,4 +1,7 @@
+tboard
+data.old
 model/
+model
 *.pyc
 .idea/
 __pycache__
