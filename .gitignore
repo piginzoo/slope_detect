@@ -1,3 +1,7 @@
+data.old
+tboard
+app/
+model
 model/
 *.pyc
 .idea/
